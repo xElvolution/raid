@@ -1,44 +1,86 @@
 'use client';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { type Raid, type TokenInfo, tokenLabel, xLabel, fmtUnits, STATUS_COPY } from '@/lib/raid';
+import { ArrowUpRight } from 'lucide-react';
+import { type Raid, phase, target, xLabel, usdcOf, liveMultiple, stepIndex, STEPS } from '@/lib/raid';
+import { coinByAsset } from '@/lib/coins';
+import { useCandles, useQuote, fmtPrice, countdown, shortAddr } from '@/lib/market';
+import { CHAINS } from '@/lib/coins';
+import { useNow } from '@/lib/hooks';
+import { Cells, Chip, CoinAvatar, Delta, Flash, Identicon } from './ui';
+import { Spark } from './Spark';
 
-/** Fomo-style raid call card: who called it, the target, the crew's pot and how close the raid is to its line. */
-export function RaidCard({ r, tokens, baseDecimals = 6 }: { r: Raid; tokens: Record<string, TokenInfo>; baseDecimals?: number }) {
-  const t = tokenLabel(r.target, tokens);
-  const now = Date.now();
-  const open = r.status === 'Open' && now < r.opens_until_ms;
-  const mins = Math.max(0, Math.round((r.opens_until_ms - now) / 60000));
-  const progress = r.status === 'Closed' ? 1 : r.status === 'Held' || r.status === 'Selling' ? 0.5 : r.status === 'Buying' ? 0.25 : 0.1;
+export function PhaseChip({ r, now }: { r: Raid; now: number }) {
+  if (!now) return <Chip tone="ghost">#{r.id}</Chip>;
+  const p = phase(r, now);
+  return <Chip tone={p.tone === 'ghost' ? 'ghost' : p.tone} live={p.live}>{p.label}</Chip>;
+}
+
+/** The raid card: target, the caller's line, the crew pot, and where the raid stands. */
+export function RaidCard({ r, i = 0 }: { r: Raid; i?: number }) {
+  const now = useNow();
+  const t = target(r);
+  const q = useQuote(t.symbol);
+  const c = useCandles(t.known ? t.symbol : undefined, '1h');
+  const closes = (c.data?.candles ?? []).slice(-48).map((x) => x.c);
+  const open = r.status === 'Open' && now > 0 && now < r.opens_until_ms;
+  const mult = liveMultiple(r, q.data?.priceUsd, coinByAsset(r.target)?.decimals);
+  const step = stepIndex(r, now);
+  const meter = mult ? Math.min(1, mult / (r.target_x_bps / 1e4)) : (step + 1) / STEPS.length;
   return (
-    <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="border-b border-line px-4 py-4 hover:bg-ink/[.02]">
-      <Link href={`/raids/${r.id}`} className="block">
-        <div className="flex items-center gap-2 text-[13px] text-mute">
-          <span className="font-semibold text-ink truncate min-w-0">@{r.caller}</span>
-          <span className="shrink-0 whitespace-nowrap">called a raid</span>
-          <span className="ml-auto shrink-0 rounded-full bg-grape/10 text-grape px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide">{STATUS_COPY[r.status]}</span>
+    <motion.article initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.05, type: 'spring', stiffness: 380, damping: 32 }}>
+      <Link href={`/raids/${r.id}`} className="lift panel group block overflow-hidden">
+        <div className="flex items-center gap-3 px-4 pt-4">
+          <CoinAvatar symbol={t.symbol} image={q.data?.image} size={40} />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2"><span className="wide text-[18px] truncate">${t.symbol}</span><span className="mono text-[10.5px] text-mute uppercase">{CHAINS[t.chain]?.label ?? t.chain}</span></div>
+            <div className="mt-1 flex items-center gap-2 text-[12.5px]"><Flash value={q.data?.priceUsd}><span className="mono">{fmtPrice(q.data?.priceUsd)}</span></Flash><Delta pct={q.data?.change24h} className="text-[11.5px]" /></div>
+          </div>
+          <PhaseChip r={r} now={now} />
         </div>
-        <h3 className="mt-2 text-[18px] font-semibold leading-snug">{r.title}</h3>
-        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
-          <Stat k="Target" v={`$${t.symbol}`} sub={t.chain} />
-          <Stat k="Sell line" v={xLabel(r.target_x_bps)} sub="auto-sell" />
-          <Stat k="Crew pot" v={fmtUnits(r.pot, baseDecimals)} sub={open ? `${mins} min left` : 'closed to new crew'} />
+
+        <div className="mt-4 grid grid-cols-[1fr_auto] items-end gap-3 px-4">
+          <div>
+            <p className="eyebrow">Sell line</p>
+            <p className="wide-black mt-1 text-[44px] leading-none">{xLabel(r.target_x_bps)}</p>
+          </div>
+          <Spark values={closes} width={132} height={44} className="opacity-90" />
         </div>
-        <div className="mt-3 h-2 w-full bg-snow overflow-hidden" aria-label="Raid progress">
-          <motion.div className="h-full bg-grape" initial={{ width: 0 }} animate={{ width: `${progress * 100}%` }} />
+
+        <div className="mt-4 grid grid-cols-3 border-y border-line">
+          <Stat k="Crew pot" v={`${usdcOf(r.pot).toLocaleString('en-US', { maximumFractionDigits: 2 })}`} unit="USDC" />
+          <Stat k={open ? 'Crew closes' : r.status === 'Held' ? 'Retreat in' : 'Raid'} v={open ? countdown(r.opens_until_ms - now) : r.status === 'Held' ? countdown(r.retreat_at_ms - now) : `#${r.id}`} />
+          <Stat k={mult ? 'Now at' : 'Entry'} v={mult ? `${mult.toFixed(2)}x` : Number(r.entry_cost) ? `${usdcOf(r.entry_cost).toFixed(2)}` : 'Pending'} unit={!mult && Number(r.entry_cost) ? 'USDC' : undefined} />
         </div>
-        {r.status === 'Closed' && <p className={`mt-2 text-[13px] font-semibold ${r.hit ? 'text-mint' : 'text-mute'}`}>{r.hit ? `Line hit: the caller's locked fee is paid and RAID gets bought back and burned.` : 'Retreated below the line: caller fee forfeited.'}</p>}
+
+        <div className="px-4 py-3.5">
+          <Cells value={meter} n={12} mark={11} />
+          <div className="mt-3 flex items-center gap-2 text-[12.5px] text-mute">
+            <Identicon seed={r.caller} size={22} className="!rounded-[6px]" />
+            <span className="truncate"><span className="text-ink font-medium">{shortAddr(r.caller)}</span> called raid #{r.id}</span>
+            <span className="ml-auto shrink-0 mono text-[10.5px] uppercase tracking-wider">{mult ? `${Math.round(meter * 100)}% to line` : STEPS[step]}</span>
+            <ArrowUpRight size={16} className="shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </div>
+        </div>
       </Link>
     </motion.article>
   );
 }
 
-function Stat({ k, v, sub }: { k: string; v: string; sub: string }) {
+function Stat({ k, v, unit }: { k: string; v: string; unit?: string }) {
   return (
-    <div className="bg-panel border border-line px-2 py-2">
-      <div className="text-[10px] uppercase tracking-[.1em] text-mute font-bold">{k}</div>
-      <div className="text-[17px] font-semibold tabular-nums truncate">{v}</div>
-      <div className="text-[11px] text-mute truncate">{sub}</div>
+    <div className="min-w-0 border-r border-line px-4 py-3 last:border-r-0">
+      <p className="eyebrow truncate">{k}</p>
+      <p className="mt-1.5 truncate mono text-[15px] font-bold">{v}{unit && <span className="ml-1 text-[10.5px] font-medium text-mute">{unit}</span>}</p>
+    </div>
+  );
+}
+
+export function RaidCardSkeleton() {
+  return (
+    <div className="panel p-4" aria-hidden>
+      <div className="flex items-center gap-3"><div className="shimmer h-10 w-10 !rounded-full" /><div className="flex-1"><div className="shimmer h-4 w-24" /><div className="shimmer mt-2 h-3 w-32" /></div></div>
+      <div className="shimmer mt-5 h-10 w-28" /><div className="shimmer mt-5 h-14 w-full" /><div className="shimmer mt-4 h-2.5 w-full" />
     </div>
   );
 }

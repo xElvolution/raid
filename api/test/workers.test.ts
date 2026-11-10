@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { draftMarket, isExcludedMarket, notificationText, notify, syncPolymarket, type WorkerDeps } from '../src/workers.js';
+import { draftMarket, isExcludedMarket, notificationText, notify, type WorkerDeps } from '../src/workers.js';
 import { setup } from './helpers.js';
 
 let t: Awaited<ReturnType<typeof setup>>;
@@ -90,42 +90,6 @@ describe('content policy', () => {
     for (const q of ['Who will win the 2028 presidential election?', 'Will Trump sign the bill?', 'Democratic Party wins the governor race in Ohio?', 'Fed rate cut in December?', 'Will Congress pass the budget?', 'Balance of power after midterms', 'US x Iran ceasefire continues through October 22?', 'US announces end of Iranian blockade?']) expect(isExcludedMarket({ question: q })).toBe(true);
     expect(isExcludedMarket({ question: 'Neutral?', tags: [{ label: 'Politics' }] })).toBe(true);
     for (const q of ['Thunder vs. Spurs', 'Will FC Bayern München win on 2026-10-21?', 'Will GTA VI release in 2026?', 'Will NEAR trade above $5?']) expect(isExcludedMarket({ question: q })).toBe(false);
-  });
-  it('sync skips excluded markets and purges ones already stored', async () => {
-    await t.db.query("INSERT INTO markets (venue, external_id, question, rules, close_ts, price_yes) VALUES ('polymarket','old-pol','Who wins the Senate?','', now() + interval '1 day', 0.5)");
-    const ff = fakeFetch({ 'gamma-api.polymarket.com/markets': () => ({ json: [
-      { id: '9001', question: '2026 Balance of Power: R Senate, R House', slug: 'bop', endDate: '2026-12-01T00:00:00Z', outcomes: '["Yes","No"]', outcomePrices: '["0.1","0.9"]', active: true, closed: false },
-    ] }) });
-    expect(await syncPolymarket({ db: t.db, bus: t.bus, fetch: ff.f })).toEqual({ upserted: 0, moved: 0 });
-    expect(await t.db.query("SELECT id FROM markets WHERE venue='polymarket' AND (external_id='old-pol' OR external_id='9001')")).toEqual([]);
-  });
-});
-
-describe('polymarket sync', () => {
-  const gamma = (price: string) => [
-    { id: '5680507', question: 'Thunder vs. Spurs', slug: 'nba-okc-sas', endDate: '2026-10-21T01:30:00Z', outcomes: '["Thunder","Spurs"]', outcomePrices: `["${price}","0.2"]`, volume: '3824872.72', volume24hr: 1000.5, active: true, closed: false, events: [{ slug: 'nba-okc-sas-2026-10-20' }] },
-    { id: '1', question: 'Multi-outcome skipped', slug: 'x', endDate: '2026-12-01T00:00:00Z', outcomes: '["A","B","C"]', outcomePrices: '["0.3","0.3","0.4"]', active: true, closed: false },
-    { garbage: true },
-    { id: '9001', question: '2026 Balance of Power: R Senate, R House', slug: 'bop', endDate: '2026-12-01T00:00:00Z', outcomes: '["Yes","No"]', outcomePrices: '["0.1","0.9"]', active: true, closed: false },
-    { id: '9002', question: 'Will there be no change in Fed interest rates after the October 2026 meeting?', slug: 'fed', endDate: '2026-12-01T00:00:00Z', outcomes: '["Yes","No"]', outcomePrices: '["0.9","0.1"]', active: true, closed: false },
-    { id: '9003', question: 'Will X happen?', slug: 'x2', endDate: '2026-12-01T00:00:00Z', outcomes: '["Yes","No"]', outcomePrices: '["0.5","0.5"]', active: true, closed: false, events: [{ slug: 'x2', tags: [{ slug: 'politics', label: 'Politics' }] }] },
-  ];
-  it('upserts binary markets, is idempotent and broadcasts odds moves', async () => {
-    let price = '0.8';
-    const ff = fakeFetch({ 'gamma-api.polymarket.com/markets': () => ({ json: gamma(price) }) });
-    const deps = { db: t.db, bus: t.bus, fetch: ff.f };
-    expect(await syncPolymarket(deps)).toEqual({ upserted: 1, moved: 0 });
-    expect(ff.calls[0]?.url).toContain('order=volume24hr');
-    const list = (await t.app.inject({ method: 'GET', url: '/v1/markets?venue=polymarket' })).json();
-    expect(list.items).toHaveLength(1);
-    expect(list.items[0]).toMatchObject({ question: 'Thunder vs. Spurs', url: 'https://polymarket.com/event/nba-okc-sas-2026-10-20', outcomes: ['Thunder', 'Spurs'], volume: '3824872720000' });
-    const id = String(list.items[0].id);
-    const got: string[] = [];
-    await t.bus.subscribe(`market:${id}`, (m) => got.push(m));
-    expect(await syncPolymarket(deps)).toEqual({ upserted: 1, moved: 0 });
-    price = '0.75';
-    expect(await syncPolymarket(deps)).toEqual({ upserted: 1, moved: 1 });
-    expect(JSON.parse(got[0] ?? '{}')).toMatchObject({ type: 'odds', data: { marketId: id, priceYes: 0.75 } });
   });
 });
 

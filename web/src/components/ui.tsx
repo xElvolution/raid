@@ -1,183 +1,196 @@
 'use client';
-/* eslint-disable @next/next/no-img-element -- remote avatars/market art served as-is */
-import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react';
+import { AnimatePresence, animate, motion, useInView, type HTMLMotionProps } from 'motion/react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import { useEffect, useState, type ReactNode } from 'react';
-import { haptic } from '@/lib/fx';
-import { Mark } from './Brand';
-import type { LucideIcon } from 'lucide-react';
+import { AlertTriangle, X } from 'lucide-react';
 
-type Tone = 'grape' | 'mint' | 'coral' | 'sun' | 'sky' | 'white' | 'ghost';
-const tones: Record<Tone, { cls: string; edge: string }> = {
-  grape: { cls: 'bg-ink text-bg hover:bg-[#e6e6e6]', edge: 'var(--color-grape-dark)' },
-  mint: { cls: 'bg-mint text-white', edge: 'var(--color-mint-dark)' },
-  coral: { cls: 'bg-coral text-white', edge: 'var(--color-coral-dark)' },
-  sun: { cls: 'bg-sun text-ink', edge: 'var(--color-sun-dark)' },
-  sky: { cls: 'bg-sky text-white', edge: 'var(--color-sky-dark)' },
-  white: { cls: 'bg-snow text-ink border border-line', edge: 'var(--color-line)' },
-  ghost: { cls: 'bg-transparent text-grape', edge: 'transparent' },
+type Tone = 'brand' | 'lime' | 'ghost' | 'ink' | 'danger';
+const TONES: Record<Tone, string> = {
+  brand: 'bg-brand text-white hover:brightness-110',
+  lime: 'bg-lime text-[#0a1a00] hover:brightness-105',
+  ghost: 'text-ink hairline hover:bg-raised',
+  ink: 'bg-ink text-bg hover:opacity-90',
+  danger: 'bg-down text-white',
 };
-const spring = { type: 'spring' as const, stiffness: 600, damping: 22 };
+const SIZES = { sm: 'h-9 px-3.5 text-[13px] rounded-[9px]', md: 'h-11 px-5 text-[14.5px] rounded-[11px]', lg: 'h-[52px] px-6 text-[15.5px] rounded-[13px]' };
 
-export function Button({ tone = 'grape', size = 'md', className = '', children, onClick, disabled, ...rest }: HTMLMotionProps<'button'> & { tone?: Tone; size?: 'sm' | 'md' | 'lg' }) {
-  const t = tones[tone];
-  const sz = size === 'sm' ? 'h-9 px-4 text-sm rounded-full' : size === 'lg' ? 'h-12 px-6 text-[15px] rounded-full' : 'h-11 px-5 text-sm rounded-full';
+export function Button({ tone = 'brand', size = 'md', className = '', children, ...rest }: HTMLMotionProps<'button'> & { tone?: Tone; size?: keyof typeof SIZES }) {
   return (
-    <motion.button {...rest} disabled={disabled}
-      onClick={(e) => { haptic('tap'); onClick?.(e); }}
-      whileTap={disabled ? undefined : { scale: 0.97 }}
-      transition={spring}
-      className={`relative inline-flex items-center justify-center gap-2 font-semibold select-none edge ${disabled ? 'bg-line! text-[#4b4f5a]! cursor-not-allowed' : t.cls} ${sz} ${className}`}
-      style={{ ['--edge' as string]: disabled ? '#23252c' : t.edge }}>
+    <motion.button whileTap={{ scale: 0.97 }} className={`inline-flex items-center justify-center gap-2 font-semibold transition-[filter,background-color,opacity] disabled:opacity-45 disabled:pointer-events-none ${TONES[tone]} ${SIZES[size]} ${className}`} {...rest}>
       {children}
     </motion.button>
   );
 }
-
-export function LinkButton({ href, tone = 'grape', className = '', children }: { href: string; tone?: Tone; className?: string; children: ReactNode }) {
-  const t = tones[tone];
-  return (
-    <motion.div whileTap={{ scale: 0.97 }} transition={spring} className="inline-flex">
-      <Link href={href} onClick={() => haptic('tap')} className={`inline-flex items-center justify-center gap-2 h-11 px-5 rounded-full text-sm font-semibold w-full ${t.cls} ${className}`} style={{ ['--edge' as string]: t.edge }}>{children}</Link>
-    </motion.div>
-  );
+export function LinkButton({ href, tone = 'brand', size = 'md', className = '', children }: { href: string; tone?: Tone; size?: keyof typeof SIZES; className?: string; children: ReactNode }) {
+  return <Link href={href} className={`press inline-flex items-center justify-center gap-2 font-semibold ${TONES[tone]} ${SIZES[size]} ${className}`}>{children}</Link>;
 }
 
-export function Card({ children, className = '', onClick, delay = 0 }: { children: ReactNode; className?: string; onClick?: () => void; delay?: number }) {
-  return (
-    <motion.div onClick={onClick} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ ...spring, stiffness: 300, delay }}
-      whileTap={onClick ? { scale: 0.98 } : undefined} className={`card3d ${onClick ? 'cursor-pointer' : ''} ${className}`}>
-      {children}
-    </motion.div>
-  );
+export function Chip({ tone = 'ghost', live, children, className = '' }: { tone?: 'lime' | 'ghost' | 'brand' | 'up' | 'down'; live?: boolean; children: ReactNode; className?: string }) {
+  return <span className={`chip chip-${tone} ${className}`}>{live && <span className="live-dot" />}{children}</span>;
 }
 
-export function Pill({ children, tone = 'snow' }: { children: ReactNode; tone?: 'snow' | 'mint' | 'sky' | 'coral' | 'sun' | 'grape' }) {
-  const m = { snow: 'bg-snow text-mute', mint: 'bg-mint-light text-mint-dark', sky: 'bg-sky-light text-sky-dark', coral: 'bg-coral-light text-coral-dark', sun: 'bg-sun-light text-sun-dark', grape: 'bg-grape-light text-grape-dark' }[tone];
-  return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${m}`}>{children}</span>;
-}
+export function Skeleton({ className = '' }: { className?: string }) { return <div aria-hidden className={`shimmer ${className}`} />; }
 
-export function Progress({ value, color = 'var(--color-grape)', className = '' }: { value: number; color?: string; className?: string }) {
+export function Empty({ title, body, action, art }: { title: string; body?: ReactNode; action?: ReactNode; art?: ReactNode }) {
   return (
-    <div className={`h-2 w-full rounded-full bg-line overflow-hidden ${className}`} role="progressbar" aria-valuenow={Math.round(value * 100)} aria-valuemin={0} aria-valuemax={100}>
-      <motion.div className="h-full rounded-full relative" style={{ background: color }} initial={{ width: 0 }} animate={{ width: `${Math.max(6, value * 100)}%` }} transition={{ type: 'spring', stiffness: 120, damping: 18 }}>
-      </motion.div>
+    <div className="flex flex-col items-center text-center px-6 py-12">
+      <div className="mb-5">{art ?? <PixelFlag />}</div>
+      <h3 className="wide text-[19px]">{title}</h3>
+      {body && <p className="mt-2 max-w-[34ch] text-[14px] text-mute leading-relaxed">{body}</p>}
+      {action && <div className="mt-5">{action}</div>}
     </div>
   );
 }
-
-/**
- * Resolve a stored avatar URL for this deployment. Seeded/uploaded assets are stored as root-relative paths that may
- * already carry a base path (e.g. "/app/avatars/leo.jpg"); re-anchor them on the base path this build is served from.
- */
-export function assetUrl(url: string | null | undefined): string | null {
-  if (!url) return null;
-  if (/^(https?:|data:|blob:)/.test(url)) return url;
-  const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
-  const m = url.match(/\/(avatars|markets|uploads|media)\/.*/);
-  const rel = m ? m[0] : url.startsWith('/') ? url : `/${url}`;
-  return `${base}${rel}`;
-}
-
-const AV = ['#7c5cff', '#5a3fe0', '#9d86ff', '#6a4cf5', '#4d34c7', '#8a70ff'];
-export function initials(handle: string, name?: string | null): string {
-  const src = (name || handle).replace(/^@/, '').trim();
-  const parts = src.split(/[\s._-]+/).filter(Boolean);
-  return ((parts.length > 1 ? parts[0][0] + parts[1][0] : src.slice(0, 2)) || '?').toUpperCase();
-}
-/** User avatar with a branded initials fallback (purple broadcast tile, Big Shoulders caps) when there is no image or it fails to load. */
-export function Avatar({ handle, url, size = 40, name }: { handle: string; url?: string | null; size?: number; name?: string | null }) {
-  const src = assetUrl(url);
-  const [failed, setFailed] = useState<string | null>(null);
-  if (src && failed !== src) return <img src={src} alt="" width={size} height={size} onError={() => setFailed(src)} className="rounded-full object-cover shrink-0 bg-panel" style={{ width: size, height: size }} />;
-  const c = AV[[...handle].reduce((a, ch) => a + ch.charCodeAt(0), 0) % AV.length];
+export function ErrorState({ title = 'Can’t reach the source', body, retry }: { title?: string; body?: ReactNode; retry?: () => void }) {
   return (
-    <div className="cd rounded-full grid place-items-center text-white shrink-0 select-none" style={{ width: size, height: size, background: c, fontSize: size * 0.44, letterSpacing: '.02em', lineHeight: 1 }} aria-hidden data-avatar-fallback>
-      {initials(handle, name)}
-    </div>
-  );
-}
-
-/** Empty state: a quiet tile (brand mark or a Lucide icon) on a dot grid, a title, one line, one action. */
-export function Empty({ title, body, action, icon: Icon }: { title: string; body?: string; action?: ReactNode; icon?: LucideIcon }) {
-  return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 300, damping: 26 }} className="flex flex-col items-center text-center gap-3 px-6 py-12">
-      <div className="relative grid h-24 w-24 place-items-center">
-        <div className="absolute inset-0 rounded-full opacity-40" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,.18) 1px, transparent 1px)', backgroundSize: '10px 10px', maskImage: 'radial-gradient(circle, #000 40%, transparent 70%)' }} aria-hidden />
-        <motion.div initial={{ scale: 0.6, rotate: -8 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 420, damping: 16, delay: 0.05 }}
-          className="relative grid h-14 w-14 place-items-center rounded-2xl border border-line bg-snow">
-          {Icon ? <Icon size={26} strokeWidth={1.75} className="text-[#9d86ff]" /> : <Mark size={30} />}
-        </motion.div>
+    <div role="alert" className="panel flex items-start gap-3 p-4">
+      <AlertTriangle size={18} className="mt-0.5 shrink-0 text-down" />
+      <div className="min-w-0 flex-1">
+        <p className="text-[14px] font-semibold">{title}</p>
+        {body && <p className="mt-0.5 text-[13px] text-mute">{body}</p>}
       </div>
-      <h3 className="text-[18px] font-semibold tracking-tight">{title}</h3>
-      {body && <p className="max-w-[300px] text-[14px] leading-snug text-mute">{body}</p>}
-      {action && <div className="mt-1">{action}</div>}
-    </motion.div>
+      {retry && <button onClick={retry} className="press shrink-0 text-[13px] font-semibold text-brand">Retry</button>}
+    </div>
   );
 }
 
-export function Skeleton({ className = '' }: { className?: string }) {
-  return <div className={`shimmer rounded-2xl ${className}`} aria-hidden />;
+/** Pixel flag on a pole, the empty-state art. */
+export function PixelFlag({ size = 64 }: { size?: number }) {
+  const cells = [[0, 0], [1, 0], [2, 0], [3, 0], [0, 1], [1, 1], [2, 1], [0, 2], [1, 2], [2, 2], [3, 2]];
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" aria-hidden>
+      <rect x="3" y="2" width="1" height="13" fill="var(--color-faint)" />
+      {cells.map(([x, y], i) => <motion.rect key={i} x={4 + x!} y={2 + y!} width="1" height="1" fill={i % 4 === 3 ? '#c6ff3d' : 'var(--color-brand)'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }} />)}
+      <rect x="1" y="15" width="6" height="1" fill="var(--color-faint)" />
+    </svg>
+  );
 }
 
-export function Segmented<T extends string>({ value, options, onChange, id = 'seg' }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; id?: string }) {
+/** Deterministic 5x5 pixel avatar from any account id. */
+export function Identicon({ seed, size = 36, className = '' }: { seed: string; size?: number; className?: string }) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
+  const hues = ['#3355ff', '#c6ff3d', '#ff5c7a', '#ffc23d', '#7ae0ff', '#b48cff'];
+  const fg = hues[Math.abs(h) % hues.length]!;
+  const cells: [number, number][] = [];
+  for (let y = 0; y < 5; y++) for (let x = 0; x < 3; x++) if ((h >>> (y * 3 + x)) & 1) { cells.push([x, y]); if (x < 2) cells.push([4 - x, y]); }
   return (
-    <div className="flex border-b border-line gap-1" role="tablist">
+    <svg width={size} height={size} viewBox="-1 -1 7 7" className={`shrink-0 rounded-[9px] bg-raised ${className}`} aria-hidden>
+      {cells.map(([x, y], i) => <rect key={i} x={x} y={y} width="1.02" height="1.02" fill={fg} />)}
+    </svg>
+  );
+}
+
+export function CoinAvatar({ symbol, image, size = 36, className = '' }: { symbol: string; image?: string | null; size?: number; className?: string }) {
+  const [bad, setBad] = useState(false);
+  if (image && !bad) return <img src={image} alt="" width={size} height={size} onError={() => setBad(true)} className={`shrink-0 rounded-full object-cover bg-raised ${className}`} style={{ width: size, height: size }} />;
+  return <span className={`grid shrink-0 place-items-center rounded-full bg-raised mono font-bold text-ink ${className}`} style={{ width: size, height: size, fontSize: size * 0.34 }}>{symbol.slice(0, 2)}</span>;
+}
+
+/** Number that counts up when it scrolls into view and re-animates on change. */
+export function CountUp({ value, format = (n) => n.toFixed(0), className = '', duration = 1.1 }: { value: number; format?: (n: number) => string; className?: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  const prev = useRef(0);
+  useEffect(() => {
+    if (!inView || !ref.current) return;
+    const el = ref.current;
+    const c = animate(prev.current, value, { duration, ease: [0.16, 1, 0.3, 1], onUpdate: (v) => { el.textContent = format(v); } });
+    prev.current = value;
+    return () => c.stop();
+  }, [value, inView, format, duration]);
+  return <span ref={ref} className={className}>{format(0)}</span>;
+}
+
+/** Price/percent that flashes green or red when it ticks. */
+export function Flash({ value, children, className = '' }: { value: number | null | undefined; children: ReactNode; className?: string }) {
+  const last = useRef(value);
+  const [dir, setDir] = useState<'up' | 'down' | null>(null);
+  useEffect(() => {
+    if (value == null || last.current == null || value === last.current) { last.current = value; return; }
+    const d = value > last.current ? 'up' : 'down';
+    last.current = value;
+    const t0 = setTimeout(() => setDir(d), 0);
+    const t1 = setTimeout(() => setDir(null), 1200);
+    return () => { clearTimeout(t0); clearTimeout(t1); };
+  }, [value]);
+  return <span className={`rounded-[4px] ${dir ? `flash-${dir}` : ''} ${className}`}>{children}</span>;
+}
+
+export function Delta({ pct, className = '' }: { pct: number | null | undefined; className?: string }) {
+  if (pct == null) return <span className={`mono text-mute ${className}`}>—</span>;
+  return <span className={`mono ${pct >= 0 ? 'text-up' : 'text-down'} ${className}`}>{pct >= 0 ? '▲' : '▼'} {Math.abs(pct).toFixed(2)}%</span>;
+}
+
+/** Relay-style segmented meter: `value` 0..1 fills cells, the `mark` cell (e.g. the sell line) glows lime. */
+export function Cells({ value, n = 10, mark, className = '' }: { value: number; n?: number; mark?: number; className?: string }) {
+  const filled = Math.round(Math.max(0, Math.min(1, value)) * n);
+  return (
+    <div className={`flex gap-[3px] ${className}`} role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value * 100)}>
+      {Array.from({ length: n }, (_, i) => (
+        <motion.span key={i} className={`h-[10px] flex-1 rounded-[2px] ${i < filled ? (i === filled - 1 && value >= 1 ? 'bg-lime' : 'bg-ink') : mark !== undefined && i === mark ? 'bg-lime/25 shadow-[inset_0_0_0_1px_#c6ff3d]' : 'shadow-[inset_0_0_0_1px_var(--color-line)]'}`}
+          initial={{ scaleY: 0.2, opacity: 0 }} animate={{ scaleY: 1, opacity: 1 }} transition={{ delay: 0.15 + i * 0.035, type: 'spring', stiffness: 500, damping: 26 }} />
+      ))}
+    </div>
+  );
+}
+
+export function Bar({ value, className = '', tone = 'brand' }: { value: number; className?: string; tone?: 'brand' | 'lime' }) {
+  return (
+    <div className={`h-1.5 w-full overflow-hidden rounded-full bg-raised ${className}`}>
+      <motion.div className={`h-full rounded-full ${tone === 'lime' ? 'bg-lime' : 'bg-brand'}`} initial={{ width: 0 }} animate={{ width: `${Math.max(0, Math.min(1, value)) * 100}%` }} transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.1 }} />
+    </div>
+  );
+}
+
+export function Segmented<T extends string>({ value, options, onChange, id, className = '' }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; id: string; className?: string }) {
+  return (
+    <div role="tablist" className={`inline-flex rounded-[10px] bg-raised p-[3px] ${className}`}>
       {options.map((o) => (
-        <button key={o.value} role="tab" aria-selected={value === o.value} onClick={() => { haptic('tap'); onChange(o.value); }}
-          className={`relative flex-1 h-11 text-[15px] font-semibold transition-colors ${value === o.value ? 'text-ink' : 'text-mute hover:text-ink/80'}`}>
-          {value === o.value && <motion.span layoutId={`${id}-pill`} className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] w-12 rounded-full bg-grape" transition={{ type: 'spring', stiffness: 500, damping: 35 }} />}
-          <span className="relative">{o.label}</span>
+        <button key={o.value} role="tab" aria-selected={value === o.value} onClick={() => onChange(o.value)} className={`relative h-8 px-3 text-[12.5px] font-semibold rounded-[8px] transition-colors ${value === o.value ? 'text-ink' : 'text-mute hover:text-ink'}`}>
+          {value === o.value && <motion.span layoutId={`seg-${id}`} className="absolute inset-0 rounded-[8px] bg-panel shadow-[0_1px_0_rgb(0_0_0/.2),inset_0_0_0_1px_var(--color-line)]" transition={{ type: 'spring', stiffness: 500, damping: 38 }} />}
+          <span className="relative mono uppercase tracking-wide">{o.label}</span>
         </button>
       ))}
     </div>
   );
 }
 
-/** Animated number that springs between values and flashes mint/coral on the direction of change. Jumps under reduced motion. */
-export function Ticker({ value, suffix = '', prefix = '', decimals = 0, from, className = '' }: { value: number; suffix?: string; prefix?: string; decimals?: number; from?: number; className?: string }) {
-  const [shown, setShown] = useState(from ?? value);
-  const [dir, setDir] = useState<0 | 1 | -1>(0);
+/** Bottom sheet on phones, centred dialog on desktop. */
+export function Modal({ open, onClose, children, label, wide }: { open: boolean; onClose: () => void; children: ReactNode; label: string; wide?: boolean }) {
   useEffect(() => {
-    const from = shown, to = value, start = performance.now();
-    if (from === to) return;
-    let raf = 0;
-    const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const f = 10 ** decimals;
-    const flash = requestAnimationFrame(() => setDir(to > from ? 1 : -1));
-    const clear = setTimeout(() => setDir(0), 700);
-    if (rm) { raf = requestAnimationFrame(() => setShown(to)); }
-    else {
-      const step = (t: number) => {
-        const k = Math.min(1, (t - start) / (decimals ? 900 : 550));
-        // easeOutExpo-ish with a hair of overshoot for a "slot machine settle"
-        const e = k === 1 ? 1 : 1 - 2 ** (-10 * k) + Math.sin(k * Math.PI) * 0.015;
-        setShown(Math.round((from + (to - from) * e) * f) / f);
-        if (k < 1) raf = requestAnimationFrame(step);
-      };
-      raf = requestAnimationFrame(step);
-    }
-    return () => { cancelAnimationFrame(raf); cancelAnimationFrame(flash); clearTimeout(clear); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value]);
-  return <span data-dir={dir || undefined} className={`ticker tabular-nums ${className}`}>{prefix}{shown.toFixed(decimals)}{suffix}</span>;
-}
-
-export function Sheet({ open, onClose, children }: { open: boolean; onClose: () => void; children: ReactNode }) {
+    if (!open) return;
+    const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', k); document.body.style.overflow = 'hidden';
+    return () => { window.removeEventListener('keydown', k); document.body.style.overflow = ''; };
+  }, [open, onClose]);
   return (
     <AnimatePresence>
       {open && (
-        <motion.div className="fixed inset-0 z-50 flex items-end md:items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <motion.div className="absolute inset-0 bg-bg/70" onClick={onClose} />
-          <motion.div role="dialog" aria-modal className="relative w-full md:max-w-md bg-panel border border-line rounded-t-3xl md:rounded-3xl p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))]"
-            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', stiffness: 380, damping: 34 }}
-            onAnimationStart={() => haptic('select')}
-            drag="y" dragConstraints={{ top: 0, bottom: 0 }} dragElastic={{ top: 0, bottom: 0.6 }} onDragEnd={(_, i) => { if (i.offset.y > 100) onClose(); }}>
-            <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-line" />
+        <motion.div className="fixed inset-0 z-[70] flex items-end md:items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <div className="absolute inset-0 bg-[#02030d]/70 backdrop-blur-sm" onClick={onClose} />
+          <motion.div role="dialog" aria-modal="true" aria-label={label}
+            className={`relative w-full ${wide ? 'md:max-w-[620px]' : 'md:max-w-[480px]'} max-h-[92dvh] overflow-y-auto no-scrollbar bg-panel border border-line rounded-t-[22px] md:rounded-[20px] pb-[env(safe-area-inset-bottom)]`}
+            initial={{ y: 60, opacity: 0.6 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }} transition={{ type: 'spring', stiffness: 420, damping: 38 }}>
+            <button onClick={onClose} aria-label="Close" className="press absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-raised text-mute hover:text-ink"><X size={18} /></button>
             {children}
           </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
   );
+}
+
+export function SectionHead({ title, meta, action }: { title: ReactNode; meta?: ReactNode; action?: ReactNode }) {
+  return (
+    <div className="flex items-end justify-between gap-3 mb-3">
+      <div className="min-w-0"><h2 className="wide text-[15px] tracking-tight">{title}</h2>{meta && <p className="eyebrow mt-1.5">{meta}</p>}</div>
+      {action}
+    </div>
+  );
+}
+
+/** Small source badge so every number says where it came from. */
+export function Source({ children }: { children: ReactNode }) {
+  return <span className="mono text-[10.5px] text-faint">src · {children}</span>;
 }

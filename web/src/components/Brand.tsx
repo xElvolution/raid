@@ -1,25 +1,25 @@
-'use client';
-import { BRAND } from '@/lib/brand';
-
-/** Signature colour. One solid purple, no gradients. */
-export const ACCENT = '#7C5CFF';
-
-/** The mark: a check that keeps rising. Works from 16px favicon to app icon. */
-export function Mark({ size = 28, mono = false, className = '' }: { size?: number; mono?: boolean; className?: string }) {
+/**
+ * The RAID mark: three rising bars that break through a horizontal sell line, the fourth (lime) bar is the hit.
+ * It is built on a 4px grid so it stays crisp from a 16px favicon to a billboard.
+ */
+export function Mark({ size = 28, className = '', mono = false }: { size?: number; className?: string; mono?: boolean }) {
+  const fg = mono ? 'currentColor' : 'var(--color-ink)';
   return (
-    <svg viewBox="0 0 32 32" width={size} height={size} className={className} aria-hidden>
-      <rect width="32" height="32" rx="9" fill={mono ? 'currentColor' : ACCENT} />
-      <path d="M7.5 17.2l5 5L24.2 9.8" fill="none" stroke={mono ? 'var(--color-bg)' : '#fff'} strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M18.6 9.4h5.9v5.9" fill="none" stroke={mono ? 'var(--color-bg)' : '#fff'} strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 28 28" width={size} height={size} className={className} aria-hidden>
+      <rect x="0" y="19" width="6" height="9" fill={fg} />
+      <rect x="7.33" y="13" width="6" height="15" fill={fg} />
+      <rect x="14.66" y="7" width="6" height="21" fill={fg} />
+      <rect x="22" y="0" width="6" height="28" fill={mono ? 'currentColor' : '#c6ff3d'} />
+      <rect x="0" y="9" width="28" height="2.2" fill={mono ? 'currentColor' : '#c6ff3d'} />
     </svg>
   );
 }
 
-export function Wordmark({ size = 28 }: { size?: number }) {
+export function Wordmark({ size = 22, className = '' }: { size?: number; className?: string }) {
   return (
-    <span className="inline-flex items-center gap-2.5">
+    <span className={`inline-flex items-center gap-2 ${className}`}>
       <Mark size={size} />
-      <span className="font-semibold tracking-[-0.03em]" style={{ fontSize: size * 0.68 }}>{BRAND.name}</span>
+      <span className="wide-black" style={{ fontSize: size * 0.86 }}>RAID</span>
     </span>
   );
 }

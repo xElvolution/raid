@@ -3,12 +3,13 @@ import { Mark } from '@/components/Brand';
 
 export default function NotFound() {
   return (
-    <main className="min-h-dvh flex flex-col items-center justify-center gap-4 text-center px-6">
-      <Mark size={64} />
-      <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.24em] text-mute">404</p>
-      <h1 className="text-[28px] font-semibold tracking-tight">Nobody called this page</h1>
-      <p className="text-[15px] text-mute">It doesn&apos;t exist, or it moved.</p>
-      <Link href="/" className="mt-2 inline-flex items-center h-12 px-6 rounded-2xl bg-grape text-white text-[15px] font-semibold shadow-[0_4px_0_0_rgba(0,0,0,0.35)]">Back home</Link>
-    </main>
+    <div className="cobalt-field grid min-h-dvh place-items-center px-6 text-center">
+      <div>
+        <div className="mx-auto w-fit"><Mark size={44} /></div>
+        <h1 className="wide-black mt-6 text-[64px] leading-[.84]">Lost at sea.</h1>
+        <p className="mt-4 text-white/75">That page doesn’t exist. The raids are this way.</p>
+        <Link href="/live" className="press mt-8 inline-flex h-12 items-center rounded-[12px] bg-lime px-6 font-bold text-[#0a1a00]">Back to Live</Link>
+      </div>
+    </div>
   );
 }

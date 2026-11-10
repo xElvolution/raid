@@ -15,7 +15,6 @@ import { registerPlay, setChain } from './play.js';
 import type { Chain } from './chain.js';
 import { courtResolve } from './resolution.js';
 import { registerOpening } from './opening.js';
-import { registerExternal, type VenueRouter } from './external.js';
 import { registerSocial } from './social.js';
 import { DraftResponse, isExcludedMarket, POLICY_MESSAGE } from './workers.js';
 
@@ -32,8 +31,6 @@ export interface Deps {
   nearTransfer?: (hash: string, from: string, to: string) => Promise<bigint>;
   nearTreasury?: string;
   nearPlayRate?: number;
-  /** Real-money venue router; null/undefined keeps routing disabled (503). */
-  router?: VenueRouter | null;
   /** Privy access-token verifier; null/undefined disables /v1/auth/privy (503). */
   privy?: PrivyVerifier | null;
   /** On-chain execution (NEAR). When set, play routes run against the contract. */
@@ -94,10 +91,6 @@ export function buildApp(deps: Deps) {
     if (!req.userId) return reply.code(401).send({ error: 'auth_required' });
     const n = await kv.hit(`rl:user:${req.userId}:${Math.floor(Date.now() / 60_000)}`, 60);
     if (n > 60) return reply.code(429).send({ error: 'rate_limited' });
-  };
-  const requireRealMoneyRegion = async (req: FastifyRequest, reply: FastifyReply) => {
-    const c = country(req);
-    if (!c || deps.config.blockedCountries.includes(c)) return reply.code(451).send({ error: 'region_restricted', mode: 'points' });
   };
 
   // ---- auth (NEP-413) ----
@@ -245,7 +238,7 @@ export function buildApp(deps: Deps) {
 
 
   // ---- markets ----
-  const MarketsQ = z.object({ status: z.enum(['open', 'proposed', 'final']).optional(), venue: z.enum(['called', 'polymarket', 'kalshi']).optional(), cursor: z.string().optional(), sort: z.enum(['new', 'volume']).default('new'), category: z.enum(['sports', 'culture', 'crypto', 'tech', 'music', 'weather']).optional() });
+  const MarketsQ = z.object({ status: z.enum(['open', 'proposed', 'final']).optional(), venue: z.enum(['called']).optional(), cursor: z.string().optional(), sort: z.enum(['new', 'volume']).default('new'), category: z.enum(['sports', 'culture', 'crypto', 'tech', 'music', 'weather']).optional() });
   app.get('/v1/markets', async (req, reply) => {
     const q = MarketsQ.safeParse(req.query);
     if (!q.success) return reply.code(400).send({ error: 'bad_request' });
@@ -295,7 +288,6 @@ export function buildApp(deps: Deps) {
   registerLeaderboard(app, { db });
   registerGrowth(app, { db: db.primary, requireUser, awardXp, nearTransfer: deps.nearTransfer, treasury: deps.nearTreasury, rate: deps.nearPlayRate ?? 5, demo: !!deps.config.demo });
   registerSocial(app, { db, bus, kv, jobs, requireUser, notify, awardXp, verifyTip: deps.verifyTip, demo: deps.config.demo });
-  registerExternal(app, { db: db.primary, requireUser, requireRealMoneyRegion, router: deps.router ?? null, kvHit: (k, t) => kv.hit(k, t) });
 
   // Live AI preview for the create screen. Nothing is stored; the real draft is made when the post is published.
   const PreviewBody = z.object({ text: z.string().trim().min(8).max(1000) });

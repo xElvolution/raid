@@ -118,15 +118,7 @@ export function notificationText(kind: string, p: Record<string, unknown>): stri
   }
 }
 
-// ---- Polymarket Gamma (read-only) ----
-
-const GammaMarket = z.object({
-  id: z.string(), question: z.string(), slug: z.string(), endDate: z.string().optional(), description: z.string().optional(),
-  outcomes: z.string(), outcomePrices: z.string().optional(), volume: z.union([z.string(), z.number()]).optional(),
-  volume24hr: z.union([z.string(), z.number()]).optional(), image: z.string().optional(), clobTokenIds: z.string().optional(),
-  active: z.boolean(), closed: z.boolean(), events: z.array(z.object({ slug: z.string(), title: z.string().optional(), tags: z.array(z.object({ slug: z.string().optional(), label: z.string().optional() }).passthrough()).optional() }).passthrough()).optional(),
-  tags: z.array(z.object({ slug: z.string().optional(), label: z.string().optional() }).passthrough()).optional(), category: z.string().optional(),
-});
+// ---- Content policy (applies to user-written posts and drafts) ----
 /** Product policy: no politics, elections, government or central-bank markets anywhere in Called. */
 const BLOCKED_TAGS = new Set(['politics', 'elections', 'election', 'us-election', 'us-politics', 'global-elections', 'world-elections', 'geopolitics', 'trump', 'congress', 'senate', 'midterms', 'government', 'fed', 'fed-rates', 'economic-policy']);
 const BLOCKED_TERMS = /\b(elections?|electoral|senate|senators?|house of representatives|congress(ional)?|president(ial|cy)?|presidents?|prime minister|governors?|gubernatorial|mayor(al)?|parliament(ary)?|referendum|ballot|primar(y|ies)|nominee|nomination|caucus|democrats?|democratic party|republicans?|gop|political|politics|party|parties|vote|votes|voting|voters?|impeach(ment)?|cabinet|white house|supreme court|balance of power|trump|biden|harris|vance|obama|desantis|newsom|putin|zelensky|netanyahu|starmer|macron|modi|xi jinping|tariffs?|federal reserve|the fed|fed (rate|interest|chair|decision|meeting)|interest rates?|fomc|rate (cut|hike)s?|bps|government shutdown|ceasefire|cease-fire|wars?|blockade|sanctions?|invasion|invade|troops|military|missile|airstrikes?|nuclear deal|nato|treaty|regime|supreme leader|diplomatic|annex(ation)?|iran(ian)?|israel(i)?|gaza|hamas|hezbollah|ukraine|russia(n)?|kremlin|taiwan|north korea|kim jong un|venezuela|maduro|hormuz|minister|ambassador|un security council|geopolitic(s|al))\b/i;
@@ -139,81 +131,3 @@ export function isExcludedMarket(m: { question: string; slug?: string; category?
   return BLOCKED_TERMS.test(text);
 }
 
-/** Remove any stored external market that violates the content policy (cascades to calls and price history). */
-export async function purgeExcludedMarkets(db: WorkerDeps['db']): Promise<number> {
-  const rows = await db.query<{ id: string; question: string }>("SELECT id, question FROM markets WHERE venue <> 'called'");
-  const bad = rows.filter((r) => isExcludedMarket({ question: r.question })).map((r) => String(r.id));
-  if (bad.length) await db.query('DELETE FROM markets WHERE id = ANY($1::bigint[])', [bad]);
-  return bad.length;
-}
-
-export const GAMMA_URL = 'https://gamma-api.polymarket.com';
-export const CLOB_URL = 'https://clob.polymarket.com';
-const backfilled = new Set<string>();
-/** One-time backfill of a week of real odds history from Polymarket's public CLOB prices-history endpoint. */
-async function backfillHistory(deps: WorkerDeps, marketId: string, token: string, clobUrl: string) {
-  if (backfilled.has(marketId)) return;
-  backfilled.add(marketId);
-  const [c] = await deps.db.query<{ n: number }>('SELECT count(*)::int AS n FROM market_prices WHERE market_id=$1', [marketId]);
-  if ((c?.n ?? 0) >= 8) return;
-  const u = new URL('/prices-history', clobUrl);
-  u.search = new URLSearchParams({ market: token, interval: '1w', fidelity: '240' }).toString();
-  const res = await deps.fetch(u, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(10_000) });
-  if (!res.ok) return;
-  const h = z.object({ history: z.array(z.object({ t: z.number(), p: z.coerce.number() })) }).safeParse(await res.json());
-  if (!h.success) return;
-  for (const pt of h.data.history.slice(-60)) {
-    await deps.db.query('INSERT INTO market_prices (market_id, ts, price_yes) VALUES ($1, to_timestamp($2), $3) ON CONFLICT DO NOTHING', [marketId, pt.t, Math.min(1, Math.max(0, pt.p)).toFixed(6)]);
-  }
-}
-const usd = (v: string | number | undefined) => BigInt(Math.max(0, Math.round(Number(v ?? 0) * 1e6))).toString();
-
-/** Upsert the most active Polymarket binary markets and broadcast odds changes. */
-export async function syncPolymarket(deps: WorkerDeps, opts: { limit?: number; gammaUrl?: string; clobUrl?: string } = {}): Promise<{ upserted: number; moved: number }> {
-  const url = new URL('/markets', opts.gammaUrl ?? GAMMA_URL);
-  url.search = new URLSearchParams({ active: 'true', closed: 'false', limit: String(opts.limit ?? 100), order: 'volume24hr', ascending: 'false' }).toString();
-  const res = await deps.fetch(url, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(20_000) });
-  if (!res.ok) throw new Error(`gamma ${res.status}`);
-  const list = z.array(z.unknown()).parse(await res.json());
-  let upserted = 0, moved = 0;
-  for (const raw of list) {
-    const p = GammaMarket.safeParse(raw);
-    if (!p.success || !p.data.endDate) continue;
-    const m = p.data;
-    if (isExcludedMarket(m)) {
-      await deps.db.query("DELETE FROM markets WHERE venue='polymarket' AND external_id=$1", [m.id]);
-      continue;
-    }
-    let outcomes: string[], prices: number[];
-    try {
-      outcomes = z.array(z.string()).parse(JSON.parse(m.outcomes));
-      prices = z.array(z.coerce.number()).parse(JSON.parse(m.outcomePrices ?? '[]'));
-    } catch { continue; }
-    if (outcomes.length !== 2 || prices.length !== 2) continue;
-    // Gamma lists the YES/first outcome first; store it as price_yes.
-    const priceYes = Math.min(1, Math.max(0, prices[0] ?? 0.5));
-    const pageSlug = m.events?.[0]?.slug ?? m.slug;
-    const rows = await deps.db.query<{ id: string; old: string | null; price_yes: string }>(
-      `WITH prev AS (SELECT price_yes FROM markets WHERE venue='polymarket' AND external_id=$1)
-       INSERT INTO markets (venue, external_id, question, rules, close_ts, price_yes, volume, volume_24h, url, image_url, outcomes, clob_token_ids, updated_at)
-       VALUES ('polymarket',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11, now())
-       ON CONFLICT (venue, external_id) DO UPDATE SET question=EXCLUDED.question, close_ts=EXCLUDED.close_ts, price_yes=EXCLUDED.price_yes,
-         volume=EXCLUDED.volume, volume_24h=EXCLUDED.volume_24h, image_url=EXCLUDED.image_url, outcomes=EXCLUDED.outcomes, clob_token_ids=COALESCE(EXCLUDED.clob_token_ids, markets.clob_token_ids), updated_at=now()
-       RETURNING id, (SELECT price_yes::text FROM prev) AS old, price_yes::text`,
-      [m.id, m.question, (m.description ?? '').slice(0, 4000), m.endDate, priceYes.toFixed(6), usd(m.volume), usd(m.volume24hr), `https://polymarket.com/event/${pageSlug}`, m.image ?? null, JSON.stringify(outcomes), (() => { try { const t = z.array(z.string()).length(2).parse(JSON.parse(m.clobTokenIds ?? '')); return JSON.stringify(t); } catch { return null; } })()],
-    );
-    upserted++;
-    const r = rows[0];
-    if (r && (r.old === null || Number(r.old) !== Number(r.price_yes))) {
-      await deps.db.query('INSERT INTO market_prices (market_id, price_yes) VALUES ($1, $2) ON CONFLICT DO NOTHING', [r.id, r.price_yes]);
-    }
-    const token = (() => { try { return z.array(z.string()).parse(JSON.parse(m.clobTokenIds ?? '[]'))[0]; } catch { return undefined; } })();
-    if (r && token && !opts.gammaUrl) await backfillHistory(deps, String(r.id), token, opts.clobUrl ?? CLOB_URL).catch(() => undefined);
-    if (r && r.old !== null && Number(r.old) !== Number(r.price_yes)) {
-      moved++;
-      await deps.bus.publish(`market:${r.id}`, JSON.stringify({ type: 'odds', data: { marketId: String(r.id), priceYes: Number(r.price_yes) }, ts: Date.now() }));
-    }
-  }
-  await purgeExcludedMarkets(deps.db);
-  return { upserted, moved };
-}

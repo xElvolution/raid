@@ -8,7 +8,7 @@ import { migrate } from '../src/db/migrate.js';
 import { MemoryBus, MemoryKv } from '../src/infra/bus.js';
 import { MemoryJobs } from '../src/infra/queue.js';
 
-export async function setup(extra: { router?: import('../src/external.js').VenueRouter | null } = {}) {
+export async function setup() {
   const pg = new PGlite();
   const db: Db = { query: async (sql, params) => (await pg.query(sql, params as unknown[])).rows as never };
   await migrate(db);
@@ -23,7 +23,6 @@ export async function setup(extra: { router?: import('../src/external.js').Venue
     kv,
     jobs,
     checkKey: async (acct, pk) => keys.get(acct) === pk,
-    router: extra.router ?? null,
     config: { jwtSecret: 's'.repeat(40), signInRecipient: 'called.testnet', blockedCountries: ['US'], corsOrigins: ['http://localhost:3000'] },
   });
   await app.ready();

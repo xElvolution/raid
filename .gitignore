@@ -9,3 +9,4 @@ target/
 secrets/
 scripts/go-no-go-*.json
 scripts/shots/
+inspo/

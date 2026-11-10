@@ -1,216 +1,140 @@
 'use client';
-/* eslint-disable @next/next/no-img-element -- market art */
-import type { MarketCategory } from '@called/sdk';
-import { useQuery } from '@tanstack/react-query';
-import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Mark } from '@/components/Brand';
-import { Battle } from '@/components/battle/Battle';
-import { Chip, CutButton, SectionTitle, ThemeToggle } from '@/components/bc';
-import { usd, timeLeft } from '@/lib/format';
-import { useLiveOdds } from '@/lib/live-hooks';
-import { usePredict } from '@/lib/predict';
-import { useRouter } from 'next/navigation';
-import { FundsSheet } from '@/components/FundsSheet';
-import { BigMoney, MarketRow, RowSkeleton, TopCallCard, ValueChart } from '@/components/home-bits';
-import { Shell } from '@/components/Shell';
-import { BRAND } from '@/lib/brand';
-import { haptic } from '@/lib/fx';
-import { money, usePlayAccount } from '@/lib/play';
-import { useSession } from '@/lib/session';
+import { AnimatePresence, motion } from 'motion/react';
+import { ArrowRight } from 'lucide-react';
+import { Mark, Wordmark } from '@/components/Brand';
+import { TickerTape } from '@/components/Ticker';
+import { ThemeToggle } from '@/components/Shell';
+import { CoinAvatar, Delta } from '@/components/ui';
+import { Spark } from '@/components/Spark';
+import { CallVisual, CrewVisual, HitVisual, KeylessVisual } from '@/components/landing/Visuals';
+import { useCandles, useQuotes, fmtPrice } from '@/lib/market';
+import { CHAINS } from '@/lib/coins';
 
-const CATS: { v: MarketCategory | 'all'; l: string }[] = [
-  { v: 'all', l: 'All' }, { v: 'sports', l: 'Sports' }, { v: 'crypto', l: 'Crypto' }, { v: 'culture', l: 'Culture' },
-  { v: 'tech', l: 'Tech' }, { v: 'music', l: 'Music' }, { v: 'weather', l: 'Weather' },
-];
-type Tab = 'watch' | 'called' | 'poly';
+const STEPS = [
+  { k: 'Call', t: 'Call the raid', b: 'Pick any memecoin NEAR Intents can reach: PEPE on Ethereum, TRUMP on Solana, BRETT on Base, SHITZU on NEAR. Set the line: 1.5x, 2x or 3x.', bg: '#2448ff', V: 'call' },
+  { k: 'Crew', t: 'Crew up', b: 'Anyone can back your call with USDC while the crew window is open. Everyone’s stake sits in one war chest.', bg: '#ff5c7a', V: 'crew' },
+  { k: 'Chest', t: 'The chest buys. No one holds the key.', b: 'The contract only moves funds against a 1Click quote it verifies on-chain. On mainnet, the chest’s keys are removed.', bg: '#7a5cff', V: 'keyless' },
+  { k: 'Line', t: 'Cash out at the line', b: 'The chest sells only when the return meets the line. Hit it, and the crew splits the profit, the caller’s fee unlocks, and RAID gets burned.', bg: '#1f9d55', V: 'hit' },
+] as const;
 
-
-function Balance({ onFunds }: { onFunds: (m: 'deposit' | 'withdraw') => void }) {
-  const a = usePlayAccount();
-  const [range, setRange] = useState<'1D' | '1W' | 'ALL'>('1W');
-  if (!a.data) return <div className="px-4 pt-2 pb-6"><div className="h-4 w-24 rounded shimmer" /><div className="mt-3 h-11 w-52 rounded-lg shimmer" /><div className="mt-6 h-[72px] rounded-xl shimmer" /></div>;
-  const d = a.data;
-  const hist = d.history.map((h) => h.value).concat(d.value);
-  const cut = range === '1D' ? Math.max(0, hist.length - 6) : range === '1W' ? Math.max(0, hist.length - 30) : 0;
-  const pts = hist.slice(cut);
-  const delta = range === '1D' ? d.pnlToday : pts.length ? d.value - pts[0]! : 0;
-  const base = d.value - delta || 1;
-  const up = delta >= 0;
+export default function Landing() {
+  const quotes = useQuotes();
+  const pepe = quotes.data?.find((q) => q.symbol === 'PEPE');
+  const c = useCandles('PEPE', '1h');
+  const closes = (c.data?.candles ?? []).slice(-60).map((x) => x.c);
+  const [s, setS] = useState(0);
+  const step = STEPS[s]!;
   return (
-    <section className="px-4 pt-2 pb-5">
-      <div className="flex items-start justify-between gap-3">
-        <Link href="/portfolio" className="min-w-0">
-          <div className="text-[13px] text-mute">Portfolio value</div>
-          <BigMoney value={d.value} className="mt-1 block text-[40px] leading-none font-semibold tracking-[-0.035em]" />
-          <div className={`mt-2 text-[14px] font-medium tabular-nums ${up ? 'text-mint' : 'text-coral'}`}>
-            {money(delta, true)} ({up ? '+' : ''}{((delta / base) * 100).toFixed(2)}%) <span className="text-mute font-normal">{range === '1D' ? 'today' : range === '1W' ? 'past week' : 'all time'}</span>
-          </div>
-        </Link>
-        <motion.button whileTap={{ scale: 0.92 }} onClick={() => { haptic('tap'); onFunds('deposit'); }}
-          className="shrink-0 h-11 pl-4 pr-5 rounded-full text-[15px] font-semibold text-white bg-grape hover:brightness-110 flex items-center gap-1.5">
-          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden><path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" /></svg>Deposit
-        </motion.button>
-      </div>
-      <div className="mt-4 -mx-1"><ValueChart points={pts} up={up} /></div>
-      <div className="mt-2 flex items-center gap-1">
-        {(['1D', '1W', 'ALL'] as const).map((r) => (
-          <button key={r} onClick={() => { setRange(r); haptic('tap'); }} className={`relative h-7 px-3 text-[12px] font-semibold rounded-full ${range === r ? 'text-ink' : 'text-mute'}`}>
-            {range === r && <motion.span layoutId="range" className="absolute inset-0 rounded-full bg-ink/[.08]" />}<span className="relative">{r}</span>
-          </button>
-        ))}
-        <div className="ml-auto flex items-center gap-4 text-[13px]">
-          <span className="text-mute">Cash <span className="text-ink tabular-nums">{money(d.balance)}</span></span>
-          <button onClick={() => onFunds('withdraw')} className="text-mute hover:text-ink font-medium">Withdraw</button>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function GuestHero() {
-  return (
-    <section className="mx-4 mt-2 mb-5 relative overflow-hidden rounded-[24px] border border-line bg-panel p-5">
-      <Mark size={36} />
-      <h1 className="mt-4 text-[26px] leading-[1.1] font-semibold tracking-[-0.03em]">Call it before<br />everyone else.</h1>
-      <p className="mt-2 text-[14px] text-mute max-w-[300px]">Trade on sports, crypto and culture with friends. Every verdict is verified on-chain.</p>
-      <div className="mt-5 flex gap-2">
-        <Link href="/signin" className="h-11 px-5 cuts bg-grape text-white text-[15px] font-semibold grid place-items-center">Get started</Link>
-        <Link href="/signin?demo=1" className="h-11 px-5 rounded-full border border-line text-[15px] font-semibold grid place-items-center">Try demo</Link>
-      </div>
-    </section>
-  );
-}
-
-function TopStrip() {
-  const { api } = useSession();
-  const q = useQuery({ queryKey: ['play-top'], queryFn: () => api.playTop(), refetchInterval: 60_000 });
-  const items = q.data?.items ?? [];
-  return (
-    <section className="pb-5">
-      <div className="flex items-center justify-between px-4 mb-3">
-        <h2 className="text-[17px] font-semibold tracking-tight">Top calls this week</h2>
-        <Link href="/leaderboard" className="text-[13px] text-mute hover:text-ink">Leaderboard</Link>
-      </div>
-      <div className="flex gap-2.5 overflow-x-auto px-4 snap-x no-scrollbar">
-        {q.isLoading && [0, 1, 2].map((i) => <div key={i} className="w-[168px] h-[148px] shrink-0 rounded-[20px] shimmer" />)}
-        {items.slice(0, 10).map((t, i) => <TopCallCard key={t.handle} t={t} rank={i + 1} />)}
-      </div>
-    </section>
-  );
-}
-
-function Markets() {
-  const { api, me } = useSession();
-  const acct = usePlayAccount();
-  const [tab, setTab] = useState<Tab>(me ? 'called' : 'called');
-  const [cat, setCat] = useState<MarketCategory | 'all'>('all');
-  const called = useQuery({ queryKey: ['markets', 'called', cat], queryFn: () => api.markets({ venue: 'called', sort: 'volume', category: cat === 'all' ? undefined : cat }), refetchInterval: 30_000, enabled: tab === 'called' });
-  const watchIds = new Set((acct.data?.open ?? []).map((p) => p.market_id));
-  const watch = useQuery({ queryKey: ['markets', 'called', 'all'], queryFn: () => api.markets({ venue: 'called', sort: 'volume' }), enabled: tab === 'watch' });
-  const list = tab === 'called' ? called : watch;
-  const items = tab === 'watch' ? (list.data?.items ?? []).filter((m) => watchIds.has(m.id)) : list.data?.items ?? [];
-  const tabs: { v: Tab; l: string; badge?: string }[] = [
-    ...(me ? [{ v: 'watch' as Tab, l: 'Watchlist' }] : []), { v: 'called', l: BRAND.name },
-  ];
-  return (
-    <section>
-      <div className="sticky top-0 md:top-0 z-10 bg-bg/85 backdrop-blur-xl">
-        <div className="flex items-center gap-5 px-4 h-12 border-b border-line">
-          {tabs.map((t) => (
-            <button key={t.v} onClick={() => { setTab(t.v); haptic('tap'); }} className={`relative h-full flex items-center gap-1.5 text-[16px] font-semibold tracking-tight ${tab === t.v ? 'text-ink' : 'text-mute'}`}>
-              {t.l}{t.badge && <span className="rounded-full bg-mint-light text-mint text-[10px] font-bold px-1.5 py-0.5 uppercase tracking-wide">{t.badge}</span>}
-              {tab === t.v && <motion.span layoutId="home-tab" className="absolute inset-x-0 -bottom-px h-[2px] rounded-full bg-ink" />}
-            </button>
-          ))}
-        </div>
-        {tab === 'called' && (
-          <div className="flex gap-2 overflow-x-auto px-4 py-3 no-scrollbar">
-            {CATS.map((c) => (
-              <motion.button key={c.v} whileTap={{ scale: 0.94 }} onClick={() => { setCat(c.v); haptic('tap'); }}
-                className={`shrink-0 h-[30px] px-3 text-[12px] font-bold uppercase tracking-[.08em] border transition-colors ${cat === c.v ? 'bg-ink text-bg border-transparent' : 'border-line text-mute hover:text-ink'}`}>{c.l}</motion.button>
-            ))}
-          </div>
-        )}
-      </div>
-      <div className="divide-y divide-line/60">
-        {list.isLoading && [0, 1, 2, 3, 4].map((i) => <RowSkeleton key={i} />)}
-        {items.map((m, i) => <MarketRow key={m.id} m={m} i={i} />)}
-        {!list.isLoading && items.length === 0 && (
-          <div className="px-4 py-12 text-center text-[14px] text-mute">{tab === 'watch' ? 'Markets you trade show up here.' : 'No markets here yet.'}</div>
-        )}
-      </div>
-    </section>
-  );
-}
-
-const LIVE_CATS: [string, string][] = [['all', 'All'], ['sports', 'Football'], ['crypto', 'Crypto'], ['f1', 'F1'], ['tech', 'Gaming'], ['music', 'Music'], ['entertainment', 'Movies'], ['science', 'Space']];
-
-/** LIVE: one hero battle (the biggest market in the category) with YES/NO, then UP NEXT. Broadcast direction C. */
-function Live() {
-  const { api, me } = useSession();
-  const router = useRouter();
-  const predict = usePredict();
-  const [cat, setCat] = useState('all');
-  const qcat = cat === 'f1' ? 'sports' : cat;
-  const q = useQuery({ queryKey: ['markets', 'called', 'live', qcat], queryFn: () => api.markets({ venue: 'called', sort: 'volume', status: 'open', category: qcat === 'all' ? undefined : qcat as MarketCategory }), refetchInterval: 30_000 });
-  const list = (q.data?.items ?? []).filter((m) => cat !== 'f1' || /\bF1\b|grand prix|formula/i.test(m.question));
-  const hero = list[0];
-  const odds = useLiveOdds(hero?.id ?? '0', Number(hero?.price_yes ?? 0.5));
-  const call = (o: 0 | 1, e: React.MouseEvent) => {
-    if (!hero) return; if (!me) return router.push('/signin');
-    haptic('tap'); predict.mutate({ marketId: String(hero.id), outcome: o, origin: { x: e.clientX / innerWidth, y: e.clientY / innerHeight } });
-  };
-  return (
-    <>
-      <div className="no-scrollbar flex gap-1 overflow-x-auto px-4 pb-3">{LIVE_CATS.map(([k, l]) => <Chip key={k} on={cat === k} onClick={() => setCat(k)}>{l}</Chip>)}</div>
-      {q.isLoading ? <div className="mx-4 shimmer h-[420px]" /> : !hero ? <p className="px-4 py-10 text-center text-mute">No live markets in this category.</p> : (
-        <section className="mx-4 cuts overflow-hidden bg-panel">
-          <Link href={`/markets/${hero.id}`}><Battle marketId={String(hero.id)} p={odds.p} category={hero.category} question={hero.question} image={hero.image_url} closeTs={hero.close_ts} height={250} /></Link>
-          <div className="p-3">
-            <Link href={`/markets/${hero.id}`}><h2 className="cd text-[32px] leading-[.95] uppercase">{hero.question}</h2></Link>
-            <div className="mn mt-2 text-[11px] uppercase text-mute">{usd(hero.volume)} vol · ends {timeLeft(hero.close_ts)}</div>
-            <div className="mt-3 grid grid-cols-2 gap-1.5">
-              <CutButton tone="mint" size="lg" onClick={(e) => call(1, e)}>Yes {Math.round(odds.p * 100)}¢</CutButton>
-              <CutButton tone="coral" size="lg" onClick={(e) => call(0, e)}>No {100 - Math.round(odds.p * 100)}¢</CutButton>
+    <div className="min-h-dvh bg-bg">
+      <header className="cobalt-field">
+        <nav className="mx-auto flex h-[68px] max-w-[1240px] items-center justify-between px-5 md:px-8">
+          <Wordmark size={24} className="[&_rect]:fill-white [&_rect:nth-child(n+4)]:fill-[#c6ff3d]" />
+          <div className="hidden md:flex items-center gap-7 text-[14px] text-white/80"><a href="#how" className="hover:text-white">How it works</a><Link href="/raids" className="hover:text-white">Raids</Link><Link href="/launch" className="hover:text-white">Launch</Link><Link href="/leaderboard" className="hover:text-white">Ranks</Link></div>
+          <div className="flex items-center gap-2"><span className="[&_button]:text-white/80"><ThemeToggle /></span><Link href="/live" className="press inline-flex h-10 items-center gap-1.5 rounded-[11px] bg-white px-4 text-[14px] font-semibold text-[#0b1fd1]">Open app<ArrowRight size={15} /></Link></div>
+        </nav>
+        <section className="relative overflow-hidden">
+          <div className="dots absolute inset-0 opacity-40" />
+          <div className="relative mx-auto grid max-w-[1240px] gap-10 px-5 pb-16 pt-10 md:grid-cols-[1.2fr_1fr] md:px-8 md:pb-24 md:pt-16">
+            <div>
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="eyebrow !text-white/70">Memecoin raids · built on NEAR</motion.p>
+              <h1 className="wide-black relative mt-5 text-[50px] sm:text-[68px] lg:text-[88px] xl:text-[96px] leading-[.86]">
+                <motion.span className="block" initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.05, type: 'spring', stiffness: 260, damping: 24 }}>Call it.</motion.span>
+                <motion.span className="block" initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.15, type: 'spring', stiffness: 260, damping: 24 }}>Crew up.</motion.span>
+                <motion.span className="relative mt-3 block pt-4 text-lime" initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.25, type: 'spring', stiffness: 260, damping: 24 }}>
+                  <motion.span aria-hidden className="absolute -left-5 -right-5 top-0 h-[3px] bg-lime md:-left-8 md:right-0" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }} transition={{ delay: 0.7, duration: 0.9, ease: [0.16, 1, 0.3, 1] }} />
+                  <motion.span aria-hidden className="chip chip-lime absolute right-0 -top-[11px] md:-right-2" initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 1.4 }}>Sell line</motion.span>
+                  Cash out at the line.</motion.span>
+                
+              </h1>
+              <p className="mt-7 max-w-[48ch] text-[16px] md:text-[17px] leading-relaxed text-white/80">Call a raid on any memecoin, on any chain. Your crew pools USDC into a war chest that buys through NEAR Intents and only sells when your line is hit. The caller gets paid only if the crew does.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/start" className="press inline-flex h-[54px] items-center gap-2 rounded-[14px] bg-lime px-6 text-[15.5px] font-bold text-[#0a1a00]">Start raiding<ArrowRight size={17} strokeWidth={2.6} /></Link>
+                <Link href="/live" className="press inline-flex h-[54px] items-center gap-2 rounded-[14px] px-6 text-[15.5px] font-semibold text-white shadow-[inset_0_0_0_1.5px_rgb(255_255_255/.4)] hover:bg-white/10"><span className="live-dot text-lime" />Watch it live</Link>
+              </div>
             </div>
+            <motion.div className="relative mx-auto w-full max-w-[420px] self-center" initial={{ opacity: 0, y: 30, rotate: 2 }} animate={{ opacity: 1, y: 0, rotate: 0 }} transition={{ delay: 0.3, type: 'spring', stiffness: 160, damping: 20 }}>
+              <div className="rounded-[22px] bg-[#04061a] p-5 text-white shadow-[0_40px_90px_-30px_rgb(0_0_0/.7)]">
+                <div className="flex items-center gap-3"><CoinAvatar symbol="PEPE" image={pepe?.image} size={44} /><div className="min-w-0 flex-1"><p className="wide text-[20px]">$PEPE</p><p className="mono text-[11px] text-white/60">Ethereum · live price</p></div><div className="text-right"><p className="mono text-[17px] font-bold">{fmtPrice(pepe?.priceUsd)}</p><Delta pct={pepe?.change24h} className="text-[11px]" /></div></div>
+                <div className="relative mt-4">
+                  <Spark values={closes} width={380} height={120} className="w-full" stroke="#ffffff" />
+                  <div className="absolute inset-x-0 top-[10px] border-t-2 border-dashed border-lime" /><span className="chip chip-lime absolute right-0 top-0 -translate-y-1/2">Sell 1.5x</span>
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-2 border-t border-white/10 pt-4">
+                  {[['Line', '1.5x'], ['Caller fee', 'locked'], ['Keys', 'none']].map(([k, v]) => <div key={k}><p className="eyebrow !text-white/50">{k}</p><p className="mono mt-1 text-[14px] font-bold">{v}</p></div>)}
+                </div>
+                <p className="mono mt-3 text-[10px] text-white/40">Chart: real PEPE 1h price (GeckoTerminal). Line drawn for illustration.</p>
+              </div>
+              <motion.div className="absolute -left-6 -bottom-6 hidden md:flex items-center gap-2 rounded-[12px] bg-white px-3 py-2 text-[12.5px] font-semibold text-[#04061a] shadow-xl" animate={{ y: [0, -6, 0] }} transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}><span className="h-2 w-2 rounded-full bg-[#1f9d55]" />Min-out verified on-chain</motion.div>
+            </motion.div>
           </div>
         </section>
-      )}
-      <SectionTitle aside={`${Math.max(0, list.length - 1)} LIVE`}>Up next</SectionTitle>
-      <ul className="pb-6">
-        {list.slice(1, 12).map((m, i) => (
-          <motion.li key={m.id} initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}>
-            <Link href={`/markets/${m.id}`} className="flex items-center gap-3 border-b border-line px-4 py-3">
-              {m.image_url ? <img src={m.image_url} alt="" className="h-9 w-9 shrink-0 object-cover" /> : <span className="h-9 w-9 shrink-0 bg-snow" />}
-              <span className="line-clamp-2 flex-1 text-[15px] font-semibold leading-snug">{m.question}</span>
-              <span className={`cd text-[28px] ${Number(m.price_yes) >= 0.5 ? 'text-mint' : 'text-coral'}`}>{Math.round(Number(m.price_yes) * 100)}%</span>
-            </Link>
-          </motion.li>
-        ))}
-      </ul>
-    </>
-  );
-}
+      </header>
+      <TickerTape />
 
-function BalancePill() {
-  const { me } = useSession();
-  const acct = usePlayAccount();
-  if (!me) return <Link href="/signin" className="cuts cd grid h-9 place-items-center bg-grape px-3 text-[18px] text-white">Sign in</Link>;
-  return <Link href="/portfolio" className="mn grid h-9 place-items-center bg-ink px-3 text-[14px] font-bold text-bg">{acct.data ? money(acct.data.value ?? acct.data.balance) : '—'}</Link>;
-}
+      <section id="how" className="mx-auto max-w-[1240px] px-5 py-20 md:px-8 md:py-28">
+        <p className="eyebrow">How a raid works</p>
+        <h2 className="wide-black mt-4 max-w-[16ch] text-[40px] md:text-[64px] leading-[.88]">Four moves. One line.</h2>
+        <div className="mt-10 grid gap-8 md:grid-cols-[1fr_1.2fr] md:gap-14">
+          <ol className="flex flex-col gap-1" role="tablist">
+            {STEPS.map((x, i) => (
+              <li key={x.k}>
+                <button role="tab" aria-selected={s === i} onClick={() => setS(i)} onMouseEnter={() => setS(i)} className={`w-full rounded-[14px] px-4 py-4 text-left transition-colors ${s === i ? 'bg-raised' : 'hover:bg-raised/50'}`}>
+                  <div className="flex items-center gap-3"><span className={`mono text-[12px] ${s === i ? 'text-lime' : 'text-faint'}`}>0{i + 1}</span><span className="wide text-[17px]">{x.t}</span></div>
+                  <AnimatePresence initial={false}>{s === i && <motion.p initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-8 pt-2 text-[14px] leading-relaxed text-mute">{x.b}</motion.p>}</AnimatePresence>
+                </button>
+              </li>
+            ))}
+          </ol>
+          <motion.div className="relative grid min-h-[360px] place-items-center overflow-hidden rounded-[24px]" animate={{ backgroundColor: step.bg }} transition={{ duration: 0.5 }}>
+            <div className="dots absolute inset-0" />
+            <AnimatePresence mode="wait"><motion.div key={s} exit={{ opacity: 0, scale: 0.96 }}>{step.V === 'call' ? <CallVisual q={pepe} /> : step.V === 'crew' ? <CrewVisual /> : step.V === 'keyless' ? <KeylessVisual /> : <HitVisual />}</motion.div></AnimatePresence>
+          </motion.div>
+        </div>
+      </section>
 
-export default function Home() {
-  const { me } = useSession();
-  const [funds, setFunds] = useState<'deposit' | 'withdraw' | null>(null);
-  return (
-    <Shell actions={<div className="flex items-center gap-2.5"><ThemeToggle /><BalancePill /></div>}>
-      <Live />
-      {me ? <><SectionTitle>Your bankroll</SectionTitle><Balance onFunds={setFunds} /></> : <GuestHero />}
-      <TopStrip />
-      <Markets />
-      {funds && <FundsSheet open mode={funds} onClose={() => setFunds(null)} />}
-    </Shell>
+      <section className="border-y border-line bg-panel">
+        <div className="mx-auto grid max-w-[1240px] gap-10 px-5 py-20 md:grid-cols-2 md:px-8 md:py-24">
+          <div>
+            <p className="eyebrow">Anti-dump by design</p>
+            <h2 className="wide-black mt-4 text-[40px] md:text-[60px] leading-[.88]">The caller<br />eats last.</h2>
+          </div>
+          <div className="grid gap-4 text-[15px] leading-relaxed text-mute">
+            <p><b className="text-ink">Callers earn a share of the profit, not of the hype.</b> The fee sits locked in the chest and pays out only when the raid hits its line. If it retreats, the fee is gone.</p>
+            <p><b className="text-ink">No one can grab the pot.</b> The chest checks every 1Click quote’s signature, recipient and minimum return before it moves a cent. On mainnet the account’s keys are removed, so only the contract’s rules can move funds.</p>
+            <p><b className="text-ink">Winners feed the token.</b> A share of every winning raid buys back RAID and burns it.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-[1240px] px-5 py-20 md:px-8 md:py-24">
+        <div className="flex flex-wrap items-end justify-between gap-4"><div><p className="eyebrow">Any chain NEAR Intents reaches</p><h2 className="wide-black mt-4 text-[36px] md:text-[56px] leading-[.88]">Raid where<br />the memes are.</h2></div><p className="mono text-[11px] text-faint">live prices · DexScreener / CoinGecko</p></div>
+        <div className="mt-10 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
+          {(quotes.data ?? []).slice(0, 8).map((q, i) => (
+            <motion.div key={q.symbol} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+              <Link href={`/coin/${q.symbol}`} className="lift panel flex items-center gap-3 p-3.5">
+                <CoinAvatar symbol={q.symbol} image={q.image} size={36} />
+                <div className="min-w-0 flex-1"><p className="font-semibold text-[14px]">${q.symbol}</p><p className="text-[11.5px] text-mute">{CHAINS[q.chain].label}</p></div>
+                <div className="text-right"><p className="mono text-[12px]">{fmtPrice(q.priceUsd)}</p><Delta pct={q.change24h} className="text-[10.5px]" /></div>
+              </Link>
+            </motion.div>
+          ))}
+          {quotes.isLoading && Array.from({ length: 8 }, (_, i) => <div key={i} className="shimmer h-[66px]" />)}
+        </div>
+      </section>
+
+      <section className="cobalt-field relative overflow-hidden">
+        <div className="dots absolute inset-0 opacity-40" />
+        <div className="relative mx-auto flex max-w-[1240px] flex-col items-start gap-6 px-5 py-20 md:flex-row md:items-end md:justify-between md:px-8">
+          <h2 className="wide-black text-[44px] md:text-[80px] leading-[.84]">Your line.<br />Your crew.</h2>
+          <Link href="/start" className="press inline-flex h-[56px] items-center gap-2 rounded-[14px] bg-lime px-7 text-[16px] font-bold text-[#0a1a00]">Start raiding<ArrowRight size={18} strokeWidth={2.6} /></Link>
+        </div>
+      </section>
+      <footer className="mx-auto flex max-w-[1240px] flex-col gap-3 px-5 py-8 text-[12px] text-faint md:flex-row md:items-center md:justify-between md:px-8">
+        <span className="flex items-center gap-2"><Mark size={16} />RAID · NEAR Hackathon 2026 · testnet preview</span>
+        <span>A game with real market risk. Raids can lose money. Not investment advice.</span>
+      </footer>
+    </div>
   );
 }

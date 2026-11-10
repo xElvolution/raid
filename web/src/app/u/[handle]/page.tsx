@@ -1,208 +1,65 @@
 'use client';
-/* eslint-disable @next/next/no-img-element -- market art */
-import type { SocialPost } from '@called/sdk';
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'motion/react';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState, type ReactNode } from 'react';
-import { BadgeCheck, CalendarDays, ChevronLeft, Copy, Link2, MapPin, MessageSquare, Settings } from 'lucide-react';
-import { Bug } from '@/components/bc';
-import { RichText } from '@/components/RichText';
-import { divisionFor } from '@/lib/gamification';
-import { CallerCard, money } from '@/components/caller/CallerCard';
-import { BattleRecord, CallRecord } from '@/components/caller/Record';
-import { Territory } from '@/components/caller/Territory';
-import { PostCard } from '@/components/PostCard';
+import Link from 'next/link';
+import { use } from 'react';
+import { motion } from 'motion/react';
+import { useQuery } from '@tanstack/react-query';
+import { ArrowUpRight, LogOut } from 'lucide-react';
 import { Shell } from '@/components/Shell';
-import { Avatar, Empty, Skeleton } from '@/components/ui';
-import { celebrate, haptic } from '@/lib/fx';
-import { motion as m2 } from 'motion/react';
-import { useSession } from '@/lib/session';
-import { TLink as Link } from '@/lib/transition';
+import { RaidCard } from '@/components/RaidCard';
+import { Button, CountUp, Empty, Identicon } from '@/components/ui';
+import { Mark } from '@/components/Brand';
+import { useRaids } from '@/lib/hooks';
+import { callerStats } from '@/lib/callers';
+import { shortAddr, shortName } from '@/lib/market';
+import { explorerAccount } from '@/lib/coins';
+import { CHEST_ID, NETWORK, usdcOf } from '@/lib/raid';
+import { connect, disconnect, useAccount } from '@/lib/wallet';
 
-const TABS = [['posts', 'Posts'], ['replies', 'Replies'], ['calls', 'Calls'], ['history', 'History'], ['created', 'Created'], ['likes', 'Likes'], ['media', 'Media']] as const;
-type Tab = (typeof TABS)[number][0];
+async function claimable(account: string): Promise<string> {
+  const rpc = NETWORK === 'mainnet' ? 'https://rpc.mainnet.fastnear.com' : 'https://rpc.testnet.fastnear.com';
+  const r = await fetch(rpc, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'query', params: { request_type: 'call_function', finality: 'optimistic', account_id: CHEST_ID, method_name: 'get_claimable', args_base64: btoa(JSON.stringify({ account_id: account })) } }) });
+  const j = await r.json(); return JSON.parse(new TextDecoder().decode(new Uint8Array(j.result.result)));
+}
 
-export default function ProfilePage() {
-  const { handle } = useParams<{ handle: string }>();
-  const { api, me } = useSession();
-  const qc = useQueryClient();
-  const router = useRouter();
-  const p = useQuery({ queryKey: ['caller', handle, !!me], queryFn: () => api.profile(handle) });
-  const [tab, setTab] = useState<Tab>('posts');
-  const [card, setCard] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
-  useEffect(() => { const on = () => setCollapsed(window.scrollY > 120); on(); window.addEventListener('scroll', on, { passive: true }); return () => window.removeEventListener('scroll', on); }, []);
-  const [dir, setDir] = useState(1);
-  const follow = useMutation({
-    mutationFn: (on: boolean) => (on ? api.follow(handle) : api.unfollow(handle)),
-    onSuccess: (_d, on) => { if (on) celebrate(); void qc.invalidateQueries({ queryKey: ['caller', handle] }); },
-  });
-  const copy = useMutation({
-    mutationFn: (on: boolean) => (on ? api.copy(handle) : api.uncopy(handle)),
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['caller', handle] }),
-  });
-  if (p.isLoading) return <Shell title="Caller" back><div className="space-y-3 p-4"><Skeleton className="mx-auto aspect-[5/7] max-w-[360px]" /><Skeleton className="h-12" /></div></Shell>;
-  if (!p.data) return <Shell title="Caller" back><Empty title="No caller by that name" body="Check the handle and try again." /></Shell>;
-  const d = p.data, u = d.user, mine = me?.handle === u.handle, tier = divisionFor(u.xp).current;
-  const pick = (t: Tab) => { const a = TABS.findIndex((x) => x[0] === tab), b = TABS.findIndex((x) => x[0] === t); setDir(b > a ? 1 : -1); setTab(t); haptic('tap'); };
-  const joined = new Date(u.created_at).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+export default function CallerPage({ params }: { params: Promise<{ handle: string }> }) {
+  const { handle: raw } = use(params);
+  const acct = useAccount();
+  const handle = raw === 'me' ? acct : decodeURIComponent(raw);
+  const raids = useRaids();
+  const fees = useQuery({ queryKey: ['claimable', handle], enabled: !!handle, queryFn: () => claimable(handle!) });
+  if (!handle) return (
+    <Shell title="Caller card">
+      <Empty art={<Mark size={48} />} title="Your caller card" body="Connect a NEAR wallet to see the raids you’ve called and backed, your hit rate and what you’ve earned." action={<Button tone="lime" size="lg" onClick={() => void connect()}>Connect NEAR wallet</Button>} />
+    </Shell>
+  );
+  const s = callerStats(raids.data ?? []).find((x) => x.account === handle);
+  const mine = (raids.data ?? []).filter((r) => r.caller === handle).reverse();
+  const rate = s && s.settled ? Math.round((s.hits / s.settled) * 100) : null;
   return (
-    <Shell bare flush>
-      <CompactBar name={u.display_name} posts={u.posts} show={collapsed} onBack={() => router.back()} />
-      {/* Banner: full width, editable; avatar overlaps its bottom-left edge. */}
-      <div className="relative h-[140px] w-full overflow-hidden bg-grape md:h-[180px]">
-        {u.cover_url ? <img src={u.cover_url} alt="" className="h-full w-full object-cover" /> : <div className="halftone h-full w-full opacity-30" />}
-        <button onClick={() => router.back()} aria-label="Back" className="press absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-full bg-[#000]/60 text-white"><ChevronLeft size={22} /></button>
-      </div>
-      <section className="px-4">
-        <div className="flex items-start justify-between">
-          <div className="relative z-10 -mt-[42px] rounded-full ring-4 ring-bg"><Avatar handle={u.handle} url={u.avatar_url} size={84} /></div>
-          <div className="flex gap-1.5 pt-3">
-            {mine ? (<>
-              <IconBtn label="Settings" onClick={() => router.push('/settings')}><Settings size={18} /></IconBtn>
-              <button onClick={() => router.push('/settings/profile')} className="press h-9 rounded-full border border-line px-4 text-[14px] font-bold">Edit profile</button>
-            </>) : (<>
-              <IconBtn label="Message" disabled={!me} onClick={() => router.push(`/messages/${u.handle}`)}><MessageSquare size={18} /></IconBtn>
-              <IconBtn label={u.am_copying ? 'Stop copying calls' : 'Copy calls'} on={u.am_copying} disabled={!me || copy.isPending} onClick={() => copy.mutate(!u.am_copying)}><Copy size={17} /></IconBtn>
-              <button disabled={!me || follow.isPending} onClick={() => follow.mutate(!u.am_following)}
-                className={`press h-9 rounded-full px-4 text-[14px] font-bold ${u.am_following ? 'border border-line' : 'bg-ink text-bg'}`}>{u.am_following ? 'Following' : u.follows_me ? 'Follow back' : 'Follow'}</button>
-            </>)}
+    <Shell title="Caller card" back="/leaderboard" actions={acct === handle ? <button onClick={() => void disconnect()} aria-label="Disconnect wallet" className="press grid h-9 w-9 place-items-center rounded-[10px] text-mute hover:bg-raised"><LogOut size={17} /></button> : undefined}>
+      <motion.section initial={{ rotateX: 12, y: 20, opacity: 0 }} animate={{ rotateX: 0, y: 0, opacity: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 22 }} style={{ perspective: 800 }}
+        className="cobalt-field relative overflow-hidden rounded-[22px] p-5 md:p-7">
+        <div className="dots absolute inset-0 opacity-60" />
+        <div className="relative">
+          <div className="flex items-start justify-between"><Mark size={22} /><span className="mono text-[10.5px] text-white/60">CALLER · {NETWORK.toUpperCase()}</span></div>
+          <div className="mt-6 flex items-center gap-4">
+            <Identicon seed={handle} size={72} className="!bg-white/10 !rounded-[16px]" />
+            <div className="min-w-0"><h2 className="wide-black text-[21px] md:text-[34px] leading-[.95] truncate">{shortName(handle)}</h2>
+              <a href={explorerAccount(handle, NETWORK)} target="_blank" rel="noreferrer" className="mt-1.5 inline-flex items-center gap-1 mono text-[11px] text-white/60 hover:text-white">{handle.length > 30 ? shortAddr(handle) : handle}<ArrowUpRight size={11} /></a></div>
           </div>
-        </div>
-        <div className="mt-2.5">
-          <h1 className="flex items-center gap-1.5 text-[21px] font-extrabold leading-tight">{u.display_name}{u.verified && <BadgeCheck size={19} className="text-grape" />}
-            <span className="ml-1 bug" style={{ background: tier.color, color: '#000' }}>{tier.name}</span></h1>
-          <p className="text-[15px] text-mute">@{u.handle}{u.follows_me && <span className="ml-2 bg-snow px-1.5 py-0.5 text-[11px]">Follows you</span>}</p>
-        </div>
-        {u.bio && <p className="mt-2.5 text-[15px] leading-[1.4]"><RichText text={u.bio} /></p>}
-        <div className="mt-2.5 flex flex-wrap gap-x-3.5 gap-y-1 text-[14px] text-mute">
-          {u.location && <span className="flex items-center gap-1"><MapPin size={15} />{u.location}</span>}
-          {(u.links ?? []).slice(0, 1).map((l) => <a key={l} href={l} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-1 text-grape"><Link2 size={15} />{l.replace(/^https?:\/\//, '')}</a>)}
-          <span className="flex items-center gap-1"><CalendarDays size={15} />Joined {joined}</span>
-        </div>
-        <div className="mt-2.5 flex gap-4 text-[14px]">
-          <Link href={`/u/${u.handle}/connections?list=following`}><b className="font-bold">{u.following}</b> <span className="text-mute">Following</span></Link>
-          <Link href={`/u/${u.handle}/connections?list=followers`}><b className="font-bold">{u.followers}</b> <span className="text-mute">Followers</span></Link>
-          {u.copiers > 0 && <span><b className="font-bold">{u.copiers}</b> <span className="text-mute">Copying</span></span>}
-        </div>
-        {d.mutuals.length > 0 && (
-          <div className="mt-2 flex items-center gap-2 text-[13px] text-mute">
-            <span className="flex -space-x-1.5">{d.mutuals.map((m) => <span key={m.handle} className="rounded-full ring-2 ring-bg"><Avatar handle={m.handle} url={m.avatar_url} size={20} /></span>)}</span>
-            Followed by {d.mutuals.map((m) => m.display_name).slice(0, 2).join(', ')}{d.mutuals.length > 2 ? ' and others you follow' : ''}
+          <div className="mt-6 grid grid-cols-4 gap-3 border-t border-white/20 pt-4">
+            <S k="Called" v={s?.called ?? 0} /><S k="Hit" v={s?.hits ?? 0} /><S k="Hit rate" v={rate} suffix="%" /><S k="Rallied" v={s?.rallied ?? 0} dp={2} />
           </div>
-        )}
-        {u.am_copying && <p className="mn mt-2 text-[11px] text-mint">COPYING NEW TRADES · MAX $25 EACH</p>}
-      </section>
-
-      <div className="mt-4 grid grid-cols-4 border-y border-line">
-        {[['Hit rate', d.stats.winRate === null ? '—' : `${Math.round(d.stats.winRate * 100)}%`], ['Called', String(d.stats.called)], ['Streak', `${u.streak}D`], ['Rank', d.stats.rank ? `#${d.stats.rank}` : '—']].map(([k, v]) => (
-          <div key={k} className="border-r border-line py-2.5 text-center last:border-0"><div className="cd text-[26px] leading-none">{v}</div><div className="mn mt-1 text-[10px] text-mute uppercase">{k}</div></div>
-        ))}
-      </div>
-      <Territory handle={u.handle} pnl={d.stats.pnl} />
-      <CallRecord record={d.record} />
-      <BattleRecord battle={d.battle} />
-      <section className="px-4 pt-6"><button onClick={() => setCard(true)} className="press cuts flex h-12 w-full items-center justify-between bg-grape px-4 text-white"><span className="cd text-[22px]">View caller card</span><span className="mn text-[11px]">FLIP · SHARE ▶</span></button></section>
-      <AnimatePresence>{card && (
-        <motion.div className="fixed inset-0 z-[70] flex flex-col justify-center bg-bg/95 backdrop-blur" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={(e) => { if (e.target === e.currentTarget) setCard(false); }}>
-          <CallerCard p={d} />
-          <button onClick={() => setCard(false)} className="mn mx-auto mt-3 text-[12px] text-mute">CLOSE</button>
-        </motion.div>
-      )}</AnimatePresence>
-
-      {d.pinned && (
-        <section className="pt-6">
-          <div className="flex items-center gap-2 px-4"><h2 className="cd text-[22px]">Pinned call</h2><Bug tone="grape">Pinned</Bug></div>
-          <PostCard item={d.pinned} />
-        </section>
-      )}
-
-      <nav className="no-scrollbar sticky top-[52px] z-20 mt-6 flex overflow-x-auto border-b border-line bg-bg">
-        {TABS.map(([k, l]) => (
-          <button key={k} onClick={() => pick(k)} className={`relative h-11 shrink-0 px-3.5 cd text-[18px] tracking-[.04em] ${tab === k ? 'text-ink' : 'text-mute'}`}>
-            {l}{tab === k && <motion.i layoutId="ptab" className="absolute inset-x-2 bottom-0 h-[3px] bg-grape" />}
-          </button>
-        ))}
-      </nav>
-      <AnimatePresence mode="wait" custom={dir} initial={false}>
-        <motion.div key={tab} custom={dir} initial={{ x: dir * 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: dir * -40, opacity: 0 }} transition={{ type: 'spring', stiffness: 420, damping: 36 }}>
-          {tab === 'calls' ? <OpenCalls handle={u.handle} /> : tab === 'history' ? <History handle={u.handle} /> : tab === 'created' ? <Created handle={u.handle} /> : <Posts handle={u.handle} tab={tab} />}
-        </motion.div>
-      </AnimatePresence>
+          <p className="mt-4 mono text-[11px] text-white/60">Claimable fees: {fees.data !== undefined ? `${usdcOf(fees.data).toFixed(2)} USDC` : '…'} · fees unlock only on hits</p>
+        </div>
+      </motion.section>
+      <h3 className="wide mt-7 text-[15px]">Raids called</h3>
+      <div className="mt-3 grid gap-3 md:grid-cols-2">{mine.map((r, i) => <RaidCard key={r.id} r={r} i={i} />)}</div>
+      {!raids.isLoading && !mine.length && <p className="mt-2 text-[13.5px] text-mute">No raids called from this account yet. <Link href="/raids" className="text-brand font-semibold">Browse raids</Link></p>}
     </Shell>
   );
 }
 
-function Posts({ handle, tab }: { handle: string; tab: 'posts' | 'replies' | 'likes' | 'media' }) {
-  const { api } = useSession();
-  const q = useInfiniteQuery({
-    queryKey: ['uposts', handle, tab], queryFn: ({ pageParam }) => api.userPosts(handle, tab, pageParam),
-    initialPageParam: undefined as string | undefined, getNextPageParam: (x) => x.next ?? undefined,
-  });
-  const items: SocialPost[] = q.data?.pages.flatMap((x) => x.items) ?? [];
-  if (q.isLoading) return <div className="space-y-2 p-4">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-24" />)}</div>;
-  if (!items.length) return <Empty title={{ posts: 'No posts yet', replies: 'No replies yet', likes: 'No likes yet', media: 'No media yet' }[tab]} />;
-  if (tab === 'media') return (
-    <div className="grid grid-cols-3 gap-[2px]">{items.filter((i) => i.media_url).map((i) => <Link key={i.id} href={`/posts/${i.id}`} className="aspect-square overflow-hidden bg-snow"><img src={i.media_url!} alt="" className="h-full w-full object-cover" loading="lazy" /></Link>)}</div>
-  );
-  return <>{items.map((it) => <PostCard key={it.id} item={it} />)}{q.hasNextPage && <button onClick={() => void q.fetchNextPage()} className="mn w-full py-4 text-[12px] text-mute">LOAD MORE</button>}</>;
-}
-
-function OpenCalls({ handle }: { handle: string }) {
-  const { api } = useSession();
-  const q = useQuery({ queryKey: ['ucalls', handle], queryFn: () => api.userCalls(handle), refetchInterval: 15_000 });
-  if (q.isLoading) return <div className="space-y-2 p-4">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-16" />)}</div>;
-  if (!q.data?.items.length) return <Empty title="No open calls" body="Live positions show here with their running P&L." />;
-  return <>{q.data.items.map((c) => (
-    <Link key={c.market_id + c.outcome} href={`/markets/${c.market_id}`} className="flex items-center gap-3 border-b border-line px-4 py-3">
-      <span className={`cd grid h-10 w-12 shrink-0 place-items-center text-[18px] text-[#000] ${c.outcome ? 'bg-mint' : 'bg-coral'}`}>{c.outcome ? 'YES' : 'NO'}</span>
-      <div className="min-w-0 flex-1"><div className="truncate text-[15px] font-semibold">{c.question}</div><div className="mn text-[11px] text-mute">{c.shares.toFixed(1)} SH · AVG {Math.round(c.avg * 100)}¢ → {Math.round(c.price * 100)}¢</div></div>
-      <div className="text-right"><div className={`cd text-[24px] leading-none ${c.pnl >= 0 ? 'text-mint' : 'text-coral'}`}>{money(c.pnl, true)}</div><div className={`mn text-[11px] ${c.pnl >= 0 ? 'text-mint' : 'text-coral'}`}>{(c.pnlPct * 100).toFixed(0)}%</div></div>
-    </Link>
-  ))}</>;
-}
-
-function History({ handle }: { handle: string }) {
-  const { api } = useSession();
-  const q = useQuery({ queryKey: ['uhist', handle], queryFn: () => api.userHistory(handle) });
-  if (q.isLoading) return <div className="space-y-2 p-4">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-16" />)}</div>;
-  if (!q.data?.items.length) return <Empty title="No settled calls yet" body="When a market resolves, the result lands here." />;
-  return <>{q.data.items.map((c, i) => (
-    <Link key={c.market_id + i} href={`/markets/${c.market_id}/proof`} className="relative flex items-center gap-3 overflow-hidden border-b border-line px-4 py-3">
-      <span className={`h-10 w-1.5 shrink-0 ${c.won ? 'bg-mint' : 'bg-coral'}`} />
-      <div className="min-w-0 flex-1"><div className="truncate text-[15px] font-semibold">{c.question}</div><div className="mn text-[11px] text-mute">CALLED {c.outcome ? 'YES' : 'NO'} · RESOLVED {c.result} · {c.kind === 'call' ? 'FREE CALL' : `STAKE ${money(c.cost)}`}</div></div>
-      {c.won ? <span className="cd -rotate-6 border-2 border-mint px-1.5 text-[18px] text-mint">Called it</span> : <span className="cd border-2 border-coral/60 px-1.5 text-[18px] text-coral/80">Missed</span>}
-      {c.kind !== 'call' && <span className={`cd w-14 text-right text-[20px] ${c.pnl >= 0 ? 'text-mint' : 'text-coral'}`}>{money(c.pnl, true)}</span>}
-    </Link>
-  ))}</>;
-}
-
-function Created({ handle }: { handle: string }) {
-  const { api } = useSession();
-  const q = useQuery({ queryKey: ['ucreated', handle], queryFn: () => api.userCreated(handle) });
-  if (q.isLoading) return <div className="space-y-2 p-4">{[0, 1].map((i) => <Skeleton key={i} className="h-16" />)}</div>;
-  if (!q.data?.items.length) return <Empty title="No markets created" body="Turn any post into a market with Call it." />;
-  return <>{q.data.items.map((m) => (
-    <Link key={m.id} href={`/markets/${m.id}`} className="flex items-center gap-3 border-b border-line px-4 py-3">
-      {m.image_url ? <img src={m.image_url} alt="" className="h-11 w-11 shrink-0 object-cover" /> : <span className="h-11 w-11 shrink-0 bg-snow" />}
-      <div className="min-w-0 flex-1"><div className="line-clamp-2 text-[15px] font-semibold">{m.question}</div><div className="mn text-[11px] text-mute uppercase">{m.status}{m.outcome ? ` · ${m.outcome}` : ''}</div></div>
-      <span className="cd text-[24px] text-mint">{Math.round(Number(m.price_yes) * 100)}%</span>
-    </Link>
-  ))}</>;
-}
-
-/** X-style collapse: once the banner scrolls away, a compact bar with the name slides in. */
-function CompactBar({ name, posts, show, onBack }: { name: string; posts: number; show: boolean; onBack: () => void }) {
-  return (
-    <m2.header initial={false} animate={{ y: show ? 0 : -64, opacity: show ? 1 : 0 }} transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-      className="sticky top-0 z-30 -mb-[52px] flex h-[52px] items-center gap-3 border-b border-line bg-bg/90 px-3 backdrop-blur-xl" aria-hidden={!show}>
-      <button onClick={onBack} aria-label="Back" className="press grid h-9 w-9 place-items-center"><ChevronLeft size={22} /></button>
-      <div className="min-w-0"><div className="truncate text-[17px] font-extrabold leading-tight">{name}</div><div className="text-[12px] text-mute">{posts} posts</div></div>
-    </m2.header>
-  );
-}
-
-function IconBtn({ children, label, on, ...rest }: { children: ReactNode; label: string; on?: boolean } & React.ComponentProps<'button'>) {
-  return <button aria-label={label} title={label} className={`press grid h-9 w-9 place-items-center rounded-full border ${on ? 'border-mint bg-mint text-[#000]' : 'border-line'} disabled:opacity-40`} {...rest}>{children}</button>;
+function S({ k, v, suffix = '', dp = 0 }: { k: string; v: number | null; suffix?: string; dp?: number }) {
+  return <div className="min-w-0"><p className="wide-black text-[24px] md:text-[32px] leading-none truncate">{v === null ? '—' : <CountUp value={v} format={(n) => `${n.toFixed(dp)}${suffix}`} />}</p><p className="eyebrow mt-1.5 truncate">{k}</p></div>;
 }

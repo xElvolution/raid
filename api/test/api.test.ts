@@ -100,13 +100,6 @@ describe('indexer', () => {
 });
 
 describe('compliance', () => {
-  it('geofences real-money external routes', async () => {
-    const a = await t.signIn('alice.testnet', 'alice');
-    const us = await t.app.inject({ method: 'POST', url: '/v1/external/polymarket/order', headers: { ...a.auth, 'cf-ipcountry': 'US' } });
-    expect(us.statusCode).toBe(451);
-    const none = await t.app.inject({ method: 'POST', url: '/v1/external/polymarket/order', headers: a.auth });
-    expect(none.statusCode).toBe(451);
-  });
   it('rate limits per user', async () => {
     const a = await t.signIn('alice.testnet', 'alice');
     let last = 0;

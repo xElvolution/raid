@@ -6,7 +6,6 @@ import { chainFromEnv } from './chain.js';
 import { pgDatabase } from './db/index.js';
 import { RedisBus, RedisKv } from './infra/bus.js';
 import { BullJobs } from './infra/queue.js';
-import { PolymarketRouter } from './polymarket-router.js';
 import { nearTipVerifier, nearTransferAmount } from './near-tips.js';
 
 const Env = z.object({
@@ -30,17 +29,8 @@ const Env = z.object({
   PRIVY_VERIFICATION_KEY: z.string().optional(),
   RESOLVER_URL: z.string().url().optional(),
   RESOLVER_TOKEN: z.string().optional(),
-  POLYMARKET_PRIVATE_KEY: z.string().regex(/^0x[0-9a-fA-F]{64}$/).optional(),
-  POLYMARKET_API_KEY: z.string().optional(),
-  POLYMARKET_API_SECRET: z.string().optional(),
-  POLYMARKET_API_PASSPHRASE: z.string().optional(),
-  POLYMARKET_FUNDER: z.string().optional(),
-  POLYMARKET_SIGNATURE_TYPE: z.coerce.number().int().min(0).max(2).optional(),
 });
 const env = Env.parse(process.env);
-const poly = env.POLYMARKET_PRIVATE_KEY && env.POLYMARKET_API_KEY && env.POLYMARKET_API_SECRET && env.POLYMARKET_API_PASSPHRASE
-  ? new PolymarketRouter({ privateKey: env.POLYMARKET_PRIVATE_KEY, apiKey: env.POLYMARKET_API_KEY, secret: env.POLYMARKET_API_SECRET, passphrase: env.POLYMARKET_API_PASSPHRASE, funder: env.POLYMARKET_FUNDER, signatureType: env.POLYMARKET_SIGNATURE_TYPE })
-  : null;
 const redis = new Redis(env.REDIS_URL, { maxRetriesPerRequest: null });
 const app = buildApp({
   db: pgDatabase(env.DATABASE_URL, env.DATABASE_REPLICA_URL),
@@ -48,7 +38,6 @@ const app = buildApp({
   kv: new RedisKv(redis),
   jobs: new BullJobs(redis),
   checkKey: rpcKeyChecker(env.NEAR_RPC_URL),
-  router: poly,
   verifyTip: nearTipVerifier(env.NEAR_RPC_URL),
   nearTransfer: nearTransferAmount(env.NEAR_RPC_URL),
   nearTreasury: env.NEAR_TREASURY_ACCOUNT,
@@ -67,5 +56,4 @@ const app = buildApp({
     nearSignIn: env.NEAR_SIGNIN === '1',
   },
 });
-app.log.info({ polymarketRouting: !!poly }, 'external venues');
 await app.listen({ port: env.PORT, host: process.env.HOST ?? '0.0.0.0' });

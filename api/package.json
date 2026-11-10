@@ -24,7 +24,6 @@
     "@ethersproject/wallet": "^5.8.0",
     "@fastify/cors": "^11.3.1",
     "@fastify/websocket": "^11.3.4",
-    "@polymarket/clob-client": "^5.8.1",
     "bs58": "^6.0.0",
     "bullmq": "^6.3.19",
     "ethers": "^6.17.0",
