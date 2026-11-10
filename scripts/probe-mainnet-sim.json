@@ -1,0 +1,13 @@
+{
+  "redeploy": "CLJSHQ67VLbjnwQMaibGFWSLes7LtfShkXsAH8vrjNyx",
+  "salt": "252812b3",
+  "probe_tx": "BzXk6qXHA874DmNyRq9rJgFq4QcarpAg3NbT4YbKmEXk",
+  "signed": {
+    "standard": "raw_ed25519",
+    "payload": "{\"signer_id\":\"64e2b3b98f7da5dd6ed0fa4183337c806aadcb40642103aa1d766285e511bb18\",\"verifying_contract\":\"intents.near\",\"deadline\":\"2026-11-10T07:33:08.269Z\",\"nonce\":\"JSgSs5yVH7QjtMoBZEfuGbK+81Rf4KKam+wCoruV98c=\",\"intents\":[{\"intent\":\"token_diff\",\"diff\":{\"nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1\":\"-1\",\"nep141:wrap.near\":\"1\"}}]}",
+    "public_key": "ed25519:7npGSZS4bSvSPA8CNEnVQqpwsgHUbqKoER1DkoEp9x5d",
+    "signature": "ed25519:5Wk8iCUiQy2tUxFnnV5uspHbRvRkneaGSf3x2Nd3A5ayUiAd5Qap2TrRBJsETHhcKrDZcfxVB4TuhKE6VE85bF9H"
+  },
+  "simulate_error": "wasm execution failed with error: HostError(GuestPanic { panic_msg: \"insufficient balance or overflow\" })",
+  "control_bad_sig_error": "wasm execution failed with error: HostError(GuestPanic { panic_msg: \"invalid signature\" })"
+}

@@ -1,0 +1,14 @@
+import { Tokens } from '../dist/auth.js';
+import pg from 'pg';
+const db = new pg.Client(process.env.DATABASE_URL); await db.connect();
+const { rows: [u] } = await db.query("INSERT INTO users (handle, privy_did, display_name) VALUES ('e2e_'||substr(md5(random()::text),1,6), 'did:privy:e2e'||random(), 'E2E') RETURNING id");
+const { rows: [m] } = await db.query("INSERT INTO markets (venue, external_id, question, rules, close_ts, price_yes) VALUES ('called', 'e2e:'||random(), 'Will the Called testnet e2e trade settle?', 'YES if settled', now() + interval '150 seconds', 0.5) RETURNING id");
+const tok = await new Tokens(process.env.JWT_SECRET).issue(String(u.id));
+const H = { authorization: `Bearer ${tok}`, 'content-type': 'application/json' };
+const api = async (method, path, body, h = H) => { const r = await fetch('http://127.0.0.1:18787' + path, { method, headers: h, body: body ? JSON.stringify(body) : undefined }); return [r.status, await r.json()]; };
+let [s, a] = await api('POST', '/v1/play/deposit', { amount: 1000 }); console.log('faucet', s, a.balance ?? a);
+[s, a] = await api('POST', '/v1/play/trade', { marketId: String(m.id), outcome: 1, side: 'buy', amount: 50 }); console.log('buy', s, a.shares ?? a, a.priceYes, a.txHash, a.account?.balance);
+[s, a] = await api('POST', '/v1/play/trade', { marketId: String(m.id), outcome: 1, side: 'sell', shares: 10 }); console.log('sell', s, a.amount ?? a, a.txHash, a.account?.balance);
+[s, a] = await api('POST', '/v1/play/deposit', { amount: 1000 }); console.log('faucet again', s, a);
+console.log(JSON.stringify({ user: u.id, market: m.id }));
+await db.end();

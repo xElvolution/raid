@@ -1,0 +1,10 @@
+[
+  {
+    "step": "on-chain verify of real 1Click signature",
+    "result": true
+  },
+  {
+    "step": "tampered quote rejected",
+    "result": false
+  }
+]

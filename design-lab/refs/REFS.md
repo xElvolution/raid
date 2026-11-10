@@ -1,0 +1,13 @@
+# Reference notes (App Store screenshots, US, pulled 21 Oct 2026; `<app>-N.jpg`, overview in `sheet-all.jpg`)
+- **Arc Search**: one bold colour field per screen, giant friendly type, a single action. Takeaway: let one element own the screen.
+- **Robinhood**: black canvas, one hero number, everything else recedes. Money numbers are the typography.
+- **Revolut**: physical objects (cards) given depth and personality. Customisation feels like owning something.
+- **Rainbow**: playful, toy-like colour and rounded chunky UI, which keeps crypto from feeling scary.
+- **Family**: soft motion and generous padding; every tap feels tactile, nothing feels like a form.
+- **Things 3**: restraint. Hairlines, perfect spacing, one accent. Shows that polish comes from rhythm rather than decoration.
+- **Linear**: dense but calm dark UI with tight type scale and precise alignment.
+- **Airbnb 2025**: dimensional icons, big photography and large rounded cards with clear hierarchy.
+- **Nike Run Club**: huge condensed type and achievement moments that feel like trophies (used in C).
+- **Sorare**: collectible cards with rarity frames and serial numbers (used in every Caller Card).
+- **Kick**: neon-on-black live energy, LIVE bugs, streamer identity up front.
+- **Telegram**: speed and fluid micro-interactions; reactions and stickers make chat addictive.

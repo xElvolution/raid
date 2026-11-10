@@ -1,0 +1,35 @@
+{
+  "name": "@called/resolver",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Called AI judge: drafts markets and produces verifiable NEAR AI Cloud verdicts",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "lint": "eslint src test",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "fixture": "cd scripts && tsx fixture.ts"
+  },
+  "dependencies": {
+    "@phala/dcap-qvl": "^0.7.0",
+    "ethers": "^6.17.0",
+    "fastify": "^5.12.7",
+    "tweetnacl": "^1.0.3",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
+    "eslint": "^10.13.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^4.1.12"
+  }
+}

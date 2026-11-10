@@ -1,0 +1,30 @@
+[
+  {
+    "step": "mpc_bootstrap",
+    "tx": "BszNAEjBttVtqK7oKzdUhFoqYbS9g1XV8c7aMBAsrqHx"
+  },
+  {
+    "step": "derived key (direct view)",
+    "key": "ed25519:7npGSZS4bSvSPA8CNEnVQqpwsgHUbqKoER1DkoEp9x5d"
+  },
+  {
+    "step": "mpc_sign_buy",
+    "tx": "4dYy4uZ8HbBX9zAZX431RK64UoVwXh5B7tmM3H1NZ4Py"
+  },
+  {
+    "step": "chest mpc state",
+    "public_key": "ed25519:7npGSZS4bSvSPA8CNEnVQqpwsgHUbqKoER1DkoEp9x5d",
+    "registered": false,
+    "last_signed": {
+      "standard": "raw_ed25519",
+      "payload": "{\"signer_id\":\"raid-chest-mwab3vnk.testnet\",\"verifying_contract\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\",\"deadline\":\"2026-11-10T06:37:28.106Z\",\"nonce\":\"AAAAALJVA1PLArAc1QrXBhsidl6duE/S5zEKPbdNiws=\",\"intents\":[{\"intent\":\"token_diff\",\"diff\":{\"nep141:tusdc.raid-chest-mwab3vnk.testnet\":\"-5000000\",\"nep141:eth-0x6982508145454ce325ddbe47a25d4ec3d2311933.omft.near\":\"900000000000000000000000\"}}]}",
+      "public_key": "ed25519:7npGSZS4bSvSPA8CNEnVQqpwsgHUbqKoER1DkoEp9x5d",
+      "signature": "ed25519:2qusAeAJKuUMpPhUqtJubUj5ac3C553mGffYvjYz4zzZw1FsxzKCcZLk6PNYKsLMtSyePmfu4kDkDE3wiGrX4VJ9"
+    }
+  },
+  {
+    "step": "raw_ed25519 signature valid for payload (intents.near rule)",
+    "ok": true,
+    "key_matches_direct_view": true
+  }
+]

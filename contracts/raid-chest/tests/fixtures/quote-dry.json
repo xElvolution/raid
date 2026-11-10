@@ -1,0 +1,7 @@
+{
+  "signed_json": "{\"amount\":\"1000000\",\"amountIn\":\"1000000\",\"amountInFormatted\":\"1.0\",\"amountInUsd\":\"0.999478000000\",\"amountOut\":\"188539639248451984877125\",\"amountOutFormatted\":\"188539.639248451984877125\",\"amountOutUsd\":\"0.995489295232\",\"deadline\":\"2026-11-10T06:46:55.158Z\",\"depositType\":\"INTENTS\",\"destinationAsset\":\"nep141:eth-0x6982508145454ce325ddbe47a25d4ec3d2311933.omft.near\",\"dry\":true,\"minAmountIn\":\"1000000\",\"minAmountOut\":\"186654242855967465028353\",\"originAsset\":\"nep141:17208628f84f5d6ad33f0da3bbbeb27ffcb398eac501a31bd6ad2011e36133a1\",\"recipient\":\"7fe3f6df3a51260ff97a1055cc8c97694bd1b0cd77bbf20b7094490b1ec81ebe\",\"recipientType\":\"INTENTS\",\"refundTo\":\"7fe3f6df3a51260ff97a1055cc8c97694bd1b0cd77bbf20b7094490b1ec81ebe\",\"refundType\":\"INTENTS\",\"slippageTolerance\":100,\"swapType\":\"EXACT_INPUT\",\"timestamp\":\"2026-11-10T06:26:55.297Z\"}",
+  "signature": "ed25519:4CtPmBFzvu94UH9aKt8MwMLB6P9amzdSmLRUcSBukYebFPn1tzpWNiH4bDWq93ooTTs8n4X8oUuTJNMe1Dk2hCQU",
+  "amountOut": "188539639248451984877125",
+  "minAmountOut": "186654242855967465028353",
+  "depositAddress": null
+}

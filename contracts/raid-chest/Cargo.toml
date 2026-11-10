@@ -1,0 +1,21 @@
+[package]
+name = "raid_chest"
+version = "0.1.0"
+edition = "2021"
+description = "RAID war chest: keyless raids on any-chain memecoins through NEAR Intents (1Click signed quotes) with Chain Signatures (MPC EdDSA) intent signing."
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+near-sdk = "=5.29.1"
+bs58 = { version = "0.5", default-features = false, features = ["alloc"] }
+base64 = { version = "0.22", default-features = false, features = ["alloc"] }
+
+[dev-dependencies]
+near-sdk = { version = "=5.29.1", features = ["unit-testing"] }
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+rand = "0.8"
+sha2 = "0.10"
+

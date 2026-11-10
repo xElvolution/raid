@@ -1,0 +1,22 @@
+[
+  {
+    "step": "create tusdc",
+    "tx": "B2pPJi6yU2TiP9u8JadkTpaP4hkK9coahPpXnkxeLsGc"
+  },
+  {
+    "step": "deploy tusdc",
+    "tx": "66gxSVWfqwAYQDsoPsUmU3BHfWpN8DYnhehGuUQ7QLrn"
+  },
+  {
+    "step": "init tusdc",
+    "tx": "BD98yHTNmF9wRNcCHe7MUFwaFKrGgvHVE9tMpHMZ5gFs"
+  },
+  {
+    "step": "deploy chest",
+    "tx": "Bw2pzsE5kc6RFFaa3G1VpGgkeW8TkjXu8NPVapriGCfg"
+  },
+  {
+    "step": "init chest",
+    "tx": "7njoApPYG5WphG6RD9ayQrhavVawNgdRZGHEC5if8623"
+  }
+]

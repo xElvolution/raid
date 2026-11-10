@@ -1,0 +1,34 @@
+[
+  {
+    "step": "create backer",
+    "tx": "9y1NkDTVr2eYjDn2ZAJJ3VVBnpEDdT4Quqm8jCC4qwH7"
+  },
+  {
+    "step": "faucet (backer)",
+    "tx": "Fr4Qv5AqmwuhEWtoVgEQx9JDwL2tJuugnuNvZAULMv5V"
+  },
+  {
+    "step": "backer backs raid 0 with 5 tUSDC",
+    "tx": "58s8tt6UTGTJhGmP1NWBPGAC17F4Hp9u49bmhGUnmHXk"
+  },
+  {
+    "step": "raid 0",
+    "id": 0,
+    "caller": "raid-chest-mwab3vnk.testnet",
+    "title": "Raid PEPE on Ethereum",
+    "target": "nep141:eth-0x6982508145454ce325ddbe47a25d4ec3d2311933.omft.near",
+    "target_x_bps": 15000,
+    "opens_until_ms": 1794295903963,
+    "retreat_at_ms": 1794382303963,
+    "pot": "5000000",
+    "entry_cost": "0",
+    "held": "0",
+    "proceeds": "0",
+    "pending_min_out": "0",
+    "pending_deadline_ms": 0,
+    "status": "Open",
+    "hit": false,
+    "buy_quote_hash": null,
+    "sell_quote_hash": null
+  }
+]
