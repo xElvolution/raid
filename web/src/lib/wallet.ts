@@ -41,3 +41,14 @@ export async function send(call: WalletCall): Promise<void> {
   const { actionCreators } = await import('@near-wallet-selector/core');
   await wallet.signAndSendTransaction({ receiverId: call.receiverId, actions: [actionCreators.functionCall(call.method, call.args, BigInt(call.gas), BigInt(call.deposit))] });
 }
+
+/** NEP-413 signed message (used to sign in to the RAID social API; no transaction, no gas). */
+export async function signMessage(p: { message: string; recipient: string; nonceB64: string }) {
+  const sel = await selector();
+  if (!sel.isSignedIn()) { await connect(); throw new Error('connect_wallet'); }
+  const wallet = await sel.wallet();
+  const { Buffer } = await import('buffer');
+  const r = await wallet.signMessage({ message: p.message, recipient: p.recipient, nonce: Buffer.from(p.nonceB64, 'base64') });
+  if (!r) throw new Error('wallet_redirect');
+  return r;
+}

@@ -10,6 +10,7 @@ import { PhaseChip } from '@/components/RaidCard';
 import { Button, CoinAvatar, Delta, Empty, ErrorState, Flash, Identicon, Segmented, Skeleton } from '@/components/ui';
 import { PayoutBox, RiskNote } from '@/components/Payout';
 import { AnyChainBack } from '@/components/AnyChainBack';
+import { Composer, Feed } from '@/components/Social';
 import { useChestConfig, useNow, useRaid, useRaids } from '@/lib/hooks';
 import { useQuote, fmtPrice, fmtUsd, countdown, shortAddr } from '@/lib/market';
 import { CHAINS, coinByAsset, explorerAccount } from '@/lib/coins';
@@ -41,7 +42,7 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   if (raid.error) return <Shell title="Raid" back="/raids"><ErrorState title="Can’t reach the war chest" body="The NEAR RPC didn’t answer." retry={() => raid.refetch()} /></Shell>;
   if (!r || !t) return <Shell title="Raid" back="/raids"><Empty title={`No raid #${id}`} body="This raid doesn’t exist on the chest contract." action={<Link href="/raids" className="text-brand font-semibold">See all raids</Link>} /></Shell>;
 
-  const step = stepIndex(r, now);
+  const step = stepIndex(r);
   const open = r.status === 'Open' && now > 0 && now < r.opens_until_ms;
   const mult = liveMultiple(r, q.data?.priceUsd, coin?.decimals);
   const inCountdown = r.status === 'Open' && !open && !!r.buy_after_ms && now > 0 && now < r.buy_after_ms;
@@ -96,6 +97,14 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
           <div className="mt-4 rounded-[12px] bg-raised p-3 text-[12.5px] text-mute"><Lock size={14} className="mb-1 text-lime" />The caller’s fee is locked until this raid hits {xLabel(r.target_x_bps)}. If it retreats, the fee is gone.</div>
         </section>
       </div>
+
+      <section className="mt-6">
+        <div className="mb-2 flex items-end justify-between"><h3 className="wide text-[16px]">Crew chat</h3><span className="mono text-[11px] text-faint">posts tagged raid #{r.id}</span></div>
+        <div className="space-y-3">
+          <Composer raidId={r.id} coin={t.symbol} placeholder={`Talk to the $${t.symbol} crew…`} />
+          <Feed raidId={r.id} emptyTitle="No crew chatter yet" emptyBody="Say why you’re in, or why you’re not." />
+        </div>
+      </section>
 
       <section className="panel mt-4 p-4">
         <p className="eyebrow">Rules the chest enforces</p>

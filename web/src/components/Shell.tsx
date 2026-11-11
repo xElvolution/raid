@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ChevronLeft, Moon, Plus, Radio, Rocket, Sun, Swords, Trophy, Wallet, UserRound } from 'lucide-react';
+import { ChevronLeft, Moon, Plus, Radio, Rocket, Sun, Swords, Trophy, Wallet, UserRound, MessagesSquare } from 'lucide-react';
 import { Mark, Wordmark } from './Brand';
 import { TickerTape } from './Ticker';
 import { Identicon } from './ui';
@@ -16,6 +16,7 @@ import { shortAddr } from '@/lib/market';
 import { target, xLabel, NETWORK, usdcOf } from '@/lib/raid';
 
 const NAV = [
+  { href: '/feed', label: 'Feed', Icon: MessagesSquare },
   { href: '/live', label: 'Live', Icon: Radio },
   { href: '/raids', label: 'Raids', Icon: Swords },
   { href: '/launch', label: 'Launch', Icon: Rocket },
@@ -122,7 +123,7 @@ export function Shell({ children, title, back, actions, rail = true, flush }: { 
       {/* Phone tabs */}
       <nav aria-label="Tabs" className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/92 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]">
         <div className="grid h-[64px] grid-cols-5 px-1">
-          {[NAV[0], NAV[1], null, NAV[2], NAV[3]].map((n) => n === null ? (
+          {[NAV[0], NAV[2], null, NAV[3], NAV[1]].map((n) => n === null ? (
             <button key="call" onClick={() => openCall()} aria-label="Call a raid" className="grid place-items-center">
               <motion.span whileTap={{ scale: 0.9 }} className="grid h-11 w-[58px] place-items-center rounded-[14px] bg-lime text-[#0a1a00] shadow-[0_6px_24px_-6px_rgb(198_255_61/.6)]"><Plus size={24} strokeWidth={3} /></motion.span>
             </button>

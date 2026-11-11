@@ -25,7 +25,7 @@ export function RaidCard({ r, i = 0 }: { r: Raid; i?: number }) {
   const closes = (c.data?.candles ?? []).slice(-48).map((x) => x.c);
   const open = r.status === 'Open' && now > 0 && now < r.opens_until_ms;
   const mult = liveMultiple(r, q.data?.priceUsd, coinByAsset(r.target)?.decimals);
-  const step = stepIndex(r, now);
+  const step = stepIndex(r);
   const meter = mult ? Math.min(1, mult / (r.target_x_bps / 1e4)) : (step + 1) / STEPS.length;
   return (
     <motion.article initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.05, type: 'spring', stiffness: 380, damping: 32 }}>

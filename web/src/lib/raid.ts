@@ -72,7 +72,7 @@ export function phase(r: Raid, now = Date.now()) {
 
 /** The 5 steps every raid walks through; index of the current one. */
 export const STEPS = ['Called', 'Crew', 'Bought', 'At the line', 'Settled'] as const;
-export function stepIndex(r: Raid, now = Date.now()) {
+export function stepIndex(r: Raid) {
   if (r.status === 'Closed') return 4;
   if (r.status === 'Selling') return 3;
   if (r.status === 'Held') return 2;
