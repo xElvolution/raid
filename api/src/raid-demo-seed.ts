@@ -4,6 +4,7 @@
  * Raid ids refer to the testnet chest (raid-chest-mwab3vnk.testnet).
  */
 import type { Db } from './db/index.js';
+import { must } from './must.js';
 
 const USERS = [
   ['demo_frogwatch', 'Frog Watch (demo)'],
@@ -23,14 +24,14 @@ export async function seedRaidDemo(db: Db): Promise<string> {
   const ids = new Map<string, string>();
   for (const [handle, name] of USERS) {
     const [u] = await db.query<{ id: string }>('INSERT INTO users (handle, display_name, demo, bio) VALUES ($1, $2, true, $3) RETURNING id::text', [handle, name, 'Demo account for previews. Not a real person.']);
-    ids.set(handle, u!.id);
+    ids.set(handle, must(u, 'demo user').id);
   }
   let t = Date.now() - 50 * 60_000;
   const postIds: string[] = [];
   for (const [h, body, raid, coin] of POSTS) {
     t += 9 * 60_000;
     const [p] = await db.query<{ id: string }>('INSERT INTO posts (author_id, body, raid_id, coin, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id::text', [ids.get(h), body, raid, coin, new Date(t).toISOString()]);
-    postIds.push(p!.id);
+    postIds.push(must(p, 'demo post').id);
   }
   await db.query('INSERT INTO posts (author_id, body, raid_id, coin, reply_to, created_at) VALUES ($1, $2, 0, $3, $4, $5)', [ids.get('demo_dogdays'), 'What happens if the bridge lands after the window closes?', 'PEPE', postIds[0], new Date(Date.now() - 20 * 60_000).toISOString()]);
   await db.query('INSERT INTO posts (author_id, body, raid_id, coin, reply_to, created_at) VALUES ($1, $2, 0, $3, $4, $5)', [ids.get('demo_linecaller'), 'It stays claimable for you. The chest parks it instead of losing it.', 'PEPE', postIds[0], new Date(Date.now() - 15 * 60_000).toISOString()]);

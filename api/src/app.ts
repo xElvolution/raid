@@ -87,7 +87,6 @@ export function buildApp(deps: Deps) {
     }
   });
 
-  const country = (req: FastifyRequest): string => String(req.headers['cf-ipcountry'] ?? req.headers['x-country'] ?? '').toUpperCase();
   const requireUser = async (req: FastifyRequest, reply: FastifyReply) => {
     if (!req.userId) return reply.code(401).send({ error: 'auth_required' });
     const n = await kv.hit(`rl:user:${req.userId}:${Math.floor(Date.now() / 60_000)}`, 60);

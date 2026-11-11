@@ -122,19 +122,19 @@ describe('Call it opening call', () => {
   it('records a failed opening with a reason, notifies, and can be retried', async () => {
     const a = await t.signIn('broke.testnet', 'broke');
     const [me] = await t.db.query<{ id: string }>("SELECT id FROM users WHERE handle='broke'");
-    await t.db.query('INSERT INTO play_accounts (user_id, balance) VALUES ($1, 10) ON CONFLICT (user_id) DO UPDATE SET balance=10', [me!.id]);
+    await t.db.query('INSERT INTO play_accounts (user_id, balance) VALUES ($1, 10) ON CONFLICT (user_id) DO UPDATE SET balance=10', [me?.id]);
     const { id } = (await t.app.inject({ method: 'POST', url: '/v1/posts', headers: a.auth, payload: { body: 'It will rain in Lagos next week', makeMarket: true, opening: { outcome: 0, amount: 50 } } })).json();
     expect(await draftMarket({ db: t.db, bus: t.bus, fetch: ready().f, resolverUrl: 'http://r' }, { postId: String(id) })).toBe('ready');
     const o = (await t.app.inject({ method: 'GET', url: `/v1/posts/${id}/opening`, headers: a.auth })).json();
     expect(o).toMatchObject({ status: 'failed', error: 'insufficient_balance' });
-    const n = await t.db.query<{ kind: string }>('SELECT kind FROM notifications WHERE user_id=$1', [me!.id]);
+    const n = await t.db.query<{ kind: string }>('SELECT kind FROM notifications WHERE user_id=$1', [me?.id]);
     expect(n.map((x) => x.kind)).toContain('opening_failed');
     expect(notificationText('opening_failed', { error: 'insufficient_balance' })).toMatch(/not enough play balance/);
     // Others can't see or retry it.
     const b = await t.signIn('nosy.testnet', 'nosy');
     expect((await t.app.inject({ method: 'POST', url: `/v1/posts/${id}/opening/retry`, headers: b.auth })).statusCode).toBe(403);
     // Top up, retry, and it goes through.
-    await t.db.query('UPDATE play_accounts SET balance=100 WHERE user_id=$1', [me!.id]);
+    await t.db.query('UPDATE play_accounts SET balance=100 WHERE user_id=$1', [me?.id]);
     const r = await t.app.inject({ method: 'POST', url: `/v1/posts/${id}/opening/retry`, headers: a.auth });
     expect(r.statusCode).toBe(200);
     expect(r.json()).toMatchObject({ status: 'placed', outcome: 0, error: null });

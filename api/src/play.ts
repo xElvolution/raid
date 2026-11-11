@@ -7,6 +7,7 @@ import { z } from 'zod';
 import type { Db as Database } from './db/index.js';
 import type { Bus } from './infra/bus.js';
 import type { Chain, ChainLog } from './chain.js';
+import { must } from './must.js';
 
 /** On-chain mode. When set, balances, trades and payouts execute on the NEAR contract; tables below mirror chain state. */
 let chain: Chain | null = null;
@@ -236,7 +237,7 @@ export async function executeTrade(db: Database, bus: Bus, uid: string, t: Trade
 }
 
 async function executeChainTrade(db: Database, bus: Bus, uid: string, t: TradeInput): Promise<{ ok: TradeOk } | { code: number; error: string }> {
-  const c = chain!;
+  const c = must(chain, 'chain');
   const { marketId, outcome, side } = t;
   const [m] = await db.query<{ price_yes: string; status: string; venue: string; close_ts: string }>('SELECT price_yes, status, venue, close_ts FROM markets WHERE id=$1', [marketId]);
   if (!m) return { code: 404, error: 'not_found' };

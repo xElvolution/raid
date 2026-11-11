@@ -7,7 +7,7 @@ beforeAll(async () => { t = await setup(); });
 afterAll(async () => { await t.close(); });
 
 const market = async (venue = 'called', ext = 'm1') => (await t.db.query<{ id: string }>(
-  "INSERT INTO markets (venue, external_id, question, close_ts, price_yes) VALUES ($1,$2,'Will it rain?', now() + interval '3 days', 0.5) RETURNING id", [venue, ext]))[0]!.id;
+  "INSERT INTO markets (venue, external_id, question, close_ts, price_yes) VALUES ($1,$2,'Will it rain?', now() + interval '3 days', 0.5) RETURNING id", [venue, ext]))[0]?.id ?? '';
 
 describe('play-money LMSR', () => {
   it('buy then sell the same shares round-trips cost and price', () => {
@@ -67,12 +67,13 @@ describe('play routes', () => {
 });
 
 import { lmsrBook } from '../src/play.js';
+import { must } from '../src/must.js';
 describe('lmsrBook', () => {
   it('asks sit above and bids below the price, with growing cumulative totals', () => {
     const b = lmsrBook(0.42);
-    expect(b.asks[0]!.price).toBeGreaterThan(0.42);
-    expect(b.bids[0]!.price).toBeLessThan(0.42);
-    expect(b.asks.every((l, i) => i === 0 || l.total > b.asks[i - 1]!.total)).toBe(true);
+    expect(must(b.asks[0], 'ask').price).toBeGreaterThan(0.42);
+    expect(must(b.bids[0], 'bid').price).toBeLessThan(0.42);
+    expect(b.asks.every((l, i) => i === 0 || l.total > (b.asks[i - 1]?.total ?? 0))).toBe(true);
     expect(b.asks.every((l) => l.shares > 0)).toBe(true);
     expect(b.spread).toBeCloseTo(0.02, 5);
   });

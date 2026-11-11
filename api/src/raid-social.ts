@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { decodeCursor, encodeCursor } from './cursor.js';
 import type { Db } from './db/index.js';
 import type { Bus, Kv } from './infra/bus.js';
+import { must } from './must.js';
 
 type Guard = (req: FastifyRequest, reply: FastifyReply) => Promise<unknown>;
 export interface RaidSocialDeps {
@@ -92,8 +93,9 @@ export function registerRaidSocial(app: FastifyInstance, d: RaidSocialDeps) {
       'INSERT INTO posts (author_id, body, raid_id, coin, reply_to) VALUES ($1, $2, $3, $4, $5) RETURNING id::text',
       [req.userId, b.data.body, raidId, coin, b.data.replyTo ?? null],
     );
-    if (parentAuthor && parentAuthor !== String(req.userId)) await d.notify(parentAuthor, 'reply', { post: row!.id, from: req.userId });
-    const [post] = await db.primary.query(`${SELECT} WHERE p.id = $2`, [String(req.userId), row!.id]);
+    const postId = must(row, 'post').id;
+    if (parentAuthor && parentAuthor !== String(req.userId)) await d.notify(parentAuthor, 'reply', { post: postId, from: req.userId });
+    const [post] = await db.primary.query(`${SELECT} WHERE p.id = $2`, [String(req.userId), postId]);
     await d.bus.publish('feed:raid', JSON.stringify({ type: 'post', post })).catch(() => {});
     return reply.code(201).send(post);
   });

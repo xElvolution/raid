@@ -5,13 +5,14 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import type { Db } from './db/index.js';
+import { must } from './must.js';
 
 type Database = { primary: Db; replica: Db };
 export const LEAGUES = [
   { name: 'Bronze', min: 0 }, { name: 'Silver', min: 200 }, { name: 'Gold', min: 600 }, { name: 'Sapphire', min: 1500 },
   { name: 'Ruby', min: 3500 }, { name: 'Diamond', min: 8000 }, { name: 'Legend', min: 20000 },
 ];
-export const leagueFor = (xp: number) => [...LEAGUES].reverse().find((l) => xp >= l.min)!.name;
+export const leagueFor = (xp: number) => [...LEAGUES].reverse().find((l) => xp >= l.min)?.name ?? 'Bronze';
 
 const Q = z.object({
   window: z.enum(['day', 'week', 'month', 'all']).default('week'),
@@ -35,7 +36,7 @@ export function registerLeaderboard(app: FastifyInstance, deps: { db: Database }
     if (!q.success) return reply.code(400).send({ error: 'bad_request' });
     const { window, sort, scope } = q.data;
     const viewer = req.userId ? String(req.userId) : null;
-    const span = SPAN[window]!;
+    const span = SPAN[window] ?? '7 days';
     // Value at window start and one window earlier (for rank change), from the value history.
     const rows = await db.replica.query<{ id: string; handle: string; display_name: string; avatar_url: string | null; xp: number; streak: number; pnl: number; prev_pnl: number; volume: number; settled: number; won: number; following: boolean }>(
       `WITH a AS (SELECT a.user_id, a.deposited::float8 AS dep FROM play_accounts a),
@@ -66,7 +67,7 @@ export function registerLeaderboard(app: FastifyInstance, deps: { db: Database }
       if (!q.data.code) return reply.code(400).send({ error: 'code_required' });
       const ids = await db.replica.query<{ user_id: string; name: string }>('SELECT m.user_id::text, l.name FROM private_league_members m JOIN private_leagues l ON l.id=m.league_id WHERE l.code=$1', [q.data.code.toUpperCase()]);
       if (!ids.length) return reply.code(404).send({ error: 'not_found' });
-      privateName = ids[0]!.name; const set = new Set(ids.map((x) => x.user_id)); pool = rows.filter((r) => set.has(r.id));
+      privateName = must(ids[0], 'league').name; const set = new Set(ids.map((x) => x.user_id)); pool = rows.filter((r) => set.has(r.id));
     }
     if (scope === 'league') { const l = leagueFor(me?.xp ?? 0); pool = rows.filter((r) => leagueFor(r.xp) === l); }
     const prevOrder = sort === 'pnl' ? [...pool].sort((a, b) => b.prev_pnl - a.prev_pnl).map((r) => r.id) : null;

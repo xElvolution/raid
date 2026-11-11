@@ -7,6 +7,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import type { Db } from './db/index.js';
 import type { Bus } from './infra/bus.js';
 import { executeTrade } from './play.js';
+import { must } from './must.js';
 
 export interface OpeningCall { post_id: string; outcome: number; amount: number; status: 'pending' | 'placed' | 'failed'; error: string | null; market_id: string | null; shares: number | null; price_yes: number | null }
 
@@ -41,7 +42,7 @@ export async function placeOpening(db: Db, bus: Bus, postId: string, marketId?: 
   const claim = await db.query("UPDATE opening_calls SET status='placed', market_id=$2, updated_at=now() WHERE post_id=$1 AND status<>'placed' RETURNING post_id", [postId, mid]);
   if (!claim.length) return getOpening(db, postId);
   const [u] = await db.query<{ user_id: string }>('SELECT user_id::text FROM opening_calls WHERE post_id=$1', [postId]);
-  const r = await executeTrade(db, bus, u!.user_id, { marketId: mid, outcome: o.outcome as 0 | 1, side: 'buy', amount: o.amount }).catch((e: Error) => ({ code: 500, error: e.message || 'trade_failed' }));
+  const r = await executeTrade(db, bus, must(u, 'opening call').user_id, { marketId: mid, outcome: o.outcome as 0 | 1, side: 'buy', amount: o.amount }).catch((e: Error) => ({ code: 500, error: e.message || 'trade_failed' }));
   if ('ok' in r) await db.query('UPDATE opening_calls SET shares=$2, price_yes=$3, error=NULL, updated_at=now() WHERE post_id=$1', [postId, r.ok.shares.toFixed(6), r.ok.priceYes.toFixed(6)]);
   else await db.query("UPDATE opening_calls SET status='failed', error=$2, updated_at=now() WHERE post_id=$1", [postId, r.error]);
   return getOpening(db, postId);

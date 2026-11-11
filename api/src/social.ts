@@ -10,6 +10,7 @@ import { decodeCursor, encodeCursor } from './cursor.js';
 import type { Db } from './db/index.js';
 import type { Bus, Kv } from './infra/bus.js';
 import type { Jobs } from './infra/queue.js';
+import { must } from './must.js';
 
 type Guard = (req: FastifyRequest, reply: FastifyReply) => Promise<unknown>;
 export interface SocialDeps {
@@ -107,7 +108,7 @@ export function registerSocial(app: FastifyInstance, deps: SocialDeps) {
     if (rp && !told.has(String(rp))) { told.add(String(rp)); await notify(String(rp), 'reply', { from: me, postId: p.id, body: d.body.slice(0, 140) }); }
     if (qp && !told.has(String(qp))) { told.add(String(qp)); await notify(String(qp), 'quote', { from: me, postId: p.id, body: d.body.slice(0, 140) }); }
     for (const [, h] of d.body.matchAll(MENTION)) {
-      const id = await userId(h!); if (id && !told.has(String(id))) { told.add(String(id)); await notify(String(id), 'mention', { from: me, postId: p.id, body: d.body.slice(0, 140) }); }
+      const id = await userId(must(h, 'mention')); if (id && !told.has(String(id))) { told.add(String(id)); await notify(String(id), 'mention', { from: me, postId: p.id, body: d.body.slice(0, 140) }); }
     }
     const msg = JSON.stringify({ type: 'post', data: { id: p.id, authorId: me }, ts: Date.now() });
     await bus.publish('feed:global', msg);
@@ -170,7 +171,7 @@ export function registerSocial(app: FastifyInstance, deps: SocialDeps) {
     const b = TipBody.safeParse(req.body);
     if (!b.success || !Id.safeParse(req.params.id).success) return reply.code(400).send({ error: 'bad_request' });
     const [whole, frac = ''] = b.data.amountNear.split('.');
-    const yocto = BigInt(whole!) * 10n ** 24n + BigInt((frac + '000000').slice(0, 6)) * 10n ** 18n;
+    const yocto = BigInt(whole || '0') * 10n ** 24n + BigInt((frac + '000000').slice(0, 6)) * 10n ** 18n;
     if (yocto <= 0n || yocto > 1000n * 10n ** 24n) return reply.code(400).send({ error: 'bad_amount' });
     const [p] = await db.replica.query<{ author_id: string; to_acct: string; from_acct: string }>(
       'SELECT p.author_id, a.near_account AS to_acct, (SELECT near_account FROM users WHERE id=$2) AS from_acct FROM posts p JOIN users a ON a.id=p.author_id WHERE p.id=$1', [req.params.id, req.userId]);
@@ -227,7 +228,7 @@ export function registerSocial(app: FastifyInstance, deps: SocialDeps) {
          AND NOT EXISTS (SELECT 1 FROM play_positions pp WHERE pp.user_id=$1 AND pp.market_id=m.id)
        ORDER BY settled_at DESC LIMIT 200`, [uid]);
     const won = settled.filter((s) => s.won).length;
-    const calib = calibrationScore(settled.filter((s) => s.p !== null).map((s) => ({ p: s.p!, won: s.won })));
+    const calib = calibrationScore(settled.flatMap((s) => (s.p === null ? [] : [{ p: s.p, won: s.won }])));
     const [vol] = await db.replica.query<{ v: number; n: number }>('SELECT COALESCE(sum(amount),0)::float8 AS v, count(*)::int AS n FROM play_trades WHERE user_id=$1', [uid]);
     const [acct] = await db.replica.query<{ balance: number; deposited: number }>('SELECT balance::float8 AS balance, deposited::float8 AS deposited FROM play_accounts WHERE user_id=$1', [uid]);
     const open = await db.replica.query<{ shares: number; outcome: number; price_yes: number }>(
@@ -428,10 +429,11 @@ export function registerSocial(app: FastifyInstance, deps: SocialDeps) {
     const [a, c] = pair(String(req.userId), String(other));
     const [t] = await db.primary.query<{ id: string }>(
       'INSERT INTO dm_threads (user_a, user_b) VALUES ($1,$2) ON CONFLICT (user_a, user_b) DO UPDATE SET last_at=now() RETURNING id', [a, c]);
-    const [m] = await db.primary.query<{ id: string; created_at: string }>('INSERT INTO dm_messages (thread_id, sender_id, body, market_id) VALUES ($1,$2,$3,$4) RETURNING id, created_at', [t!.id, req.userId, b.data.body, b.data.marketId ?? null]);
-    await bus.publish(`dm:${other}`, JSON.stringify({ type: 'dm', data: { id: m!.id, from: String(req.userId), body: b.data.body }, ts: Date.now() }));
+    const [m] = await db.primary.query<{ id: string; created_at: string }>('INSERT INTO dm_messages (thread_id, sender_id, body, market_id) VALUES ($1,$2,$3,$4) RETURNING id, created_at', [must(t, 'dm thread').id, req.userId, b.data.body, b.data.marketId ?? null]);
+    const msg = must(m, 'dm message');
+    await bus.publish(`dm:${other}`, JSON.stringify({ type: 'dm', data: { id: msg.id, from: String(req.userId), body: b.data.body }, ts: Date.now() }));
     await notify(String(other), 'dm', { from: String(req.userId), body: b.data.body.slice(0, 140) });
-    return reply.code(201).send({ id: m!.id, createdAt: m!.created_at });
+    return reply.code(201).send({ id: msg.id, createdAt: msg.created_at });
   });
 
   // ---------- notifications (enriched with the actor) ----------
@@ -465,7 +467,7 @@ export function registerSocial(app: FastifyInstance, deps: SocialDeps) {
   app.get('/v1/trending', async (req) => {
     const recent = await db.replica.query<{ body: string }>("SELECT body FROM posts WHERE created_at > now() - interval '14 days' ORDER BY created_at DESC LIMIT 2000");
     const counts = new Map<string, number>();
-    for (const r of recent) for (const [, t] of r.body.matchAll(TAG)) { const k = t!.toLowerCase(); counts.set(k, (counts.get(k) ?? 0) + 1); }
+    for (const r of recent) for (const [, t] of r.body.matchAll(TAG)) { const k = (t ?? '').toLowerCase(); if (!k) continue; counts.set(k, (counts.get(k) ?? 0) + 1); }
     const topics = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([tag, posts]) => ({ tag, posts }));
     const v = viewer(req);
     const whoToFollow = await db.replica.query(

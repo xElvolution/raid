@@ -4,6 +4,7 @@
  * and every resulting EVENT_JSON log is fed to the indexer path. Collateral is NEP-141 (6 decimals).
  */
 import { connect, keyStores, KeyPair, type Account, type Near } from 'near-api-js';
+import { must } from './must.js';
 
 export const UNIT = 1_000_000; // collateral decimals
 const GAS = 300_000_000_000_000n;
@@ -39,7 +40,7 @@ export class Chain {
 
   private async call<T>(as: 'relayer' | 'court', contractId: string, method: string, args: object, deposit = 0n): Promise<CallResult<T>> {
     await this.ready;
-    const acct: Account = await this.near.account(as === 'court' ? this.cfg.courtId! : this.cfg.relayerId);
+    const acct: Account = await this.near.account(as === 'court' ? must(this.cfg.courtId, 'COURT_ACCOUNT') : this.cfg.relayerId);
     const out = await acct.functionCall({ contractId, methodName: method, args, gas: GAS, attachedDeposit: deposit });
     const logs: ChainLog[] = [];
     for (const r of out.receipts_outcome) r.outcome.logs.forEach((log: string, i: number) => logs.push({ receiptId: r.id, logIndex: i, log }));
@@ -96,7 +97,7 @@ export function chainFromEnv(env: Record<string, string | undefined>): Chain | n
   const network = env.NEAR_NETWORK ?? 'testnet';
   return new Chain({
     network, rpcUrl: env.NEAR_RPC_URL ?? `https://rpc.${network}.fastnear.com`,
-    contractId: env.NEAR_CONTRACT_ID!, tokenId: env.COLLATERAL_TOKEN!, relayerId: env.RELAYER_ACCOUNT!, relayerKey: env.RELAYER_PRIVATE_KEY!,
+    contractId: must(env.NEAR_CONTRACT_ID, 'NEAR_CONTRACT_ID'), tokenId: must(env.COLLATERAL_TOKEN, 'COLLATERAL_TOKEN'), relayerId: must(env.RELAYER_ACCOUNT, 'RELAYER_ACCOUNT'), relayerKey: must(env.RELAYER_PRIVATE_KEY, 'RELAYER_PRIVATE_KEY'),
     courtId: env.COURT_ACCOUNT, courtKey: env.COURT_PRIVATE_KEY,
     houseLiquidity: Number(env.HOUSE_LIQUIDITY ?? 1000), faucetAmount: Number(env.FAUCET_AMOUNT ?? 1000),
     testnetFaucet: network === 'testnet' && env.TESTNET_FAUCET !== '0',

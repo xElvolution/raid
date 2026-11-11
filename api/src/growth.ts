@@ -6,6 +6,7 @@ import { randomInt } from 'node:crypto';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import type { Db } from './db/index.js';
+import { must } from './must.js';
 
 export interface GrowthDeps {
   db: Db;
@@ -103,7 +104,7 @@ export function registerGrowth(app: FastifyInstance, d: GrowthDeps) {
       yocto = 10n ** 24n * 10n; demo = true; // demo deposit: 10 testnet NEAR, clearly flagged
     } else {
       if (!d.treasury || !d.nearTransfer) return reply.code(503).send({ error: 'deposits_not_configured' });
-      try { yocto = await d.nearTransfer(b.data.txHash, me!.near_account, d.treasury); } catch { return reply.code(502).send({ error: 'rpc_unavailable' }); }
+      try { yocto = await d.nearTransfer(b.data.txHash, must(me, 'user').near_account, d.treasury); } catch { return reply.code(502).send({ error: 'rpc_unavailable' }); }
       if (yocto <= 0n) return reply.code(422).send({ error: 'tx_not_verified' });
     }
     const credited = Math.round((Number(yocto / 10n ** 18n) / 1e6) * d.rate * 100) / 100;
@@ -120,9 +121,10 @@ export function registerGrowth(app: FastifyInstance, d: GrowthDeps) {
     const [me] = await db.query<{ near_account: string }>('SELECT near_account FROM users WHERE id=$1', [uid(req)]);
     const r = await db.query('UPDATE play_accounts SET balance=balance-$2, deposited=deposited-$2 WHERE user_id=$1 AND balance >= $2 RETURNING user_id', [uid(req), b.data.amount.toFixed(6)]);
     if (!r.length) return reply.code(409).send({ error: 'insufficient_balance' });
-    const [w] = await db.query<{ id: string }>('INSERT INTO near_withdrawals (user_id, to_account, amount) VALUES ($1,$2,$3) RETURNING id::text', [uid(req), me!.near_account, b.data.amount]);
-    req.log.info({ user: uid(req), amount: b.data.amount, id: w!.id }, 'near withdrawal queued');
-    return { id: w!.id, status: 'queued', to: me!.near_account, near: Math.round((b.data.amount / d.rate) * 1e4) / 1e4 };
+    const [w] = await db.query<{ id: string }>('INSERT INTO near_withdrawals (user_id, to_account, amount) VALUES ($1,$2,$3) RETURNING id::text', [uid(req), must(me, 'user').near_account, b.data.amount]);
+    const wid = must(w, 'withdrawal').id;
+    req.log.info({ user: uid(req), amount: b.data.amount, id: wid }, 'near withdrawal queued');
+    return { id: wid, status: 'queued', to: must(me, 'user').near_account, near: Math.round((b.data.amount / d.rate) * 1e4) / 1e4 };
   });
   app.get('/v1/funds/history', { preHandler: requireUser }, async (req) => ({
     deposits: await db.query('SELECT tx_hash, credited::float8, demo, created_at FROM near_deposits WHERE user_id=$1 ORDER BY created_at DESC LIMIT 20', [uid(req)]),
