@@ -122,6 +122,25 @@ fn size_caps_refund_the_excess() {
 }
 
 #[test]
+fn bridged_backing_credits_the_beneficiary_and_parks_overflow() {
+    let mut c = chest();
+    ctx(accounts(1), T - 60 * 60_000);
+    let id = c.call_raid("Raid PEPE".into(), PEPE.into(), 15000, 10, 24);
+    ctx("usdc.near".parse().unwrap(), T - 59 * 60_000);
+    // 1Click's bridge account sends 0.9 for alice: 0.7 fits her cap, 0.2 becomes claimable (no refund to the bridge)
+    let msg = format!(r#"{{"back":0,"for":"{}"}}"#, accounts(2));
+    match c.ft_on_transfer("bridge.near".parse().unwrap(), U128(900_000), msg.clone()) { PromiseOrValue::Value(v) => assert_eq!(v.0, 0), _ => panic!() }
+    assert_eq!(c.get_stake(id, accounts(2)).0, 700_000);
+    assert_eq!(c.get_stake(id, "bridge.near".parse().unwrap()).0, 0);
+    assert_eq!(c.get_claimable(accounts(2)).0, 200_000);
+    // arriving after the crew window: all of it is parked for alice, not lost
+    ctx("usdc.near".parse().unwrap(), T);
+    let _ = c.ft_on_transfer("bridge.near".parse().unwrap(), U128(300_000), msg);
+    assert_eq!(c.get_claimable(accounts(2)).0, 500_000);
+    assert_eq!(c.get_raid(id).unwrap().pot.0, 700_000);
+}
+
+#[test]
 fn crew_window_has_a_minimum() {
     let mut c = chest();
     ctx(accounts(1), T);

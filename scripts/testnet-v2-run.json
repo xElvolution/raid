@@ -174,5 +174,42 @@
       "graduated": false
     },
     "creator_fees": "302162"
+  },
+  {
+    "step": "upgrade chest code: bridged backing",
+    "at": "2026-11-11T02:47:58.793Z",
+    "tx": "2c3ekTcz5DSutRG7fQFXF17MaDp288xW3QCB6z93h9BW"
+  },
+  {
+    "step": "mint 20 tUSDC to the 'bridge' (chest owner stands in)",
+    "at": "2026-11-11T02:48:01.403Z",
+    "tx": "Fs9JiHRwwx2TyQyFAjAou4SsV7vK2aqTsjGPHVn8hyCF",
+    "ok": true,
+    "logs": []
+  },
+  {
+    "step": "mint 20 tUSDC to a stand-in bridge account",
+    "at": "2026-11-11T02:48:13.627Z",
+    "tx": "3h19hz3VW6vQmtbhqDMEWmVjn5qeLYgLNGKa5fXWAqcv",
+    "ok": true,
+    "logs": []
+  },
+  {
+    "step": "bridged back 20 tUSDC for backer on raid 1",
+    "at": "2026-11-11T02:48:18.348Z",
+    "tx": "3bqaP3UiJCqrZL3g6Ui2ehtziwBZmDsjXGYmoN3xuCu6",
+    "ok": false,
+    "logs": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer",
+      "ft_transfer"
+    ]
+  },
+  {
+    "step": "beneficiary stake on raid 1",
+    "at": "2026-11-11T02:48:18.620Z",
+    "stake": "20000000",
+    "bridge_stake": "0"
   }
 ]

@@ -151,6 +151,10 @@ pub struct SignedIntent {
 #[serde(crate = "near_sdk::serde")]
 struct BackMsg {
     back: u64,
+    /// Any-chain backing: 1Click delivers bridged USDC with `customRecipientMsg` = {"back": id, "for": "<account>"}.
+    /// The stake is credited to `for`, not to the bridge account that sent it.
+    #[serde(rename = "for")]
+    beneficiary: Option<AccountId>,
 }
 
 #[ext_contract(ext_ft)]
@@ -266,27 +270,39 @@ impl Chest {
         require!(env::predecessor_account_id() == self.cfg.usdc, "only USDC");
         let m: BackMsg = serde_json::from_str(&msg).unwrap_or_else(|_| env::panic_str("msg must be {\"back\": id}"));
         require!(amount.0 >= self.cfg.min_back.0, "below minimum");
+        let bridged = m.beneficiary.is_some();
+        let backer = m.beneficiary.unwrap_or(sender_id);
         let mut raid = self.raid_or_panic(m.back);
-        require!(raid.status == Status::Open && now_ms() < raid.opens_until_ms, "raid not open");
-        let k = (m.back, sender_id.clone());
+        let open = raid.status == Status::Open && now_ms() < raid.opens_until_ms;
+        let k = (m.back, backer.clone());
         let s = self.stakes.get(&k).copied().unwrap_or(0);
-        // Size caps: take what fits under the per-raid and per-backer caps, refund the rest.
-        let room = self.cfg.max_pot.0.saturating_sub(raid.pot.0).min(self.cfg.max_back.0.saturating_sub(s));
-        require!(room > 0, "raid is full or you are at the per-backer cap");
+        // Size caps: take what fits under the per-raid and per-backer caps.
+        let room = if open { self.cfg.max_pot.0.saturating_sub(raid.pot.0).min(self.cfg.max_back.0.saturating_sub(s)) } else { 0 };
+        if !bridged {
+            require!(open, "raid not open");
+            require!(room > 0, "raid is full or you are at the per-backer cap");
+        }
         let take = amount.0.min(room);
-        raid.pot = U128(raid.pot.0 + take);
-        self.stakes.insert(k, s + take);
-        self.raids.insert(m.back, raid);
+        // Direct backers get the excess refunded by the token contract. Bridged deposits can't be refunded to the
+        // origin chain from here, so anything that doesn't fit (late, full, over cap) becomes claimable by `for`.
+        let parked = if bridged { amount.0 - take } else { 0 };
+        if take > 0 {
+            raid.pot = U128(raid.pot.0 + take);
+            self.stakes.insert(k, s + take);
+            self.raids.insert(m.back, raid);
+        }
+        if parked > 0 { let c = self.claimable.get(&backer).copied().unwrap_or(0); self.claimable.insert(backer.clone(), c + parked); }
+        let kept = take + parked;
         let usdc = self.usdc_asset();
-        self.add_accounted(&usdc, take);
-        log_event("raid_backed", json!({"id": m.back, "backer": sender_id, "amount": U128(take), "refunded": U128(amount.0 - take)}));
+        self.add_accounted(&usdc, kept);
+        log_event("raid_backed", json!({"id": m.back, "backer": backer, "amount": U128(take), "refunded": U128(amount.0 - kept), "parked_claimable": U128(parked), "bridged": bridged}));
         // Move it into NEAR Intents under the chest's own account (msg "" = credit the sender, i.e. us).
         ext_ft::ext(self.cfg.usdc.clone())
             .with_attached_deposit(ONE_YOCTO)
             .with_static_gas(GAS_TRANSFER)
-            .ft_transfer_call(self.cfg.intents.clone(), U128(take), None, String::new())
+            .ft_transfer_call(self.cfg.intents.clone(), U128(kept), None, String::new())
             .detach();
-        PromiseOrValue::Value(U128(amount.0 - take))
+        PromiseOrValue::Value(U128(amount.0 - kept))
     }
 
     // ---------- 1Click path (no key) ----------

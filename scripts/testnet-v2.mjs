@@ -66,3 +66,13 @@ if (step === "all" || step === "launch") {
   note("sell half back", { quote: await view(LAUNCH, "quote_sell", { id: c.id, tokens_in: half }), ...(await call(backer, LAUNCH, "sell", { id: c.id, amount: half, min_out: null }, { gas: teraToGas("60") })) });
   note("coin state", { coin: await view(LAUNCH, "get_coin", { id: c.id }), creator_fees: await view(LAUNCH, "fees_of", { account_id: BACKER }) });
 }
+if (step === "upgrade") {
+  // code-only upgrade (state layout unchanged)
+  note("upgrade chest code: bridged backing", { tx: txh(await me.deployContract(fs.readFileSync("../contracts/target/near/raid_chest/raid_chest.wasm"))) });
+}
+if (step === "bridged") {
+  // Simulates what 1Click does on mainnet: an outside account delivers USDC with customRecipientMsg {"back": id, "for": beneficiary}.
+  note("mint 20 tUSDC to a stand-in bridge account", await call(me, USDC, "mint", { account_id: LAUNCH, amount: "20000000" }));
+  note("bridged back 20 tUSDC for backer on raid 1", await call(launch, USDC, "ft_transfer_call", { receiver_id: CHEST, amount: "20000000", msg: JSON.stringify({ back: 1, for: BACKER }) }, { deposit: 1n, gas: teraToGas("150") }));
+  note("beneficiary stake on raid 1", { stake: await view(CHEST, "get_stake", { id: 1, account_id: BACKER }), bridge_stake: await view(CHEST, "get_stake", { id: 1, account_id: LAUNCH }) });
+}
