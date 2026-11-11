@@ -9,6 +9,7 @@ import { CHAINS } from '@/lib/coins';
 import { useNow } from '@/lib/hooks';
 import { Cells, Chip, CoinAvatar, Delta, Flash, Identicon } from './ui';
 import { Spark } from './Spark';
+import { Receipt } from './JudgeKit';
 
 export function PhaseChip({ r, now }: { r: Raid; now: number }) {
   if (!now) return <Chip tone="ghost">#{r.id}</Chip>;
@@ -29,7 +30,8 @@ export function RaidCard({ r, i = 0 }: { r: Raid; i?: number }) {
   const meter = mult ? Math.min(1, mult / (r.target_x_bps / 1e4)) : (step + 1) / STEPS.length;
   return (
     <motion.article initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.05, type: 'spring', stiffness: 380, damping: 32 }}>
-      <Link href={`/raids/${r.id}`} className="lift panel group block overflow-hidden">
+      <div className="lift panel group overflow-hidden">
+      <Link href={`/raids/${r.id}`} className="block">
         <div className="flex items-center gap-2.5 md:gap-3 px-3 pt-3 md:px-4 md:pt-4">
           <CoinAvatar symbol={t.symbol} image={q.data?.image} size={40} />
           <div className="min-w-0 flex-1">
@@ -63,6 +65,8 @@ export function RaidCard({ r, i = 0 }: { r: Raid; i?: number }) {
           </div>
         </div>
       </Link>
+      <Receipt id={r.id} className="border-t border-line px-3 py-1.5 md:px-4 md:py-2" />
+      </div>
     </motion.article>
   );
 }

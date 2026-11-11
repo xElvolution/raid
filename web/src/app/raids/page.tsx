@@ -8,6 +8,7 @@ import { useQuotes, fmtPrice } from '@/lib/market';
 import { openCall } from '@/lib/bus';
 import { CHEST_ID, phase, usdcOf } from '@/lib/raid';
 import { shortAddr } from '@/lib/market';
+import { JudgeBox } from '@/components/JudgeKit';
 
 export default function RaidsPage() {
   const [f, setF] = useState<'all' | 'live' | 'done'>('all');
@@ -32,6 +33,8 @@ export default function RaidsPage() {
           </div>
         </div>
       </section>
+
+      <JudgeBox className="mt-3 md:mt-4" />
 
       <div className="mt-4 md:mt-5">
         <p className="eyebrow mb-2 md:mb-2.5">Raidable right now</p>

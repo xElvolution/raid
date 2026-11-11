@@ -12,3 +12,6 @@ scripts/shots/
 inspo/
 api/.data/
 scripts/*/node_modules
+
+# judge keys for the submission form (never commit)
+*.local.md

@@ -1,0 +1,370 @@
+[
+ {
+  "step": "deploy chest v2",
+  "tx": "5aLp3MvaVQxyK7WVYMaReFQvip2B4QbAqhqpdzqJrstv",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "raid-chest-mwab3vnk.testnet",
+  "block": 277155384,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "migrate_v2 (fresh state, new rules)",
+  "tx": "EQ2pdVj3gNDCNbSYNsbJgNmDMhjczCvFFRVzRZKCZM2k",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "raid-chest-mwab3vnk.testnet",
+  "block": 277155387,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "create launch account",
+  "tx": "zf4qAL2DJeJm6iP2Lq3P2d8wcEKLdikDB5uSwBhPWc9",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "launch.raid-chest-mwab3vnk.testnet",
+  "block": 277155390,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "deploy launchpad",
+  "tx": "AXMpvjssax6uj3L8YinUBp7vy59U4Mj8NkaAjkt1kAde",
+  "signer": "launch.raid-chest-mwab3vnk.testnet",
+  "receiver": "launch.raid-chest-mwab3vnk.testnet",
+  "block": 277155394,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "init launchpad",
+  "tx": "DK5QKnnEucukqMAV6CJeD3bxQNdgi3w2Fr86oNKLMmnR",
+  "signer": "launch.raid-chest-mwab3vnk.testnet",
+  "receiver": "launch.raid-chest-mwab3vnk.testnet",
+  "block": 277155396,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "deploy tusdc fix",
+  "tx": "6kmJmYGkKPsgtTRvyJsW4gXWWrzvacP2HdJvPVnEj1XK",
+  "signer": "tusdc.raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277155399,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "call_raid (web tx.callRaid)",
+  "tx": "CqMscZaysodEPjwENV8WmLCdBKEhoJqg4eNf4uoFVnHE",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "raid-chest-mwab3vnk.testnet",
+  "block": 277155409,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "mint 300 tUSDC to backer (owner mint, testnet)",
+  "tx": "HaQPbcQjVa5jy35Djwpe6TCNhatqRpXTubpSLHT2knH8",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277155412,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "back 5 tUSDC (web tx.back)",
+  "tx": "CzeS4dAgf8C2iQbhke6XQrrGinvkAphK23KjGJ3XJfG",
+  "signer": "backer.raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277155415,
+  "failed_receipts_on": [
+   "intents-not-on-testnet.raid-chest-mwab3vnk.testnet"
+  ],
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "back 260 tUSDC: per-backer cap 250 -> 15 refunded",
+  "tx": "5xSuDjitZZagba2Ufo6HNVbCiAhkrYe3pVputB7bPyYj",
+  "signer": "backer.raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277155423,
+  "failed_receipts_on": [
+   "intents-not-on-testnet.raid-chest-mwab3vnk.testnet"
+  ],
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "call_raid DOGE 2x",
+  "tx": "H3Duup41dvMZHCeUkhy5ZXsv8zoBHmYRQDVEKuiWB3Zd",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "raid-chest-mwab3vnk.testnet",
+  "block": 277155431,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "create_coin (web Launchpad)",
+  "tx": "5hBuJt8Quy6b1JSgiJ4MC2yU9m1ji8tdD2h6ieDJkfpq",
+  "signer": "backer.raid-chest-mwab3vnk.testnet",
+  "receiver": "launch.raid-chest-mwab3vnk.testnet",
+  "block": 277155435,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "buy 20 tUSDC on the curve",
+  "tx": "6VQ2nuMe4HaCWiv9SFbTzsvD4Yp2NEdMJaiQx24LhqNB",
+  "signer": "backer.raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277155439,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "sell half back",
+  "tx": "5RvUw4cm8q6ey3AUEJZ7zb15cGegZhCxkjko7hxdpnzf",
+  "signer": "backer.raid-chest-mwab3vnk.testnet",
+  "receiver": "launch.raid-chest-mwab3vnk.testnet",
+  "block": 277155446,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "upgrade chest code: bridged backing",
+  "tx": "2c3ekTcz5DSutRG7fQFXF17MaDp288xW3QCB6z93h9BW",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "raid-chest-mwab3vnk.testnet",
+  "block": 277155622,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "mint 20 tUSDC to the 'bridge' (chest owner stands in)",
+  "tx": "Fs9JiHRwwx2TyQyFAjAou4SsV7vK2aqTsjGPHVn8hyCF",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277155626,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "mint 20 tUSDC to a stand-in bridge account",
+  "tx": "3h19hz3VW6vQmtbhqDMEWmVjn5qeLYgLNGKa5fXWAqcv",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277155649,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "bridged back 20 tUSDC for backer on raid 1",
+  "tx": "3bqaP3UiJCqrZL3g6Ui2ehtziwBZmDsjXGYmoN3xuCu6",
+  "signer": "launch.raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277155653,
+  "failed_receipts_on": [
+   "intents-not-on-testnet.raid-chest-mwab3vnk.testnet"
+  ],
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "ui: call_raid by a non-owner caller (tx.callRaid)",
+  "tx": "7kRCubGqZF2SYXQQLFeEwYwMsqv7ZMP8NQCj3K9PTF7g",
+  "signer": "backer.raid-chest-mwab3vnk.testnet",
+  "receiver": "raid-chest-mwab3vnk.testnet",
+  "block": 277158387,
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "ui: back 5 tUSDC (tx.back)",
+  "tx": "HMkA3MpyVS1YgG5XconmLYduGhcpmo4h4cp7nuJ2hkFE",
+  "signer": "backer.raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277158390,
+  "failed_receipts_on": [
+   "intents-not-on-testnet.raid-chest-mwab3vnk.testnet"
+  ],
+  "source": "testnet-v2-run.json"
+ },
+ {
+  "step": "create crew DAO on sputnikv2.testnet",
+  "tx": "JDthDTWakp9UyFzd8TJhJ3rbZDYXRGoGp27NSHo7bBQs",
+  "signer": "raid-capt-frogs-mwce6jqg.testnet",
+  "receiver": "sputnikv2.testnet",
+  "block": 277246031,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "create crew DAO on sputnikv2.testnet",
+  "tx": "DiZMYJoekm8F1QSN6yYm7g4oNEJevq2go4a9KtCbSP3i",
+  "signer": "raid-capt-dogs-mwce6nua.testnet",
+  "receiver": "sputnikv2.testnet",
+  "block": 277246038,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "add_proposal (crew raid)",
+  "tx": "BsqvAAD3QKrCUmQcFM8odQWwE5yz6xbzb4CJjozdWgWR",
+  "signer": "raid-capt-frogs-mwce6jqg.testnet",
+  "receiver": "raid-frog-legion.sputnikv2.testnet",
+  "block": 277246054,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "add_proposal (crew raid)",
+  "tx": "7xzTxNqNHeGtYvYEt5XeAETGwrRMD8fkGobUK3RCy85C",
+  "signer": "raid-capt-frogs-mwce6jqg.testnet",
+  "receiver": "raid-frog-legion.sputnikv2.testnet",
+  "block": 277246057,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "add_proposal (crew raid)",
+  "tx": "8HJWUnZ3AWGBRGz8DJKcb5vV9pJFB2wnqFvcmrgxzBzd",
+  "signer": "raid-capt-dogs-mwce6nua.testnet",
+  "receiver": "raid-doge-pack.sputnikv2.testnet",
+  "block": 277246061,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "add_proposal (crew raid)",
+  "tx": "3YdSaDo6dJhpbncR4sWvLDkXTmb4ZbM1yrUbY7QtXRwa",
+  "signer": "raid-capt-dogs-mwce6nua.testnet",
+  "receiver": "raid-doge-pack.sputnikv2.testnet",
+  "block": 277246064,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "act_proposal VoteApprove",
+  "tx": "3seAztSv4C5UnVvVXWjdMF5a3ZQEz5vwg25jEpGNYVo9",
+  "signer": "raid-capt-frogs-mwce6jqg.testnet",
+  "receiver": "raid-frog-legion.sputnikv2.testnet",
+  "block": 277246068,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "act_proposal VoteApprove",
+  "tx": "6Y2dgEiRSRYnqUJhTwoh63Kb9HGAUtT6tKUCUvAjBm5N",
+  "signer": "raid-judge1-mwce6ry3.testnet",
+  "receiver": "raid-frog-legion.sputnikv2.testnet",
+  "block": 277246071,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "act_proposal VoteApprove",
+  "tx": "6Kx4bswcwiHvW4GWnSBaJstY6GC6DQoPdYVUqGfN17oU",
+  "signer": "raid-capt-frogs-mwce6jqg.testnet",
+  "receiver": "raid-frog-legion.sputnikv2.testnet",
+  "block": 277246077,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "act_proposal VoteApprove",
+  "tx": "FaWjFUN8rVXUTFZ3KDUYYRLC2V8uFtfXsvqZzcLfVsHD",
+  "signer": "raid-capt-dogs-mwce6nua.testnet",
+  "receiver": "raid-doge-pack.sputnikv2.testnet",
+  "block": 277246081,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "act_proposal VoteApprove",
+  "tx": "431hUSjo8UKM7LjEwNG3wSRkqNiwv88YTJo4RHWYCkn4",
+  "signer": "raid-judge3-mwce6zdz.testnet",
+  "receiver": "raid-doge-pack.sputnikv2.testnet",
+  "block": 277246084,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "act_proposal VoteApprove",
+  "tx": "63VLsZkH2nJNeUi6Tgeu56RksqskRP9sNeT34QBWXk1H",
+  "signer": "raid-capt-dogs-mwce6nua.testnet",
+  "receiver": "raid-doge-pack.sputnikv2.testnet",
+  "block": 277246090,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "mint tUSDC (testnet faucet token)",
+  "tx": "EMtX4BKN2gBLqLrZKpkbR42Np4LoahQp5ugU2Q498Nzm",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246106,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "back crew raid",
+  "tx": "At2y885aPopYdmXHtf4TsqdJHxarVpV8MSTwSsW9gSU7",
+  "signer": "raid-capt-frogs-mwce6jqg.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246110,
+  "failed_receipts_on": [
+   "intents-not-on-testnet.raid-chest-mwab3vnk.testnet"
+  ],
+  "source": "crews-run.json"
+ },
+ {
+  "step": "mint tUSDC (testnet faucet token)",
+  "tx": "GnrJeTLRYDoBYjAo3Jbbp6L6QNQNsQFdoLLMdtqGHtLk",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246118,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "back crew raid",
+  "tx": "8mPv6nijiR64qQTSXjSHHdmMwcMV5ZDMXpZCXWsKxZcT",
+  "signer": "raid-judge1-mwce6ry3.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246121,
+  "failed_receipts_on": [
+   "intents-not-on-testnet.raid-chest-mwab3vnk.testnet"
+  ],
+  "source": "crews-run.json"
+ },
+ {
+  "step": "mint tUSDC (testnet faucet token)",
+  "tx": "HqZxMtbMGF5LjKXtB1ag58EjwBL2YdkNg95qu33dpKh9",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246128,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "back crew raid",
+  "tx": "7Xg5QncwX6VTKHd6CrsgDjVvfvaaJBSKdUT34PDGPLTk",
+  "signer": "raid-capt-dogs-mwce6nua.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246131,
+  "failed_receipts_on": [
+   "intents-not-on-testnet.raid-chest-mwab3vnk.testnet"
+  ],
+  "source": "crews-run.json"
+ },
+ {
+  "step": "mint tUSDC (testnet faucet token)",
+  "tx": "Hm9jbtApZYujNnAAXme5d3p4ehTrTtWJPco3gVisGhxe",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246139,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "back crew raid",
+  "tx": "8hv7F6cMcyeuNCj7Hhj29hm6DrA5ExQaGg1VRYx6AbPA",
+  "signer": "raid-judge3-mwce6zdz.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246143,
+  "failed_receipts_on": [
+   "intents-not-on-testnet.raid-chest-mwab3vnk.testnet"
+  ],
+  "source": "crews-run.json"
+ },
+ {
+  "step": "mint 500 tUSDC to judge",
+  "tx": "GNomtBsu8jfKVva8EmiKkmJtaLpiCF5ngZeV72qjUHya",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246157,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "mint 500 tUSDC to judge",
+  "tx": "7qEcCDnTdEE7Lg28PoYgkHBZMMf6vXAtxMW5iRmg2mXm",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246160,
+  "source": "crews-run.json"
+ },
+ {
+  "step": "mint 500 tUSDC to judge",
+  "tx": "J4z9YXD6XVY3iyNVZiEf9EVkfyEnpt1MNDVYRLu1sj88",
+  "signer": "raid-chest-mwab3vnk.testnet",
+  "receiver": "tusdc.raid-chest-mwab3vnk.testnet",
+  "block": 277246163,
+  "source": "crews-run.json"
+ }
+]

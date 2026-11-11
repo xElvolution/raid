@@ -33,7 +33,7 @@ export default function WarPage() {
           <CrewHead s={b} right />
         </div>
         <div className="px-3 pt-3 md:px-5 md:pt-4">
-          <div className="flex h-[1.75rem] md:h-10 overflow-hidden rounded-[8px] md:rounded-[10px] bg-raised" role="meter" aria-label="Firepower share">
+          <div className="flex h-[1.75rem] md:h-10 overflow-hidden rounded-[8px] md:rounded-[10px] bg-raised" role="meter" aria-label="Firepower share" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round((a.firepower / total) * 100)}>
             <motion.div className="flex items-center pl-2 mono text-[11px] md:text-[13px] font-bold" style={{ background: a.crew.color, color: a.crew.ink }} initial={{ width: '50%' }} animate={{ width: `${(a.firepower / total) * 100}%` }} transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}>{Math.round((a.firepower / total) * 100)}%</motion.div>
             <motion.div className="flex flex-1 items-center justify-end pr-2 mono text-[11px] md:text-[13px] font-bold" style={{ background: b.crew.color, color: b.crew.ink }}>{Math.round((b.firepower / total) * 100)}%</motion.div>
           </div>

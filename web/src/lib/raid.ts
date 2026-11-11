@@ -3,7 +3,7 @@ import { coinByAsset } from './coins';
 
 export const NETWORK = (process.env.NEXT_PUBLIC_NEAR_NETWORK ?? 'testnet') as 'testnet' | 'mainnet';
 export const CHEST_ID = process.env.NEXT_PUBLIC_RAID_CHEST ?? 'raid-chest-mwab3vnk.testnet';
-const RPC = process.env.NEXT_PUBLIC_RAID_RPC ?? (NETWORK === 'mainnet' ? 'https://rpc.mainnet.fastnear.com' : 'https://rpc.testnet.fastnear.com');
+export const RPC = process.env.NEXT_PUBLIC_RAID_RPC ?? (NETWORK === 'mainnet' ? 'https://rpc.mainnet.fastnear.com' : 'https://rpc.testnet.fastnear.com');
 
 export type RaidStatus = 'Open' | 'Buying' | 'Held' | 'Selling' | 'Closed';
 export interface Raid {

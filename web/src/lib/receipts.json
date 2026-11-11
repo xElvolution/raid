@@ -1,0 +1,105 @@
+{
+ "chest": "raid-chest-mwab3vnk.testnet",
+ "network": "testnet",
+ "generated": "2026-11-11T17:39:15.423Z",
+ "raids": {
+  "0": {
+   "call": {
+    "tx": "CqMscZaysodEPjwENV8WmLCdBKEhoJqg4eNf4uoFVnHE",
+    "block": 277155409,
+    "caller": "raid-chest-mwab3vnk.testnet",
+    "signer": "raid-chest-mwab3vnk.testnet"
+   },
+   "backs": [
+    {
+     "tx": "CzeS4dAgf8C2iQbhke6XQrrGinvkAphK23KjGJ3XJfG",
+     "block": 277155417,
+     "backer": "backer.raid-chest-mwab3vnk.testnet",
+     "amount": "5000000"
+    },
+    {
+     "tx": "5xSuDjitZZagba2Ufo6HNVbCiAhkrYe3pVputB7bPyYj",
+     "block": 277155425,
+     "backer": "backer.raid-chest-mwab3vnk.testnet",
+     "amount": "245000000"
+    }
+   ]
+  },
+  "1": {
+   "call": {
+    "tx": "H3Duup41dvMZHCeUkhy5ZXsv8zoBHmYRQDVEKuiWB3Zd",
+    "block": 277155431,
+    "caller": "raid-chest-mwab3vnk.testnet",
+    "signer": "raid-chest-mwab3vnk.testnet"
+   },
+   "backs": [
+    {
+     "tx": "3bqaP3UiJCqrZL3g6Ui2ehtziwBZmDsjXGYmoN3xuCu6",
+     "block": 277155655,
+     "backer": "backer.raid-chest-mwab3vnk.testnet",
+     "amount": "20000000"
+    }
+   ]
+  },
+  "2": {
+   "call": {
+    "tx": "7kRCubGqZF2SYXQQLFeEwYwMsqv7ZMP8NQCj3K9PTF7g",
+    "block": 277158388,
+    "caller": "backer.raid-chest-mwab3vnk.testnet",
+    "signer": "backer.raid-chest-mwab3vnk.testnet"
+   },
+   "backs": [
+    {
+     "tx": "HMkA3MpyVS1YgG5XconmLYduGhcpmo4h4cp7nuJ2hkFE",
+     "block": 277158392,
+     "backer": "backer.raid-chest-mwab3vnk.testnet",
+     "amount": "5000000"
+    }
+   ]
+  },
+  "3": {
+   "call": {
+    "tx": "6Y2dgEiRSRYnqUJhTwoh63Kb9HGAUtT6tKUCUvAjBm5N",
+    "block": 277246073,
+    "caller": "raid-frog-legion.sputnikv2.testnet",
+    "signer": "raid-judge1-mwce6ry3.testnet"
+   },
+   "backs": [
+    {
+     "tx": "At2y885aPopYdmXHtf4TsqdJHxarVpV8MSTwSsW9gSU7",
+     "block": 277246112,
+     "backer": "raid-capt-frogs-mwce6jqg.testnet",
+     "amount": "120000000"
+    },
+    {
+     "tx": "8mPv6nijiR64qQTSXjSHHdmMwcMV5ZDMXpZCXWsKxZcT",
+     "block": 277246123,
+     "backer": "raid-judge1-mwce6ry3.testnet",
+     "amount": "60000000"
+    }
+   ]
+  },
+  "4": {
+   "call": {
+    "tx": "431hUSjo8UKM7LjEwNG3wSRkqNiwv88YTJo4RHWYCkn4",
+    "block": 277246086,
+    "caller": "raid-doge-pack.sputnikv2.testnet",
+    "signer": "raid-judge3-mwce6zdz.testnet"
+   },
+   "backs": [
+    {
+     "tx": "7Xg5QncwX6VTKHd6CrsgDjVvfvaaJBSKdUT34PDGPLTk",
+     "block": 277246133,
+     "backer": "raid-capt-dogs-mwce6nua.testnet",
+     "amount": "90000000"
+    },
+    {
+     "tx": "8hv7F6cMcyeuNCj7Hhj29hm6DrA5ExQaGg1VRYx6AbPA",
+     "block": 277246145,
+     "backer": "raid-judge3-mwce6zdz.testnet",
+     "amount": "40000000"
+    }
+   ]
+  }
+ }
+}

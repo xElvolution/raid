@@ -1,0 +1,9 @@
+[
+  {
+    "step": "judge mode e2e: raid-judge2-mwce6vli.testnet backs raid #3 with 5 tUSDC via the web UI",
+    "at": "2026-11-11T17:42:51.456Z",
+    "stake_before": "0",
+    "stake_after": "5000000",
+    "ok": true
+  }
+]

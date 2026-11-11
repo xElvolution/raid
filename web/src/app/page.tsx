@@ -11,12 +11,13 @@ import { Spark } from '@/components/Spark';
 import { CallVisual, CrewVisual, HitVisual, KeylessVisual } from '@/components/landing/Visuals';
 import { useCandles, useQuotes, fmtPrice } from '@/lib/market';
 import { CHAINS } from '@/lib/coins';
+import { JudgeBox, PayoutSlider, WhyNow } from '@/components/JudgeKit';
 
 const STEPS = [
   { k: 'Call', t: 'Call the raid', b: 'Pick any memecoin NEAR Intents can reach: PEPE on Ethereum, TRUMP on Solana, BRETT on Base, SHITZU on NEAR. Set the line: 1.5x, 2x or 3x.', bg: '#2448ff', V: 'call' },
   { k: 'Crew', t: 'Crew up', b: 'Anyone can back your call with USDC while the crew window is open. Everyone’s stake sits in one war chest.', bg: '#ff5c7a', V: 'crew' },
   { k: 'Chest', t: 'The chest buys. No one holds the key.', b: 'The contract only moves funds against a 1Click quote it verifies on-chain. On mainnet, the chest’s keys are removed.', bg: '#7a5cff', V: 'keyless' },
-  { k: 'Line', t: 'Cash out at the line', b: 'The chest sells only when the return meets the line. Hit it, and the crew splits the profit, the caller’s fee unlocks, and RAID gets burned.', bg: '#1f9d55', V: 'hit' },
+  { k: 'Line', t: 'Cash out at the line', b: 'The chest sells only when the return meets the line. Hit it, and the crew splits the profit, the caller’s fee unlocks, and 7.5% of the profit goes to the buyback reserve.', bg: '#1f9d55', V: 'hit' },
 ] as const;
 
 export default function Landing() {
@@ -73,6 +74,11 @@ export default function Landing() {
       </header>
       <TickerTape />
 
+      <section className="mx-auto grid max-w-[1240px] gap-3 px-4 pt-4 md:grid-cols-[1fr_1.4fr] md:gap-6 md:px-8 md:pt-10">
+        <JudgeBox />
+        <WhyNow />
+      </section>
+
       <section id="how" className="mx-auto max-w-[1240px] px-4 py-10 md:px-8 md:py-28">
         <p className="eyebrow">How a raid works</p>
         <h2 className="wide-black mt-4 max-w-[16ch] text-[1.625rem] md:text-[64px] leading-[.88]">Four moves. One line.</h2>
@@ -104,6 +110,7 @@ export default function Landing() {
             <p><b className="text-ink">Callers earn a share of the profit, not of the hype.</b> The fee sits locked in the chest and pays out only when the raid hits its line. If it retreats, the fee is gone.</p>
             <p><b className="text-ink">No one can grab the pot.</b> The chest checks every 1Click quote’s signature, recipient and minimum return before it moves a cent. On mainnet the account’s keys are removed, so only the contract’s rules can move funds.</p>
             <p><b className="text-ink">Backers keep 90% of the profit.</b> The caller takes 2.5% and the buyback reserve 7.5%, only on a hit. A 1.5x line nets backers +45%, 2x nets +90%, 3x nets +180%. A miss pays no fees, and you can still lose the pot.</p>
+            <PayoutSlider />
           </div>
         </div>
       </section>

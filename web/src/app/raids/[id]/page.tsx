@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { use, useMemo, useState } from 'react';
+import { Fragment, use, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowUpRight, Flame, Gauge, Lock, ShieldCheck, Timer, TimerReset } from 'lucide-react';
@@ -13,7 +13,9 @@ import { AnyChainBack } from '@/components/AnyChainBack';
 import { Composer, Feed } from '@/components/Social';
 import { useChestConfig, useNow, useRaid, useRaids } from '@/lib/hooks';
 import { useQuote, fmtPrice, fmtUsd, countdown, shortAddr } from '@/lib/market';
-import { CHAINS, coinByAsset, explorerAccount } from '@/lib/coins';
+import { CHAINS, coinByAsset, explorerAccount, explorerTx } from '@/lib/coins';
+import { raidReceipt } from '@/components/JudgeKit';
+import { crewByDao } from '@/lib/crews';
 import { CHEST_ID, NETWORK, STEPS, raidApi, stepIndex, target, tx, usdcOf, xLabel, liveMultiple } from '@/lib/raid';
 import { send, useAccount, connect } from '@/lib/wallet';
 import { toast } from '@/lib/bus';
@@ -47,6 +49,8 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   const mult = liveMultiple(r, q.data?.priceUsd, coin?.decimals);
   const inCountdown = r.status === 'Open' && !open && !!r.buy_after_ms && now > 0 && now < r.buy_after_ms;
   const callerRaids = (all.data ?? []).filter((x) => x.caller === r.caller);
+  const rc = raidReceipt(r.id);
+  const crew = crewByDao(r.caller);
 
   return (
     <Shell title={`Raid #${r.id}`} back="/raids">
@@ -90,9 +94,9 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
         <BackPanel id={r.id} open={open} bps={r.target_x_bps} pot={usdcOf(r.pot)} />
         <section className="panel p-3 md:p-4">
           <p className="eyebrow">Caller</p>
-          <Link href={`/u/${r.caller}`} className="mt-3 flex items-center gap-3 group">
+          <Link href={crew ? "/war" : `/u/${r.caller}`} className="mt-3 flex items-center gap-3 group">
             <Identicon seed={r.caller} size={46} />
-            <div className="min-w-0"><p className="font-semibold truncate group-hover:underline">{shortAddr(r.caller)}</p><p className="text-[12px] text-mute">{callerRaids.length} raid{callerRaids.length === 1 ? '' : 's'} called · {callerRaids.filter((x) => x.hit).length} hit</p></div>
+            <div className="min-w-0"><p className="font-semibold truncate group-hover:underline">{crew ? crew.name : shortAddr(r.caller)}</p>{crew && <p className="mono text-[10.5px] text-lime">Crew DAO · passed by vote</p>}<p className="text-[12px] text-mute">{callerRaids.length} raid{callerRaids.length === 1 ? '' : 's'} called · {callerRaids.filter((x) => x.hit).length} hit</p></div>
           </Link>
           <div className="mt-4 rounded-[12px] bg-raised p-3 text-[12.5px] text-mute"><Lock size={14} className="mb-1 text-lime" />The caller’s fee is locked until this raid hits {xLabel(r.target_x_bps)}. If it retreats, the fee is gone.</div>
         </section>
@@ -118,6 +122,8 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
         </ul>
         <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 border-t border-line pt-3 mono text-[11px]">
           <dt className="text-faint">Chest</dt><dd className="truncate text-right"><a className="hover:text-ink text-mute inline-flex items-center gap-0.5" href={explorerAccount(CHEST_ID, NETWORK)} target="_blank" rel="noreferrer">{shortAddr(CHEST_ID)}<ArrowUpRight size={11} /></a></dd>
+          {rc?.call && <><dt className="text-faint">Called in</dt><dd className="truncate text-right"><a className="hover:text-ink text-mute" href={explorerTx(rc.call.tx, NETWORK)} target="_blank" rel="noreferrer">{rc.call.tx.slice(0, 10)}… · block {rc.call.block?.toLocaleString('en-US')}</a></dd></>}
+          {rc?.backs?.map((b) => <Fragment key={b.tx}><dt className="text-faint">Back {usdcOf(b.amount).toFixed(0)}</dt><dd className="truncate text-right"><a className="hover:text-ink text-mute" href={explorerTx(b.tx, NETWORK)} target="_blank" rel="noreferrer">{shortAddr(b.backer)} · {b.tx.slice(0, 8)}…</a></dd></Fragment>)}
           <dt className="text-faint">Target asset</dt><dd className="truncate text-right text-mute">{r.target}</dd>
           <dt className="text-faint">Buy quote</dt><dd className="truncate text-right text-mute">{r.buy_quote_hash ?? 'not yet'}</dd>
           <dt className="text-faint">Sell quote</dt><dd className="truncate text-right text-mute">{r.sell_quote_hash ?? 'not yet'}</dd>
