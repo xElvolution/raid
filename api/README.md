@@ -1,4 +1,4 @@
-# @called/api
+# @raid/api
 
 Stateless Fastify 5 backend: REST + realtime websockets, NEP-413 sign-in, idempotent chain indexer, BullMQ queues.
 
@@ -8,6 +8,7 @@ cp .env.example .env   # fill DATABASE_URL, REDIS_URL, JWT_SECRET
 npm i && npm run migrate && npm run dev
 ```
 `npm test` uses in-process Postgres (PGlite) + in-memory bus/kv/queue; no services needed. `npm run lint`, `npm run typecheck`.
+`npm run dev:local` runs the API on :8787 with PGlite persisted in `api/.data` and seeds three accounts marked `demo` (display names end in "(demo)").
 
 ## REST (v1)
 | Method | Path | Notes |
@@ -25,7 +26,15 @@ npm i && npm run migrate && npm run dev
 | GET | /v1/notifications | auth |
 | GET | /v1/drafts | auth; AI market drafts from your posts |
 | POST | /v1/push-tokens | auth; Expo push token |
-| POST | /v1/external/polymarket/order | auth + geofence (451 in blocked regions). Order routing **not implemented yet** (501) |
+
+### RAID social
+| Method | Path | Notes |
+|---|---|---|
+| GET | /v1/raid/feed?tab=all\|following&raid=&coin=&author=&cursor= | top-level posts, keyset cursor; each post carries `raid_id`, `coin`, `demo` |
+| GET | /v1/raid/posts/:id | post + replies |
+| POST | /v1/raid/posts | auth; `{ body, raidId?, coin?, replyTo? }` (coin `^[A-Z0-9]{2,12}$`), notifies the parent author on reply |
+| POST/DELETE | /v1/raid/posts/:id/like | auth |
+| GET | /v1/raid/callers | who to follow, ranked by followers and posts |
 
 ## Realtime: `GET /v1/live` (WebSocket)
 Send `{"op":"sub","channel":"market:42"}` / `{"op":"unsub",...}`. Channels: `feed:global`, `feed:user:{id}`, `market:{id}`, `notifications:{yourId}` (only your own; auth with Bearer header).
@@ -39,4 +48,3 @@ See SPEC.md §11: replicas for reads, Redis for pub/sub, rate limits and leaderb
 BullMQ processors in `src/workers.ts` (pure functions, tested on PGlite):
 - `draft-market`: post → resolver `/draft` (NEAR AI Cloud, or the resolver's labelled stub mode without a key) → `market_drafts` + live `draft_ready` notification. Idempotent per post; resolver errors throw so BullMQ retries with backoff.
 - `notify`: Expo push to registered devices, prunes `DeviceNotRegistered` tokens.
-- `external-sync`: Polymarket Gamma read-only sync every 30 s (one scheduler across replicas). Upserts the top binary markets by 24h volume and broadcasts `odds` on `market:{id}` when prices move.
