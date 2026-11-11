@@ -1,7 +1,8 @@
 // RAID v2 testnet run: redeploy the chest with the honest fee split, public countdown and size caps,
 // deploy the lean launchpad, then sign the same call/back/create/buy/sell transactions the web app builds.
 // Testnet only. Secrets are read from ../secrets/testnet.json and never printed.
-import { Account, JsonRpcProvider, teraToGas, nearToYocto } from "near-api-js";
+import { Account, JsonRpcProvider, KeyPair, teraToGas, nearToYocto } from "near-api-js";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 const S = JSON.parse(fs.readFileSync(new URL("../secrets/testnet.json", import.meta.url)));
 if (S.network !== "testnet" || !S.account_id.endsWith(".testnet")) throw new Error("testnet only");
@@ -75,4 +76,32 @@ if (step === "bridged") {
   note("mint 20 tUSDC to a stand-in bridge account", await call(me, USDC, "mint", { account_id: LAUNCH, amount: "20000000" }));
   note("bridged back 20 tUSDC for backer on raid 1", await call(launch, USDC, "ft_transfer_call", { receiver_id: CHEST, amount: "20000000", msg: JSON.stringify({ back: 1, for: BACKER }) }, { deposit: 1n, gas: teraToGas("150") }));
   note("beneficiary stake on raid 1", { stake: await view(CHEST, "get_stake", { id: 1, account_id: BACKER }), bridge_stake: await view(CHEST, "get_stake", { id: 1, account_id: LAUNCH }) });
+}
+
+if (step === "ui") {
+  // The call and back flows as a normal (non-owner) user would sign them from the web wallet: the exact WalletCall
+  // objects web/src/lib/raid.ts tx.callRaid / tx.back build with the composer defaults, then NEP-413 social sign-in.
+  const id = (await view(CHEST, "list_raids", { from: 0, limit: 100 })).length;
+  const callRaid = { receiverId: CHEST, method: "call_raid", args: { title: "Raid $BRETT to 2x", target: "nep141:base-0x532f27101965dd16442e59d40670faf5ebb142e4.omft.near", target_x_bps: 20000, open_minutes: 60, retreat_hours: 72 }, deposit: "0", gas: "30000000000000" };
+  const back = { receiverId: USDC, method: "ft_transfer_call", args: { receiver_id: CHEST, amount: "5000000", msg: JSON.stringify({ back: id }) }, deposit: "1", gas: "150000000000000" };
+  const sign = (w) => call(backer, w.receiverId, w.method, w.args, { deposit: BigInt(w.deposit), gas: BigInt(w.gas) });
+  note("ui: call_raid by a non-owner caller (tx.callRaid)", { id, ...(await sign(callRaid)) });
+  note("ui: back 5 tUSDC (tx.back)", await sign(back));
+  note("ui: raid + stake", { raid: await view(CHEST, "get_raid", { id }), stake: await view(CHEST, "get_stake", { id, account_id: BACKER }) });
+  // NEP-413 sign-in against the local social API (http://localhost:8787), same payload wallet-selector signMessage produces.
+  const API = process.env.RAID_API || "http://localhost:8787";
+  const n = await (await fetch(API + "/v1/auth/nonce", { method: "POST" })).json();
+  const str = (x) => { const b = Buffer.from(x, "utf8"); const l = Buffer.alloc(4); l.writeUInt32LE(b.length); return Buffer.concat([l, b]); };
+  const tag = Buffer.alloc(4); tag.writeUInt32LE(2147484061);
+  const hash = createHash("sha256").update(Buffer.concat([tag, str(n.message), Buffer.from(n.nonce, "base64"), str(n.recipient), Buffer.from([0])])).digest();
+  const kp = KeyPair.fromString(S.private_key);
+  const sig = kp.sign(hash);
+  const signed = { accountId: BACKER, publicKey: kp.getPublicKey().toString(), signature: Buffer.from(sig.signature).toString("base64"), message: n.message, nonce: n.nonce, recipient: n.recipient };
+  const r = await fetch(API + "/v1/auth/signin", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ signed }) });
+  const j = await r.json(); const token = j.token ?? j.jwt;
+  note("ui: NEP-413 sign-in to social API", { status: r.status, handle: j.user?.handle ?? null, token: token ? "(issued, not logged)" : null });
+  if (token) {
+    const p = await fetch(API + "/v1/raid/posts", { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + token }, body: JSON.stringify({ body: `Testnet check: called $BRETT to 2x and backed 5 tUSDC from the same payloads the app signs.`, raidId: id, coin: "BRETT" }) });
+    note("ui: post on the new raid", { status: p.status, id: (await p.json()).id ?? null });
+  }
 }
