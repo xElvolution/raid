@@ -2,6 +2,7 @@
 import { AnimatePresence, animate, motion, useInView, type HTMLMotionProps } from 'motion/react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
+import { coinBySymbol } from '@/lib/coins';
 import { AlertTriangle, X } from 'lucide-react';
 
 type Tone = 'brand' | 'lime' | 'ghost' | 'ink' | 'danger';
@@ -81,9 +82,14 @@ export function Identicon({ seed, size = 36, className = '' }: { seed: string; s
   );
 }
 
+/** Coin logo: the bundled logo for every coin RAID can trade (no hotlink, never blank), then the market API image,
+ *  then the ticker letters. */
 export function CoinAvatar({ symbol, image, size = 36, className = '' }: { symbol: string; image?: string | null; size?: number; className?: string }) {
-  const [bad, setBad] = useState(false);
-  if (image && !bad) return <img src={image} alt="" width={size} height={size} onError={() => setBad(true)} className={`shrink-0 rounded-full object-cover bg-raised ${className}`} style={{ width: size, height: size }} />;
+  const local = coinBySymbol(symbol) ? `/coins/${symbol.toUpperCase()}.png` : null;
+  const sources = [local, image].filter((x): x is string => !!x);
+  const [failed, setFailed] = useState(0);
+  const src = sources[failed];
+  if (src) return <img src={src} alt="" width={size} height={size} onError={() => setFailed((n) => n + 1)} className={`shrink-0 rounded-full object-cover bg-raised ${className}`} style={{ width: size, height: size }} />;
   return <span className={`grid shrink-0 place-items-center rounded-full bg-raised mono font-bold text-ink ${className}`} style={{ width: size, height: size, fontSize: size * 0.34 }}>{symbol.slice(0, 2)}</span>;
 }
 

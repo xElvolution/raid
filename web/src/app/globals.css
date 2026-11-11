@@ -34,7 +34,7 @@
 
 :root, html[data-theme="dark"] {
   --c-bg: #04061a; --c-panel: #0a0f2e; --c-raised: #111842; --c-line: #1c2558; --c-ink: #f3f5ff; --c-mute: #8c93c4; --c-faint: #5a6196;
-  --c-brand: #3355ff; --c-up: #c6ff3d; --c-down: #ff5c7a; --c-glass: rgb(255 255 255 / .05); --c-lime-ink: #0a1a00;
+  --c-brand: #3355ff; --c-up: #c6ff3d; --c-down: #ff5c7a; --c-glass: rgb(255 255 255 / .05); --c-lime-ink: #0a1a00; --c-lime-line: #c6ff3d;
   color-scheme: dark;
 }
 html[data-theme="light"] {
@@ -100,3 +100,13 @@ html.theme-vt::view-transition-new(root) { z-index: 2; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Light mode: #c6ff3d on near-white fails contrast, so lime TEXT and the mark's lime bar darken to an olive
+   that keeps the hue. Lime fills (chips, buttons, meters) keep dark ink text and stay lime. Lime text that sits
+   on a dark or cobalt surface keeps the real lime. */
+html[data-theme="light"] { --c-lime-text: #4a7d00; --c-lime-line: #5f9800; }
+html[data-theme="light"] .text-lime { color: var(--c-lime-text); }
+html[data-theme="light"] :is(.text-white, .on-dark, .cobalt-field, [class*="bg-[#04061a]"], [class*="bg-[#0a1a00]"], [class*="bg-brand"]) .text-lime,
+html[data-theme="light"] :is(.on-dark, [class*="bg-[#0a1a00]"]).text-lime { color: var(--color-lime); }
+html[data-theme="light"] .mark-lime { fill: #7fc400; }
+html[data-theme="light"] :is(.text-white, .on-dark, .cobalt-field, [class*="bg-[#04061a]"], [class*="bg-brand"]) .mark-lime { fill: #c6ff3d; }

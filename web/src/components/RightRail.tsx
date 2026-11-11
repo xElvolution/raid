@@ -18,10 +18,10 @@ export function RightRail() {
         <div className="dots absolute inset-0 opacity-50" />
         <div className="relative">
           <p className="eyebrow">War chest · all raids</p>
-          <div className="mt-3 flex items-end gap-2"><span className="wide-black text-[58px] leading-[.8]"><CountUp value={pot} format={(n) => n.toFixed(2)} /></span><span className="wide pb-1 text-[14px]">USDC</span></div>
+          <div className="mt-3 flex min-w-0 items-end gap-2"><span className="wide-black min-w-0 truncate text-[44px] leading-[.85]"><CountUp value={pot} format={(n) => n.toFixed(2)} /></span><span className="wide shrink-0 pb-1 text-[13px]">USDC</span></div>
           <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/20 pt-3 text-[12px]">
             <div><p className="text-white/60">Raids called</p><p className="mono mt-0.5 text-[15px] font-bold">{raids.data?.length ?? '–'}</p></div>
-            <div><p className="text-white/60">Buyback bucket</p><p className="mono mt-0.5 text-[15px] font-bold">{bb.data !== undefined ? usdcOf(bb.data).toFixed(2) : '–'}</p></div>
+            <div><p className="text-white/60">Buyback reserve</p><p className="mono mt-0.5 text-[15px] font-bold">{bb.data !== undefined ? usdcOf(bb.data).toFixed(2) : '–'}</p></div>
           </div>
         </div>
       </section>

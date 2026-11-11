@@ -9,8 +9,8 @@ export function Mark({ size = 28, className = '', mono = false }: { size?: numbe
       <rect x="0" y="19" width="6" height="9" fill={fg} />
       <rect x="7.33" y="13" width="6" height="15" fill={fg} />
       <rect x="14.66" y="7" width="6" height="21" fill={fg} />
-      <rect x="22" y="0" width="6" height="28" fill={mono ? 'currentColor' : '#c6ff3d'} />
-      <rect x="0" y="9" width="28" height="2.2" fill={mono ? 'currentColor' : '#c6ff3d'} />
+      <rect x="22" y="0" width="6" height="28" fill={mono ? 'currentColor' : '#c6ff3d'} className={mono ? '' : 'mark-lime'} />
+      <rect x="0" y="9" width="28" height="2.2" fill={mono ? 'currentColor' : '#c6ff3d'} className={mono ? '' : 'mark-lime'} />
     </svg>
   );
 }

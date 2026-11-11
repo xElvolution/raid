@@ -100,11 +100,11 @@ export function PostCard({ p, i = 0, now, threaded = true }: { p: Post; i?: numb
       <Identicon seed={p.near_account ?? p.handle} size={40} />
       <div className="min-w-0 flex-1">
         <div className="flex min-w-0 items-center gap-1.5 text-[13.5px]">
-          <span className="truncate font-semibold">{p.display_name || p.handle}</span>
+          <span className="truncate font-semibold">{(p.display_name || p.handle).replace(/\s*\(demo\)$/i, '')}</span>
           {p.demo && <span className="chip chip-ghost !h-[18px] !px-1.5 !text-[9.5px]" title="Seeded demo account, not a real person">DEMO</span>}
-          <span className="truncate text-mute">@{p.handle}</span>
+          <span className="hidden truncate text-mute sm:inline">@{p.handle}</span>
           <span className="shrink-0 text-faint">· {now ? ago(new Date(p.created_at).getTime(), now) : ''}</span>
-          {!mine && <button onClick={follow} aria-pressed={following} className={`press ml-auto flex h-7 shrink-0 items-center gap-1 rounded-full px-2.5 text-[11.5px] font-bold ${following ? 'hairline text-mute' : 'bg-ink text-bg'}`}>{following ? <><UserCheck size={13} />Following</> : <><UserPlus size={13} />Follow</>}</button>}
+          {!mine && <button onClick={follow} aria-pressed={following} aria-label={following ? `Unfollow @${p.handle}` : `Follow @${p.handle}`} className={`press ml-auto flex h-7 shrink-0 items-center gap-1 rounded-full px-2.5 text-[11.5px] font-bold ${following ? 'hairline text-mute' : 'bg-ink text-bg'}`}>{following ? <><UserCheck size={13} /><span className="hidden sm:inline">Following</span></> : <><UserPlus size={13} /><span className="hidden sm:inline">Follow</span></>}</button>}
         </div>
         <p className="mt-1 whitespace-pre-wrap break-words text-[15px] leading-snug"><Body text={p.body} /></p>
         {p.raid_id !== null && !p.reply_to && <Link href={`/raids/${p.raid_id}`} className="lift mt-2 inline-flex items-center gap-1.5 rounded-[10px] hairline px-2.5 py-1.5 text-[12px] font-semibold"><Swords size={13} className="text-lime" />Raid #{p.raid_id}{p.coin ? ` · $${p.coin}` : ''}</Link>}
@@ -171,7 +171,7 @@ export function WhoToFollow() {
         {c.data?.items.map((u) => (
           <li key={u.handle} className="flex items-center gap-2.5">
             <Identicon seed={u.near_account ?? u.handle} size={34} />
-            <div className="min-w-0 flex-1"><p className="truncate text-[13px] font-semibold">{u.display_name || u.handle}{u.demo && <span className="ml-1.5 mono text-[9.5px] text-faint">DEMO</span>}</p><p className="truncate mono text-[11px] text-mute">{u.followers} followers · {u.posts} posts</p></div>
+            <div className="min-w-0 flex-1"><p className="truncate text-[13px] font-semibold">{(u.display_name || u.handle).replace(/\s*\(demo\)$/i, "")}{u.demo && <span className="ml-1.5 mono text-[9.5px] text-faint">DEMO</span>}</p><p className="truncate mono text-[11px] text-mute">{u.followers} followers · {u.posts} posts</p></div>
             <button onClick={async () => { if (!(await ensure())) return; await social.follow(u.handle, !u.following).catch(() => {}); void qc.invalidateQueries({ queryKey: ['callers'] }); void qc.invalidateQueries({ queryKey: ['feed'] }); }}
               className={`press h-7 rounded-full px-2.5 text-[11.5px] font-bold ${u.following ? 'hairline text-mute' : 'bg-ink text-bg'}`}>{u.following ? 'Following' : 'Follow'}</button>
           </li>

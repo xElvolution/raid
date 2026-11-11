@@ -18,7 +18,8 @@ const PAGES = [
   ["launch-buy", "/launch", async (p) => { await p.getByRole("button", { name: "Buy", exact: true }).first().click(); await p.waitForTimeout(1500); }],
   ["live", "/live"],
   ["start", "/start", async (p) => { await p.waitForTimeout(300); }],
-  ["social", "/social"],
+  ["feed", "/feed"],
+  ["feed-thread", "/feed", async (p) => { await p.waitForTimeout(800); await p.getByRole("button", { name: /repl/i }).first().click(); await p.waitForTimeout(1500); }],
 ];
 const b = await chromium.launch({ executablePath: "/usr/bin/google-chrome", args: ["--no-sandbox"] });
 for (const [name, path, act] of PAGES) {
