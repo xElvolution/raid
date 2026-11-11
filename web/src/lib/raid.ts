@@ -31,7 +31,7 @@ export function payoutAtLine(stake: number, targetXBps: number, callerFeeBps: nu
 }
 export const fmtPct = (n: number) => `${n >= 0 ? '+' : ''}${n.toFixed(n % 1 === 0 ? 0 : 1)}%`;
 
-async function view<T>(method: string, args: object = {}, contract = CHEST_ID): Promise<T> {
+export async function view<T>(method: string, args: object = {}, contract = CHEST_ID): Promise<T> {
   const r = await fetch(RPC, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ jsonrpc: '2.0', id: 'raid', method: 'query', params: { request_type: 'call_function', finality: 'optimistic', account_id: contract, method_name: method, args_base64: btoa(JSON.stringify(args)) } }),

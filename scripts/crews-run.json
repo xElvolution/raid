@@ -1,0 +1,263 @@
+[
+  {
+    "step": "captain account (testnet helper)",
+    "at": "2026-11-11T17:27:44.418Z",
+    "crew": "frogs",
+    "account": "raid-capt-frogs-mwce6jqg.testnet"
+  },
+  {
+    "step": "captain account (testnet helper)",
+    "at": "2026-11-11T17:27:49.754Z",
+    "crew": "dogs",
+    "account": "raid-capt-dogs-mwce6nua.testnet"
+  },
+  {
+    "step": "judge account (testnet helper)",
+    "at": "2026-11-11T17:27:54.484Z",
+    "judge": "judge1",
+    "account": "raid-judge1-mwce6ry3.testnet"
+  },
+  {
+    "step": "judge account (testnet helper)",
+    "at": "2026-11-11T17:27:59.397Z",
+    "judge": "judge2",
+    "account": "raid-judge2-mwce6vli.testnet"
+  },
+  {
+    "step": "judge account (testnet helper)",
+    "at": "2026-11-11T17:28:04.498Z",
+    "judge": "judge3",
+    "account": "raid-judge3-mwce6zdz.testnet"
+  },
+  {
+    "step": "create crew DAO on sputnikv2.testnet",
+    "at": "2026-11-11T17:28:13.968Z",
+    "dao": "raid-frog-legion.sputnikv2.testnet",
+    "members": [
+      "raid-capt-frogs-mwce6jqg.testnet",
+      "raid-judge1-mwce6ry3.testnet",
+      "raid-judge2-mwce6vli.testnet"
+    ],
+    "tx": "JDthDTWakp9UyFzd8TJhJ3rbZDYXRGoGp27NSHo7bBQs",
+    "ok": true
+  },
+  {
+    "step": "create crew DAO on sputnikv2.testnet",
+    "at": "2026-11-11T17:28:17.674Z",
+    "dao": "raid-doge-pack.sputnikv2.testnet",
+    "members": [
+      "raid-capt-dogs-mwce6nua.testnet",
+      "raid-judge3-mwce6zdz.testnet",
+      "backer.raid-chest-mwab3vnk.testnet"
+    ],
+    "tx": "DiZMYJoekm8F1QSN6yYm7g4oNEJevq2go4a9KtCbSP3i",
+    "ok": true
+  },
+  {
+    "step": "add_proposal (crew raid)",
+    "at": "2026-11-11T17:28:24.401Z",
+    "dao": "raid-frog-legion.sputnikv2.testnet",
+    "title": "Raid $PEPE to 2x",
+    "tx": "BsqvAAD3QKrCUmQcFM8odQWwE5yz6xbzb4CJjozdWgWR",
+    "ok": true,
+    "value": "0"
+  },
+  {
+    "step": "add_proposal (crew raid)",
+    "at": "2026-11-11T17:28:26.241Z",
+    "dao": "raid-frog-legion.sputnikv2.testnet",
+    "title": "Raid $DOGE to 1.5x",
+    "tx": "7xzTxNqNHeGtYvYEt5XeAETGwrRMD8fkGobUK3RCy85C",
+    "ok": true,
+    "value": "1"
+  },
+  {
+    "step": "add_proposal (crew raid)",
+    "at": "2026-11-11T17:28:27.998Z",
+    "dao": "raid-doge-pack.sputnikv2.testnet",
+    "title": "Raid $DOGE to 3x",
+    "tx": "8HJWUnZ3AWGBRGz8DJKcb5vV9pJFB2wnqFvcmrgxzBzd",
+    "ok": true,
+    "value": "0"
+  },
+  {
+    "step": "add_proposal (crew raid)",
+    "at": "2026-11-11T17:28:29.620Z",
+    "dao": "raid-doge-pack.sputnikv2.testnet",
+    "title": "Raid $PEPE to 1.5x",
+    "tx": "3YdSaDo6dJhpbncR4sWvLDkXTmb4ZbM1yrUbY7QtXRwa",
+    "ok": true,
+    "value": "1"
+  },
+  {
+    "step": "act_proposal VoteApprove",
+    "at": "2026-11-11T17:28:32.042Z",
+    "dao": "raid-frog-legion.sputnikv2.testnet",
+    "proposal": 0,
+    "voter": "raid-capt-frogs-mwce6jqg.testnet",
+    "tx": "3seAztSv4C5UnVvVXWjdMF5a3ZQEz5vwg25jEpGNYVo9",
+    "ok": true
+  },
+  {
+    "step": "act_proposal VoteApprove",
+    "at": "2026-11-11T17:28:35.534Z",
+    "dao": "raid-frog-legion.sputnikv2.testnet",
+    "proposal": 0,
+    "voter": "raid-judge1-mwce6ry3.testnet",
+    "tx": "6Y2dgEiRSRYnqUJhTwoh63Kb9HGAUtT6tKUCUvAjBm5N",
+    "ok": true
+  },
+  {
+    "step": "act_proposal VoteApprove",
+    "at": "2026-11-11T17:28:37.128Z",
+    "dao": "raid-frog-legion.sputnikv2.testnet",
+    "proposal": 1,
+    "voter": "raid-capt-frogs-mwce6jqg.testnet",
+    "tx": "6Kx4bswcwiHvW4GWnSBaJstY6GC6DQoPdYVUqGfN17oU",
+    "ok": true
+  },
+  {
+    "step": "act_proposal VoteApprove",
+    "at": "2026-11-11T17:28:39.354Z",
+    "dao": "raid-doge-pack.sputnikv2.testnet",
+    "proposal": 0,
+    "voter": "raid-capt-dogs-mwce6nua.testnet",
+    "tx": "FaWjFUN8rVXUTFZ3KDUYYRLC2V8uFtfXsvqZzcLfVsHD",
+    "ok": true
+  },
+  {
+    "step": "act_proposal VoteApprove",
+    "at": "2026-11-11T17:28:42.656Z",
+    "dao": "raid-doge-pack.sputnikv2.testnet",
+    "proposal": 0,
+    "voter": "raid-judge3-mwce6zdz.testnet",
+    "tx": "431hUSjo8UKM7LjEwNG3wSRkqNiwv88YTJo4RHWYCkn4",
+    "ok": true
+  },
+  {
+    "step": "act_proposal VoteApprove",
+    "at": "2026-11-11T17:28:44.587Z",
+    "dao": "raid-doge-pack.sputnikv2.testnet",
+    "proposal": 1,
+    "voter": "raid-capt-dogs-mwce6nua.testnet",
+    "tx": "63VLsZkH2nJNeUi6Tgeu56RksqskRP9sNeT34QBWXk1H",
+    "ok": true
+  },
+  {
+    "step": "mint tUSDC (testnet faucet token)",
+    "at": "2026-11-11T17:28:54.097Z",
+    "to": "raid-capt-frogs-mwce6jqg.testnet",
+    "tx": "EMtX4BKN2gBLqLrZKpkbR42Np4LoahQp5ugU2Q498Nzm",
+    "ok": true
+  },
+  {
+    "step": "back crew raid",
+    "at": "2026-11-11T17:28:58.729Z",
+    "crew": "frogs",
+    "raid": 3,
+    "backer": "raid-capt-frogs-mwce6jqg.testnet",
+    "amount": 120,
+    "tx": "At2y885aPopYdmXHtf4TsqdJHxarVpV8MSTwSsW9gSU7",
+    "ok": false,
+    "fails": [
+      "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"AccountDoesNotExist\":{\"account_id\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\"}}}}}"
+    ],
+    "value": "\"120000000\""
+  },
+  {
+    "step": "mint tUSDC (testnet faucet token)",
+    "at": "2026-11-11T17:29:00.850Z",
+    "to": "raid-judge1-mwce6ry3.testnet",
+    "tx": "GnrJeTLRYDoBYjAo3Jbbp6L6QNQNsQFdoLLMdtqGHtLk",
+    "ok": true
+  },
+  {
+    "step": "back crew raid",
+    "at": "2026-11-11T17:29:04.926Z",
+    "crew": "frogs",
+    "raid": 3,
+    "backer": "raid-judge1-mwce6ry3.testnet",
+    "amount": 60,
+    "tx": "8mPv6nijiR64qQTSXjSHHdmMwcMV5ZDMXpZCXWsKxZcT",
+    "ok": false,
+    "fails": [
+      "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"AccountDoesNotExist\":{\"account_id\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\"}}}}}"
+    ],
+    "value": "\"60000000\""
+  },
+  {
+    "step": "mint tUSDC (testnet faucet token)",
+    "at": "2026-11-11T17:29:06.860Z",
+    "to": "raid-capt-dogs-mwce6nua.testnet",
+    "tx": "HqZxMtbMGF5LjKXtB1ag58EjwBL2YdkNg95qu33dpKh9",
+    "ok": true
+  },
+  {
+    "step": "back crew raid",
+    "at": "2026-11-11T17:29:10.932Z",
+    "crew": "dogs",
+    "raid": 4,
+    "backer": "raid-capt-dogs-mwce6nua.testnet",
+    "amount": 90,
+    "tx": "7Xg5QncwX6VTKHd6CrsgDjVvfvaaJBSKdUT34PDGPLTk",
+    "ok": false,
+    "fails": [
+      "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"AccountDoesNotExist\":{\"account_id\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\"}}}}}"
+    ],
+    "value": "\"90000000\""
+  },
+  {
+    "step": "mint tUSDC (testnet faucet token)",
+    "at": "2026-11-11T17:29:13.336Z",
+    "to": "raid-judge3-mwce6zdz.testnet",
+    "tx": "Hm9jbtApZYujNnAAXme5d3p4ehTrTtWJPco3gVisGhxe",
+    "ok": true
+  },
+  {
+    "step": "back crew raid",
+    "at": "2026-11-11T17:29:18.006Z",
+    "crew": "dogs",
+    "raid": 4,
+    "backer": "raid-judge3-mwce6zdz.testnet",
+    "amount": 40,
+    "tx": "8hv7F6cMcyeuNCj7Hhj29hm6DrA5ExQaGg1VRYx6AbPA",
+    "ok": false,
+    "fails": [
+      "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"AccountDoesNotExist\":{\"account_id\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\"}}}}}"
+    ],
+    "value": "\"40000000\""
+  },
+  {
+    "step": "mint 500 tUSDC to judge",
+    "at": "2026-11-11T17:29:20.301Z",
+    "ok": false,
+    "err": "Smart contract panicked: Failed to deserialize input from JSON. Error: `missing field `account_id` at line 1 column 22`"
+  },
+  {
+    "step": "mint 500 tUSDC to judge",
+    "at": "2026-11-11T17:29:22.304Z",
+    "ok": false,
+    "err": "Smart contract panicked: Failed to deserialize input from JSON. Error: `missing field `account_id` at line 1 column 22`"
+  },
+  {
+    "step": "mint 500 tUSDC to judge",
+    "at": "2026-11-11T17:29:24.164Z",
+    "to": "raid-judge1-mwce6ry3.testnet",
+    "tx": "GNomtBsu8jfKVva8EmiKkmJtaLpiCF5ngZeV72qjUHya",
+    "ok": true
+  },
+  {
+    "step": "mint 500 tUSDC to judge",
+    "at": "2026-11-11T17:29:25.803Z",
+    "to": "raid-judge2-mwce6vli.testnet",
+    "tx": "7qEcCDnTdEE7Lg28PoYgkHBZMMf6vXAtxMW5iRmg2mXm",
+    "ok": true
+  },
+  {
+    "step": "mint 500 tUSDC to judge",
+    "at": "2026-11-11T17:29:27.715Z",
+    "to": "raid-judge3-mwce6zdz.testnet",
+    "tx": "J4z9YXD6XVY3iyNVZiEf9EVkfyEnpt1MNDVYRLu1sj88",
+    "ok": true
+  }
+]
