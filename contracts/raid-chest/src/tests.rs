@@ -13,7 +13,8 @@ fn ctx(pred: AccountId, ms: u64) {
 fn chest() -> Chest {
     ctx(accounts(0), NOW);
     Chest::new(Config { intents: "intents.near".parse().unwrap(), usdc: "usdc.near".parse().unwrap(), mpc: "v1.signer".parse().unwrap(),
-        oneclick_key: key_str(), caller_fee_bps: 500, buyback_bps: 2000, min_back: U128(100_000) })
+        oneclick_key: key_str(), caller_fee_bps: 250, buyback_bps: 750, min_back: U128(100_000),
+        max_back: U128(700_000), max_pot: U128(1_200_000), min_open_minutes: 10, buy_delay_minutes: 5 })
 }
 fn sign(s: &str) -> String {
     let h = bs58::encode(<sha2::Sha256 as sha2::Digest>::digest(s.as_bytes())).into_string();
@@ -56,10 +57,16 @@ fn full_raid_lifecycle() {
     let mut c = chest();
     ctx(accounts(1), T - 60 * 60_000);
     let id = c.call_raid("Raid PEPE".into(), PEPE.into(), 15000, 10, 24);
+    assert_eq!(c.get_raid(id).unwrap().buy_after_ms, T - 45 * 60_000); // 10 min crew + 5 min public countdown
     ctx("usdc.near".parse().unwrap(), T - 59 * 60_000);
     c.ft_on_transfer(accounts(2), U128(600_000), r#"{"back":0}"#.into());
     c.ft_on_transfer(accounts(3), U128(400_000), r#"{"back":0}"#.into());
     assert_eq!(c.get_raid(id).unwrap().pot.0, 1_000_000);
+    // the buy is refused during the public countdown
+    ctx(accounts(4), T - 47 * 60_000);
+    let early = quote("nep141:usdc.near", PEPE, 1_000_000, 900, false);
+    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| { let mut c2 = chest_clone(&c); let _ = c2.execute_buy(id, early.clone(), sign(&early)); }));
+    assert!(r.is_err());
     // buy
     ctx(accounts(4), T - 4 * 60_000);
     let q = quote("nep141:usdc.near", PEPE, 1_000_000, 900, false);
@@ -76,10 +83,59 @@ fn full_raid_lifecycle() {
     c.on_balance(id, "nep141:usdc.near".into(), "sell".into(), Ok(U128(1_600_000)));
     let raid = c.get_raid(id).unwrap();
     assert!(raid.hit);
-    assert_eq!(c.get_claimable(accounts(1)).0, 30_000); // 5% of 600k profit to the caller
-    assert_eq!(c.get_buyback_bucket().0, 120_000); // 20% to buy back and burn RAID
+    assert_eq!(c.get_claimable(accounts(1)).0, 15_000); // 2.5% of 600k profit to the caller
+    assert_eq!(c.get_buyback_bucket().0, 45_000); // 7.5% of profit to the buyback reserve
+    assert_eq!(raid.for_backers.0, 1_540_000); // backers keep 90% of profit: +54% on a 1.6x fill
     ctx(accounts(2), T);
-    assert_eq!(c.claim_share(id).0, (1_600_000 - 150_000) * 6 / 10);
+    assert_eq!(c.claim_share(id).0, 1_540_000 * 6 / 10);
+}
+
+#[test]
+fn miss_pays_no_fees_and_backers_can_lose() {
+    let s = split(700_000, 1_000_000, false, 250, 750);
+    assert_eq!(s, Split { caller_cut: 0, buyback: 0, for_backers: 700_000 });
+    // a retreat sale in profit but under the line also pays no fees
+    assert_eq!(split(1_200_000, 1_000_000, false, 250, 750).for_backers, 1_200_000);
+}
+
+#[test]
+fn net_backer_return_per_line() {
+    assert_eq!(payout_at_line(100_000_000, 15000, 250, 750), (145_000_000, 4500)); // 1.5x -> +45%
+    assert_eq!(payout_at_line(100_000_000, 20000, 250, 750), (190_000_000, 9000)); // 2x   -> +90%
+    assert_eq!(payout_at_line(100_000_000, 30000, 250, 750), (280_000_000, 18000)); // 3x  -> +180%
+    let c = chest();
+    let v = c.payout_preview(15000, U128(100_000_000));
+    assert_eq!(v["net_gain_bps"], 4500);
+}
+
+#[test]
+fn size_caps_refund_the_excess() {
+    let mut c = chest();
+    ctx(accounts(1), T - 60 * 60_000);
+    let id = c.call_raid("Raid PEPE".into(), PEPE.into(), 20000, 10, 24);
+    ctx("usdc.near".parse().unwrap(), T - 59 * 60_000);
+    match c.ft_on_transfer(accounts(2), U128(900_000), r#"{"back":0}"#.into()) { PromiseOrValue::Value(v) => assert_eq!(v.0, 200_000), _ => panic!() }
+    match c.ft_on_transfer(accounts(3), U128(700_000), r#"{"back":0}"#.into()) { PromiseOrValue::Value(v) => assert_eq!(v.0, 200_000), _ => panic!() }
+    assert_eq!(c.get_raid(id).unwrap().pot.0, 1_200_000);
+    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| { let mut c2 = chest_clone(&c); c2.ft_on_transfer(accounts(4), U128(100_000), r#"{"back":0}"#.into()); }));
+    assert!(r.is_err(), "full raid refuses new backing");
+}
+
+#[test]
+fn crew_window_has_a_minimum() {
+    let mut c = chest();
+    ctx(accounts(1), T);
+    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| { let mut c2 = chest_clone(&c); c2.call_raid("x".into(), PEPE.into(), 15000, 5, 24); }));
+    assert!(r.is_err());
+    c.call_raid("ok".into(), PEPE.into(), 15000, 10, 24);
+}
+
+#[test]
+#[should_panic(expected = "fees too high")]
+fn fee_ceiling_enforced() {
+    ctx(accounts(0), NOW);
+    Chest::new(Config { intents: "intents.near".parse().unwrap(), usdc: "usdc.near".parse().unwrap(), mpc: "v1.signer".parse().unwrap(),
+        oneclick_key: key_str(), caller_fee_bps: 500, buyback_bps: 2000, min_back: U128(1), max_back: U128(1), max_pot: U128(1), min_open_minutes: 1, buy_delay_minutes: 0 });
 }
 
 fn chest_clone(c: &Chest) -> Chest { near_sdk::borsh::from_slice(&near_sdk::borsh::to_vec(c).unwrap()).unwrap() }

@@ -6,6 +6,28 @@ pub const MPC_PATH: &str = "raid-chest";
 
 pub fn mul_bps(x: u128, bps: u32) -> u128 { x * bps as u128 / 10_000 }
 
+/// Hard ceilings, checked at init, so no deployment can take more than this from backers' profit.
+pub const MAX_CALLER_FEE_BPS: u32 = 500;
+pub const MAX_BUYBACK_BPS: u32 = 1000;
+
+/// How a closed raid's proceeds are split. Fees are a share of PROFIT and only on a hit; a miss pays no fees.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Split { pub caller_cut: u128, pub buyback: u128, pub for_backers: u128 }
+
+pub fn split(proceeds: u128, cost: u128, hit: bool, caller_fee_bps: u32, buyback_bps: u32) -> Split {
+    let profit = proceeds.saturating_sub(cost);
+    let (caller_cut, buyback) = if hit { (mul_bps(profit, caller_fee_bps), mul_bps(profit, buyback_bps)) } else { (0, 0) };
+    Split { caller_cut, buyback, for_backers: proceeds - caller_cut - buyback }
+}
+
+/// What a backer gets back if the chest sells exactly at the line (the minimum a pre-retreat sale can fill at).
+/// Returns (payout, net gain in bps of the stake).
+pub fn payout_at_line(stake: u128, target_x_bps: u32, caller_fee_bps: u32, buyback_bps: u32) -> (u128, u32) {
+    let s = split(mul_bps(stake, target_x_bps), stake, true, caller_fee_bps, buyback_bps);
+    let gain_bps = if stake == 0 { 0 } else { ((s.for_backers.saturating_sub(stake)) * 10_000 / stake) as u32 };
+    (s.for_backers, gain_bps)
+}
+
 pub fn parse_ed25519_key(k: &str) -> [u8; 32] {
     let b58 = k.strip_prefix("ed25519:").unwrap_or_else(|| env::panic_str("key must start with ed25519:"));
     let v = bs58::decode(b58).into_vec().unwrap_or_else(|_| env::panic_str("bad base58 key"));

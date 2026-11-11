@@ -70,6 +70,8 @@ pub struct Raid {
     /// Sell line as basis points of the entry cost: 15000 = 1.5x, 20000 = 2x, 30000 = 3x.
     pub target_x_bps: u32,
     pub opens_until_ms: u64,
+    /// Public countdown: the chest cannot buy before this time (crew window close + `buy_delay_minutes`).
+    pub buy_after_ms: u64,
     pub retreat_at_ms: u64,
     pub pot: U128,
     pub entry_cost: U128,
@@ -81,6 +83,10 @@ pub struct Raid {
     pub hit: bool,
     pub buy_quote_hash: Option<String>,
     pub sell_quote_hash: Option<String>,
+    /// Filled at close: what the caller, the buyback reserve and the backers (pro rata) get.
+    pub caller_cut: U128,
+    pub buyback: U128,
+    pub for_backers: U128,
 }
 
 #[near(serializers = [borsh, json])]
@@ -91,9 +97,19 @@ pub struct Config {
     pub mpc: AccountId,
     /// 1Click quote-signing key, "ed25519:<base58>".
     pub oneclick_key: String,
+    /// Caller's share of PROFIT, paid only on a hit. Max 5%.
     pub caller_fee_bps: u32,
+    /// Buyback reserve's share of PROFIT, only on a hit. Max 10%.
     pub buyback_bps: u32,
     pub min_back: U128,
+    /// Most one account can put into one raid.
+    pub max_back: U128,
+    /// Size cap per raid. Backing above it is refunded by the token contract.
+    pub max_pot: U128,
+    /// Shortest crew window a caller may set.
+    pub min_open_minutes: u32,
+    /// Public delay between the crew window closing and the earliest buy.
+    pub buy_delay_minutes: u32,
 }
 
 #[near(contract_state)]
@@ -167,7 +183,9 @@ trait SelfCb {
 impl Chest {
     #[init]
     pub fn new(cfg: Config) -> Self {
-        require!(cfg.caller_fee_bps + cfg.buyback_bps <= 5000, "fees too high");
+        require!(cfg.caller_fee_bps <= MAX_CALLER_FEE_BPS && cfg.buyback_bps <= MAX_BUYBACK_BPS, "fees too high");
+        require!(cfg.min_back.0 > 0 && cfg.min_back.0 <= cfg.max_back.0 && cfg.max_back.0 <= cfg.max_pot.0, "bad size limits");
+        require!(cfg.min_open_minutes >= 1 && cfg.buy_delay_minutes <= 24 * 60, "bad timing");
         parse_ed25519_key(&cfg.oneclick_key);
         Self {
             cfg,
@@ -193,7 +211,7 @@ impl Chest {
         require!(target.starts_with("nep141:") || target.starts_with("nep245:"), "target must be an intents asset id");
         require!(target != self.usdc_asset(), "cannot raid the war chest's own coin");
         require!([15000, 20000, 30000].contains(&target_x_bps), "target must be 1.5x, 2x or 3x");
-        require!((1..=24 * 60).contains(&open_minutes), "open window 1 min - 24 h");
+        require!((self.cfg.min_open_minutes..=24 * 60).contains(&open_minutes), "crew window too short or longer than 24 h");
         require!((1..=24 * 28).contains(&retreat_hours), "retreat 1 h - 28 days");
         let now = now_ms();
         let id = self.next_id;
@@ -206,7 +224,8 @@ impl Chest {
             target,
             target_x_bps,
             opens_until_ms,
-            retreat_at_ms: opens_until_ms + retreat_hours as u64 * 3_600_000,
+            buy_after_ms: opens_until_ms + self.cfg.buy_delay_minutes as u64 * 60_000,
+            retreat_at_ms: opens_until_ms + self.cfg.buy_delay_minutes as u64 * 60_000 + retreat_hours as u64 * 3_600_000,
             pot: U128(0),
             entry_cost: U128(0),
             held: U128(0),
@@ -217,8 +236,11 @@ impl Chest {
             hit: false,
             buy_quote_hash: None,
             sell_quote_hash: None,
+            caller_cut: U128(0),
+            buyback: U128(0),
+            for_backers: U128(0),
         };
-        log_event("raid_called", json!({"id": id, "caller": raid.caller, "target": raid.target, "target_x_bps": target_x_bps}));
+        log_event("raid_called", json!({"id": id, "caller": raid.caller, "target": raid.target, "target_x_bps": target_x_bps, "buy_after_ms": raid.buy_after_ms}));
         self.raids.insert(id, raid);
         id
     }
@@ -230,21 +252,25 @@ impl Chest {
         require!(amount.0 >= self.cfg.min_back.0, "below minimum");
         let mut raid = self.raid_or_panic(m.back);
         require!(raid.status == Status::Open && now_ms() < raid.opens_until_ms, "raid not open");
-        raid.pot = U128(raid.pot.0 + amount.0);
         let k = (m.back, sender_id.clone());
         let s = self.stakes.get(&k).copied().unwrap_or(0);
-        self.stakes.insert(k, s + amount.0);
+        // Size caps: take what fits under the per-raid and per-backer caps, refund the rest.
+        let room = self.cfg.max_pot.0.saturating_sub(raid.pot.0).min(self.cfg.max_back.0.saturating_sub(s));
+        require!(room > 0, "raid is full or you are at the per-backer cap");
+        let take = amount.0.min(room);
+        raid.pot = U128(raid.pot.0 + take);
+        self.stakes.insert(k, s + take);
         self.raids.insert(m.back, raid);
         let usdc = self.usdc_asset();
-        self.add_accounted(&usdc, amount.0);
-        log_event("raid_backed", json!({"id": m.back, "backer": sender_id, "amount": amount}));
+        self.add_accounted(&usdc, take);
+        log_event("raid_backed", json!({"id": m.back, "backer": sender_id, "amount": U128(take), "refunded": U128(amount.0 - take)}));
         // Move it into NEAR Intents under the chest's own account (msg "" = credit the sender, i.e. us).
         ext_ft::ext(self.cfg.usdc.clone())
             .with_attached_deposit(ONE_YOCTO)
             .with_static_gas(GAS_TRANSFER)
-            .ft_transfer_call(self.cfg.intents.clone(), amount, None, String::new())
+            .ft_transfer_call(self.cfg.intents.clone(), U128(take), None, String::new())
             .detach();
-        PromiseOrValue::Value(U128(0))
+        PromiseOrValue::Value(U128(amount.0 - take))
     }
 
     // ---------- 1Click path (no key) ----------
@@ -253,7 +279,7 @@ impl Chest {
     pub fn execute_buy(&mut self, id: u64, signed_json: String, signature: String) -> Promise {
         let mut raid = self.raid_or_panic(id);
         require!(raid.status == Status::Open, "raid not open");
-        require!(now_ms() >= raid.opens_until_ms || raid.pot.0 > 0, "nothing to buy");
+        require!(now_ms() >= raid.buy_after_ms, "public countdown still running");
         require!(raid.pot.0 > 0, "empty pot");
         let usdc = self.usdc_asset();
         let q = self.check_quote_inner(&signed_json, &signature, &usdc, &raid.target, raid.pot.0, 1);
@@ -336,7 +362,7 @@ impl Chest {
             raid.proceeds = U128(arrived);
             raid.hit = arrived >= mul_bps(raid.entry_cost.0, raid.target_x_bps);
             raid.status = Status::Closed;
-            self.distribute(&raid);
+            self.distribute(&mut raid);
             log_event("raid_closed", json!({"id": id, "proceeds": raid.proceeds, "hit": raid.hit}));
         }
         self.raids.insert(id, raid);
@@ -408,6 +434,7 @@ impl Chest {
     pub fn mpc_sign_buy(&mut self, id: u64, min_out: U128, salt_hex: Option<String>) -> Promise {
         let raid = self.raid_or_panic(id);
         require!(raid.status == Status::Open && raid.pot.0 > 0, "raid not ready");
+        require!(now_ms() >= raid.buy_after_ms, "public countdown still running");
         require!(min_out.0 > 0, "min_out must be > 0");
         let payload = self.build_token_diff_payload(&raid.target, raid.pot.0, min_out.0, salt_hex.as_deref().unwrap_or("00000000"));
         self.request_mpc_signature(payload)
@@ -458,6 +485,12 @@ impl Chest {
     pub fn get_stake(&self, id: u64, account_id: AccountId) -> U128 { U128(self.stakes.get(&(id, account_id)).copied().unwrap_or(0)) }
     pub fn get_claimable(&self, account_id: AccountId) -> U128 { U128(self.claimable.get(&account_id).copied().unwrap_or(0)) }
     pub fn get_buyback_bucket(&self) -> U128 { U128(self.buyback_bucket) }
+    /// What a backer gets if the raid sells exactly at its line (the lowest fill a pre-retreat sale may take).
+    /// Shown in the call and back flows so the advertised gain is the real net number.
+    pub fn payout_preview(&self, target_x_bps: u32, stake: U128) -> Value {
+        let (payout, gain_bps) = payout_at_line(stake.0, target_x_bps, self.cfg.caller_fee_bps, self.cfg.buyback_bps);
+        json!({"stake": stake, "payout_at_line": U128(payout), "net_gain_bps": gain_bps, "caller_fee_bps": self.cfg.caller_fee_bps, "buyback_bps": self.cfg.buyback_bps, "worst_case": "can lose the stake: after retreat the chest sells at market"})
+    }
     pub fn get_mpc(&self) -> Value { json!({"public_key": self.mpc_public_key, "registered": self.mpc_registered, "last_signed": self.last_mpc_signed}) }
 }
 
@@ -495,16 +528,15 @@ impl Chest {
             .mt_transfer(receiver, token, U128(amount), None, Some("RAID".into()))
     }
 
-    fn distribute(&mut self, raid: &Raid) {
-        let proceeds = raid.proceeds.0;
-        let cost = raid.entry_cost.0;
-        let profit = proceeds.saturating_sub(cost);
-        let (caller_cut, buyback) = if raid.hit { (mul_bps(profit, self.cfg.caller_fee_bps), mul_bps(profit, self.cfg.buyback_bps)) } else { (0, 0) };
-        if caller_cut > 0 { let c = self.claimable.get(&raid.caller).copied().unwrap_or(0); self.claimable.insert(raid.caller.clone(), c + caller_cut); }
-        self.buyback_bucket += buyback;
-        let for_backers = proceeds - caller_cut - buyback;
+    fn distribute(&mut self, raid: &mut Raid) {
+        let sp = split(raid.proceeds.0, raid.entry_cost.0, raid.hit, self.cfg.caller_fee_bps, self.cfg.buyback_bps);
+        if sp.caller_cut > 0 { let c = self.claimable.get(&raid.caller).copied().unwrap_or(0); self.claimable.insert(raid.caller.clone(), c + sp.caller_cut); }
+        self.buyback_bucket += sp.buyback;
+        raid.caller_cut = U128(sp.caller_cut);
+        raid.buyback = U128(sp.buyback);
+        raid.for_backers = U128(sp.for_backers);
         // Backers pull their pro-rata share with `claim_share` (stakes are keyed by (raid, account)).
-        log_event("raid_pool", json!({"id": raid.id, "for_backers": U128(for_backers), "pot": raid.pot, "caller_cut": U128(caller_cut), "buyback": U128(buyback)}));
+        log_event("raid_pool", json!({"id": raid.id, "for_backers": raid.for_backers, "pot": raid.pot, "caller_cut": raid.caller_cut, "buyback": raid.buyback}));
     }
 
     fn build_token_diff_payload(&mut self, target: &str, amount_in: u128, min_out: u128, salt_hex: &str) -> String {
@@ -547,10 +579,7 @@ impl Chest {
         let stake = self.stakes.get(&k).copied().unwrap_or(0);
         require!(stake > 0, "no stake");
         self.stakes.remove(&k);
-        let profit = raid.proceeds.0.saturating_sub(raid.entry_cost.0);
-        let (caller_cut, buyback) = if raid.hit { (mul_bps(profit, self.cfg.caller_fee_bps), mul_bps(profit, self.cfg.buyback_bps)) } else { (0, 0) };
-        let for_backers = raid.proceeds.0 - caller_cut - buyback;
-        let share = for_backers * stake / raid.pot.0;
+        let share = raid.for_backers.0 * stake / raid.pot.0;
         let c = self.claimable.get(&who).copied().unwrap_or(0);
         self.claimable.insert(who, c + share);
         U128(share)
