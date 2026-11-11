@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowUpRight, ImagePlus, Rocket } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, ImagePlus, Plus, Rocket } from 'lucide-react';
 import { Shell } from '@/components/Shell';
 import { Bar, Button, CoinAvatar, Empty, ErrorState, Identicon, Modal, Segmented, Skeleton } from '@/components/ui';
 import { useLaunches, countdown, shortAddr, fmtUsd, fmtPrice, ago } from '@/lib/market';
@@ -24,6 +24,7 @@ export default function LaunchPage() {
   const [image, setImage] = useState('');
   const [busy, setBusy] = useState(false);
   const [buying, setBuying] = useState<LaunchCoin | null>(null);
+  const [create, setCreate] = useState(false); // phones: the form folds into one row until tapped
   const acct = useAccount();
   const coins = useLaunchCoins();
   const qc = useQueryClient();
@@ -44,24 +45,30 @@ export default function LaunchPage() {
   const items = (l.data ?? []).filter((x) => (f === 'live' ? !x.finalized && x.endsAt > now : true));
   return (
     <Shell title="Launch">
-      <section className="grid gap-4 md:grid-cols-[1.1fr_1fr]">
-        <div className="cobalt-field relative overflow-hidden rounded-[18px] p-5 md:p-6">
+      <section className="grid gap-3 md:gap-4 md:grid-cols-[1.1fr_1fr]">
+        <div className="cobalt-field relative overflow-hidden rounded-[14px] md:rounded-[18px] p-3.5 md:p-6">
           <div className="dots absolute inset-0 opacity-50" />
           <div className="relative">
             <span className="chip chip-lime"><span className="live-dot" />Live on NEAR {NETWORK}</span>
-            <h2 className="wide-black mt-4 text-[38px] md:text-[48px] leading-[.86]">Launch a coin.<br />No presale. No team bag.</h2>
-            <p className="mt-3 text-[14px] text-white/75 max-w-[40ch]">Every coin starts on the same bonding curve, priced in USDC. The creator gets nothing up front and earns 1% of trades. At 80% sold, the curve closes and the coin graduates.</p>
-            <dl className="mt-5 grid grid-cols-3 gap-3 text-[12px]">
+            <h2 className="wide-black mt-2.5 md:mt-4 text-[1.25rem] md:text-[48px] leading-[.95] md:leading-[.86]">Launch a coin. <span className="md:block">No presale. No team bag.</span></h2>
+            <p className="mt-1.5 md:mt-3 text-[12.5px] md:text-[14px] leading-snug text-white/75 max-w-[40ch]">Every coin starts on the same bonding curve, priced in USDC. The creator gets nothing up front and earns 1% of trades. At 80% sold, the curve closes and the coin graduates.</p>
+            <dl className="mt-3 md:mt-5 grid grid-cols-3 gap-3 text-[11px] md:text-[12px]">
               <div><dt className="text-white/60">Supply</dt><dd className="mono mt-0.5 font-bold">1B</dd></div>
               <div><dt className="text-white/60">On the curve</dt><dd className="mono mt-0.5 font-bold">800M</dd></div>
               <div><dt className="text-white/60">Trade fee</dt><dd className="mono mt-0.5 font-bold">1% → creator</dd></div>
             </dl>
           </div>
         </div>
-        <form className="panel p-4" onSubmit={(e) => { e.preventDefault(); void launch(); }} aria-describedby="lp-note">
-          <p className="eyebrow">Create a coin</p>
-          <div className="mt-3 flex gap-3">
-            <div className="grid h-[86px] w-[86px] shrink-0 place-items-center overflow-hidden rounded-[14px] bg-raised text-mute" aria-hidden>{image && imgOk ? <img src={image} alt="" className="h-full w-full object-cover" /> : <ImagePlus size={22} />}</div>
+        <form className="panel p-3 md:p-4" onSubmit={(e) => { e.preventDefault(); void launch(); }} aria-describedby="lp-note">
+          <button type="button" onClick={() => setCreate((v) => !v)} aria-expanded={create} className="flex w-full items-center gap-2.5 text-left md:hidden">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[9px] bg-lime text-[#0a1a00]"><Plus size={17} strokeWidth={3} /></span>
+            <span className="min-w-0 flex-1"><span className="block text-[13.5px] font-semibold">Create a coin</span><span className="block truncate text-[11.5px] text-mute">Name, ticker, meme. Live on the curve in one tx.</span></span>
+            <ChevronDown size={17} className={`shrink-0 text-mute transition-transform ${create ? 'rotate-180' : ''}`} />
+          </button>
+          <div className={create ? 'mt-3 md:mt-0' : 'hidden md:block'}>
+          <p className="eyebrow hidden md:block">Create a coin</p>
+          <div className="mt-0 md:mt-3 flex gap-3">
+            <div className="grid h-[5.375rem] w-[5.375rem] shrink-0 max-md:h-[4.75rem] max-md:w-[4.75rem] place-items-center overflow-hidden rounded-[14px] bg-raised text-mute" aria-hidden>{image && imgOk ? <img src={image} alt="" className="h-full w-full object-cover" /> : <ImagePlus size={22} />}</div>
             <div className="min-w-0 flex-1 space-y-2">
               <input value={name} onChange={(e) => setName(e.target.value.slice(0, 32))} placeholder="Coin name" aria-label="Coin name" className="h-10 w-full rounded-[10px] bg-raised px-3 text-[14px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)]" />
               <input value={ticker} onChange={(e) => setTicker(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10))} placeholder="TICKER" aria-label="Ticker" className="h-10 w-full rounded-[10px] bg-raised px-3 mono text-[14px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)]" />
@@ -76,31 +83,32 @@ export default function LaunchPage() {
           </div>
           <Button type="submit" size="lg" tone="lime" className="mt-3 w-full" disabled={acct ? !canLaunch : false}>{busy ? 'Waiting for wallet…' : !acct ? 'Connect wallet to launch' : `Launch ${ticker ? `$${ticker}` : 'coin'}`}</Button>
           <p id="lp-note" className="mt-2 text-[11.5px] text-faint">0.05 NEAR storage deposit. {NETWORK === 'testnet' ? 'Testnet: coins and tUSDC have no value. ' : ''}Contract <a className="underline hover:text-ink" href={explorerAccount(LAUNCHPAD_ID, NETWORK)} target="_blank" rel="noreferrer">{shortAddr(LAUNCHPAD_ID)}</a>. Graduation to a Rhea pool isn’t built yet.</p>
+          </div>
         </form>
       </section>
 
-      <div className="mt-8"><h3 className="wide text-[16px]">On the RAID curve</h3><p className="mt-1 text-[12.5px] text-mute">Coins launched on the RAID launchpad contract, read live from NEAR {NETWORK}.</p></div>
+      <div className="mt-5 md:mt-8"><h3 className="wide text-[1rem]">On the RAID curve</h3><p className="mt-1 text-[12.5px] text-mute">Coins launched on the RAID launchpad contract, read live from NEAR {NETWORK}.</p></div>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        {coins.isLoading && [0, 1].map((i) => <Skeleton key={i} className="h-[170px]" />)}
+        {coins.isLoading && [0, 1].map((i) => <Skeleton key={i} className="h-[10.625rem]" />)}
         {(coins.data ?? []).slice().reverse().map((c, i) => <CoinCard key={c.id} c={c} i={i} onBuy={() => setBuying(c)} now={now} />)}
       </div>
       {coins.error && <ErrorState title="Can’t reach the launchpad contract" retry={() => coins.refetch()} />}
       {!coins.isLoading && !coins.error && !coins.data?.length && <Empty art={<Rocket size={40} className="text-faint" />} title="No RAID coins yet" body="Be the first. Launch one above." />}
       <BuySheet coin={buying} onClose={() => setBuying(null)} />
 
-      <div className="mt-10 flex flex-wrap items-end justify-between gap-3">
-        <div><h3 className="wide text-[16px]">Cooking on NEAR now</h3><p className="mt-1 text-[12.5px] text-mute">Real fair launches from meme.cooking, NEAR’s live launchpad. Not RAID launches.</p></div>
+      <div className="mt-6 md:mt-10 flex flex-wrap items-end justify-between gap-3">
+        <div><h3 className="wide text-[1rem]">Cooking on NEAR now</h3><p className="mt-1 text-[12.5px] text-mute">Real fair launches from meme.cooking, NEAR’s live launchpad. Not RAID launches.</p></div>
         <Segmented id="lp" value={f} onChange={setF} options={[{ value: 'live', label: 'Raising' }, { value: 'recent', label: 'Recent' }]} />
       </div>
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        {l.isLoading && [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[150px]" />)}
+        {l.isLoading && [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-[9.375rem]" />)}
         {items.map((x, i) => {
           const live = !x.finalized && x.endsAt > now; const pct = x.raised / Math.max(1, x.softCap);
           return (
-            <motion.a key={x.id} href={x.url} target="_blank" rel="noreferrer" className="lift panel block p-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+            <motion.a key={x.id} href={x.url} target="_blank" rel="noreferrer" className="lift panel block p-3 md:p-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
               <div className="flex items-center gap-3">
                 <CoinAvatar symbol={x.symbol} image={x.image} size={44} />
-                <div className="min-w-0 flex-1"><p className="wide text-[16px] truncate">${x.symbol}</p><p className="text-[12px] text-mute truncate">{x.name} · by {shortAddr(x.owner)}</p></div>
+                <div className="min-w-0 flex-1"><p className="wide text-[1rem] truncate">${x.symbol}</p><p className="text-[12px] text-mute truncate">{x.name} · by {shortAddr(x.owner)}</p></div>
                 <ArrowUpRight size={16} className="text-mute shrink-0" />
               </div>
               {x.description && <p className="mt-2.5 line-clamp-2 text-[12.5px] text-mute">{x.description}</p>}
@@ -119,10 +127,10 @@ export default function LaunchPage() {
 function CoinCard({ c, i, onBuy, now }: { c: LaunchCoin; i: number; onBuy: () => void; now: number }) {
   const prog = curveProgress(c);
   return (
-    <motion.article className="panel p-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+    <motion.article className="panel p-3 md:p-4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
       <div className="flex items-center gap-3">
         <CoinAvatar symbol={c.ticker} image={c.image} size={44} />
-        <div className="min-w-0 flex-1"><p className="wide text-[16px] truncate">${c.ticker}</p><p className="text-[12px] text-mute truncate">{c.name}</p></div>
+        <div className="min-w-0 flex-1"><p className="wide text-[1rem] truncate">${c.ticker}</p><p className="text-[12px] text-mute truncate">{c.name}</p></div>
         {c.graduated ? <span className="chip chip-lime">Graduated</span> : <span className="chip chip-ghost">{c.trades} trades</span>}
       </div>
       {c.description && <p className="mt-2.5 line-clamp-2 text-[12.5px] text-mute">{c.description}</p>}
@@ -166,10 +174,10 @@ function BuySheet({ coin, onClose }: { coin: LaunchCoin | null; onClose: () => v
   return (
     <Modal open={!!coin} onClose={onClose} label={coin ? `Buy $${coin.ticker}` : 'Buy'}>
       {coin && (
-        <div className="p-5">
-          <div className="flex items-center gap-3 pr-10"><CoinAvatar symbol={coin.ticker} image={coin.image} size={44} /><div><p className="eyebrow">Buy on the curve</p><p className="wide text-[22px]">${coin.ticker}</p></div></div>
-          <label className="mt-4 flex h-14 items-center gap-2 rounded-[12px] bg-raised px-4 focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]">
-            <input inputMode="decimal" value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9.]/g, ''))} aria-label={`Amount in ${unit}`} className="w-full bg-transparent mono text-[24px] font-bold outline-none" />
+        <div className="p-4 md:p-5">
+          <div className="flex items-center gap-3 pr-10"><CoinAvatar symbol={coin.ticker} image={coin.image} size={44} /><div><p className="eyebrow">Buy on the curve</p><p className="wide text-[1.375rem]">${coin.ticker}</p></div></div>
+          <label className="mt-4 flex h-12 md:h-14 items-center gap-2 rounded-[11px] md:rounded-[12px] bg-raised px-3.5 md:px-4 focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]">
+            <input inputMode="decimal" value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9.]/g, ''))} aria-label={`Amount in ${unit}`} className="w-full bg-transparent mono text-[1.5rem] font-bold outline-none" />
             <span className="mono text-[12px] text-mute">{unit}</span>
           </label>
           <div className="mt-3 rounded-[12px] hairline p-3 mono text-[12.5px]">

@@ -5,6 +5,7 @@
  */
 import { AreaSeries, CandlestickSeries, ColorType, CrosshairMode, HistogramSeries, LineStyle, createChart, type IChartApi, type UTCTimestamp } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
+import type React from 'react';
 import type { Candle } from '@/lib/coins';
 import { fmtPrice } from '@/lib/market';
 
@@ -64,9 +65,9 @@ export function CoinChart({ candles, mode = 'candles', lines = [], height = 300 
   const last = candles.length ? [...candles].sort((a, b) => a.t - b.t).at(-1)! : null;
   const show = tip ?? (last ? { ...last } : null);
   return (
-    <div className="relative" style={{ height }}>
+    <div className="relative h-[var(--chm)] md:h-[var(--ch)]" style={{ '--ch': `${height}px`, '--chm': `${Math.round(height * 0.72)}px` } as React.CSSProperties}>
       {show && (
-        <div className="pointer-events-none absolute left-3 top-2 z-10 flex flex-wrap gap-x-3 gap-y-0.5 mono text-[10.5px] text-mute">
+        <div className="pointer-events-none absolute left-2.5 md:left-3 top-1.5 md:top-2 z-10 flex flex-wrap gap-x-2.5 md:gap-x-3 gap-y-0.5 mono text-[10.5px] text-mute">
           <span>O <b className="text-ink font-medium">{fmtPrice(show.o)}</b></span><span>H <b className="text-ink font-medium">{fmtPrice(show.h)}</b></span>
           <span>L <b className="text-ink font-medium">{fmtPrice(show.l)}</b></span><span>C <b className={show.c >= show.o ? 'text-up font-medium' : 'text-down font-medium'}>{fmtPrice(show.c)}</b></span>
         </div>

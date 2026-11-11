@@ -38,7 +38,7 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
     return q.data ? [{ price: q.data.priceUsd * x, label: `${xLabel(r.target_x_bps)} IF BOUGHT NOW`, tone: 'lime' }] : [];
   }, [r, entryPrice, q.data]);
 
-  if (raid.isLoading) return <Shell title="Raid" back="/raids"><Skeleton className="h-28" /><Skeleton className="mt-4 h-[360px]" /></Shell>;
+  if (raid.isLoading) return <Shell title="Raid" back="/raids"><Skeleton className="h-28" /><Skeleton className="mt-4 h-[22.5rem]" /></Shell>;
   if (raid.error) return <Shell title="Raid" back="/raids"><ErrorState title="Can’t reach the war chest" body="The NEAR RPC didn’t answer." retry={() => raid.refetch()} /></Shell>;
   if (!r || !t) return <Shell title="Raid" back="/raids"><Empty title={`No raid #${id}`} body="This raid doesn’t exist on the chest contract." action={<Link href="/raids" className="text-brand font-semibold">See all raids</Link>} /></Shell>;
 
@@ -50,30 +50,30 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
 
   return (
     <Shell title={`Raid #${r.id}`} back="/raids">
-      <section className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <CoinAvatar symbol={t.symbol} image={q.data?.image} size={56} />
+      <section className="flex flex-wrap items-center gap-x-3 gap-y-2 md:gap-x-4 md:gap-y-3">
+        <CoinAvatar symbol={t.symbol} image={q.data?.image} size={52} />
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2"><h2 className="wide-black text-[34px] md:text-[44px] leading-none">${t.symbol}</h2><PhaseChip r={r} now={now} /></div>
-          <p className="mt-1.5 text-[13px] text-mute truncate">{r.title}</p>
+          <div className="flex flex-wrap items-center gap-2"><h2 className="wide-black text-[1.5rem] md:text-[44px] leading-none">${t.symbol}</h2><PhaseChip r={r} now={now} /></div>
+          <p className="mt-1 md:mt-1.5 text-[12px] md:text-[13px] text-mute truncate">{r.title}</p>
         </div>
         <div className="text-right">
-          <Flash value={q.data?.priceUsd}><p className="mono text-[22px] font-bold">{fmtPrice(q.data?.priceUsd)}</p></Flash>
+          <Flash value={q.data?.priceUsd}><p className="mono text-[1.25rem] md:text-[22px] font-bold">{fmtPrice(q.data?.priceUsd)}</p></Flash>
           <Delta pct={q.data?.change24h} className="text-[12px]" />
         </div>
       </section>
 
-      <div className="mt-4 grid grid-cols-3 gap-2">
+      <div className="mt-3 md:mt-4 grid grid-cols-3 gap-1.5 md:gap-2">
         <Big k="Sell line" v={xLabel(r.target_x_bps)} lime />
         <Big k="Crew pot" v={usdcOf(r.pot).toFixed(2)} unit="USDC" />
         <Big k={mult ? 'Now at' : open ? 'Crew closes' : inCountdown ? 'Chest buys in' : 'Retreat in'} v={mult ? `${mult.toFixed(2)}x` : open ? countdown(r.opens_until_ms - now) : inCountdown ? countdown(r.buy_after_ms! - now) : now ? countdown(r.retreat_at_ms - now) : '—'} />
       </div>
 
-      <div className="mt-4"><ChartPanel symbol={t.symbol} lines={lines} /></div>
+      <div className="mt-3 md:mt-4"><ChartPanel symbol={t.symbol} lines={lines} /></div>
       {!entryPrice && <p className="mt-2 px-1 text-[11.5px] text-faint">Not bought yet, so the lime line shows where {xLabel(r.target_x_bps)} would sit at today’s price. Once the chest buys, it moves to the real entry × {xLabel(r.target_x_bps)}.</p>}
 
-      <section className="panel mt-4 p-4">
+      <section className="panel mt-3 md:mt-4 p-3 md:p-4">
         <p className="eyebrow">Raid progress</p>
-        <ol className="mt-3 grid grid-cols-5 gap-1.5">
+        <ol className="mt-2.5 md:mt-3 grid grid-cols-5 gap-1.5">
           {STEPS.map((s, i) => (
             <li key={s} className="min-w-0">
               <motion.div className={`h-1.5 rounded-full ${i <= step ? (i === step ? 'bg-lime' : 'bg-ink') : 'bg-raised'}`} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }} transition={{ delay: 0.1 + i * 0.08 }} />
@@ -86,9 +86,9 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
         {r.status === 'Open' && !open && !inCountdown && <p className="mt-3 text-[12.5px] text-mute">Countdown over. Next, a keeper hands the chest a signed 1Click quote, and the chest checks it before buying.</p>}
       </section>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-[1.25fr_1fr]">
+      <div className="mt-3 md:mt-4 grid gap-3 md:gap-4 md:grid-cols-[1.25fr_1fr]">
         <BackPanel id={r.id} open={open} bps={r.target_x_bps} pot={usdcOf(r.pot)} />
-        <section className="panel p-4">
+        <section className="panel p-3 md:p-4">
           <p className="eyebrow">Caller</p>
           <Link href={`/u/${r.caller}`} className="mt-3 flex items-center gap-3 group">
             <Identicon seed={r.caller} size={46} />
@@ -99,14 +99,14 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
       </div>
 
       <section className="mt-6">
-        <div className="mb-2 flex items-end justify-between"><h3 className="wide text-[16px]">Crew chat</h3><span className="mono text-[11px] text-faint">posts tagged raid #{r.id}</span></div>
+        <div className="mb-2 flex items-end justify-between"><h3 className="wide text-[1rem]">Crew chat</h3><span className="mono text-[11px] text-faint">posts tagged raid #{r.id}</span></div>
         <div className="space-y-3">
           <Composer raidId={r.id} coin={t.symbol} placeholder={`Talk to the $${t.symbol} crew…`} />
           <Feed raidId={r.id} emptyTitle="No crew chatter yet" emptyBody="Say why you’re in, or why you’re not." />
         </div>
       </section>
 
-      <section className="panel mt-4 p-4">
+      <section className="panel mt-4 p-3 md:p-4">
         <p className="eyebrow">Rules the chest enforces</p>
         <ul className="mt-3 grid gap-3 md:grid-cols-2 text-[13px]">
           <Rule icon={<ShieldCheck size={15} />} t="Keyless buys and sells">The chest only moves funds against a 1Click quote whose signature and min-out it checks on-chain.</Rule>
@@ -129,9 +129,9 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
 
 function Big({ k, v, unit, lime }: { k: string; v: string; unit?: string; lime?: boolean }) {
   return (
-    <div className={`min-w-0 rounded-[14px] p-3 md:p-4 ${lime ? 'bg-lime text-[#0a1a00]' : 'panel'}`}>
+    <div className={`min-w-0 rounded-[12px] md:rounded-[14px] p-2.5 md:p-4 ${lime ? 'bg-lime text-[#0a1a00]' : 'panel'}`}>
       <p className={`eyebrow ${lime ? '!text-[#0a1a00]/60' : ''}`}>{k}</p>
-      <p className="mt-2 truncate mono text-[17px] md:text-[22px] font-bold leading-none">{v}{unit && <span className="ml-1 text-[10.5px] font-medium opacity-60">{unit}</span>}</p>
+      <p className="mt-1.5 md:mt-2 truncate mono text-[1.0625rem] md:text-[22px] font-bold leading-none">{v}{unit && <span className="ml-1 text-[10.5px] font-medium opacity-60">{unit}</span>}</p>
     </div>
   );
 }
@@ -164,13 +164,13 @@ function BackPanel({ id, open, bps, pot }: { id: number; open: boolean; bps: num
     finally { setBusy(false); }
   }
   return (
-    <section className="panel min-w-0 p-4">
+    <section className="panel min-w-0 p-3 md:p-4">
       <div className="flex items-center justify-between gap-2"><p className="eyebrow">Back this raid</p>{acct && <span className="mono text-[11px] text-mute">your stake {mine.toFixed(2)}</span>}</div>
       <Segmented id={`via-${id}`} className="mt-3 w-full [&>button]:flex-1" value={via} onChange={setVia} options={[{ value: 'near', label: 'NEAR wallet' }, { value: 'any', label: 'Solana / EVM' }]} />
       {via === 'any' ? <AnyChainBack raidId={id} bps={bps} open={open} /> : (
         <>
-          <label className={`mt-3 flex h-14 items-center gap-2 rounded-[12px] bg-raised px-4 ${open ? 'focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]' : 'opacity-60'}`}>
-            <input inputMode="decimal" value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9.]/g, ''))} disabled={!open} aria-label={`Amount in ${unit}`} className="w-full bg-transparent mono text-[24px] font-bold outline-none" />
+          <label className={`mt-3 flex h-12 md:h-14 items-center gap-2 rounded-[11px] md:rounded-[12px] bg-raised px-3.5 md:px-4 ${open ? 'focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]' : 'opacity-60'}`}>
+            <input inputMode="decimal" value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9.]/g, ''))} disabled={!open} aria-label={`Amount in ${unit}`} className="w-full bg-transparent mono text-[1.5rem] font-bold outline-none" />
             <span className="mono text-[12px] text-mute">{unit}</span>
           </label>
           <div className="mt-2 grid grid-cols-4 gap-1.5">{['1', '5', '25', '100'].map((v) => <button key={v} disabled={!open} onClick={() => setAmt(v)} className={`press h-9 rounded-[9px] mono text-[12px] font-bold ${amt === v ? 'bg-ink text-bg' : 'hairline text-mute'} disabled:opacity-50`}>{v}</button>)}</div>

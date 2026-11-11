@@ -47,15 +47,15 @@ export function FeedList({ items, now }: { items: FeedItem[]; now: number }) {
 
 function Row({ avatar, who, verb, when, src, href, children }: { avatar: React.ReactNode; who: React.ReactNode; verb: React.ReactNode; when: string; src: string; href?: string; children?: React.ReactNode }) {
   return (
-    <div className="flex gap-3 px-4 py-3.5 md:px-5 hover:bg-raised/40 transition-colors">
+    <div className="flex gap-2.5 md:gap-3 px-3 py-2.5 md:px-5 md:py-3.5 hover:bg-raised/40 transition-colors">
       <div className="pt-0.5">{avatar}</div>
       <div className="min-w-0 flex-1">
-        <div className="flex items-baseline gap-1.5 text-[13.5px] leading-snug">
+        <div className="flex items-baseline gap-1.5 text-[13px] md:text-[13.5px] leading-snug">
           <span className="min-w-0 truncate"><span className="font-semibold">{who}</span> <span className="text-mute">{verb}</span></span>
           <span className="ml-auto shrink-0 mono text-[11px] text-faint">{when}</span>
         </div>
         {children}
-        <div className="mt-2 flex items-center gap-2 mono text-[10.5px] text-faint">
+        <div className="mt-1.5 md:mt-2 flex items-center gap-2 mono text-[10px] md:text-[10.5px] text-faint">
           <span>src · {src}</span>
           {href && <a href={href} target="_blank" rel="noreferrer" className="inline-flex items-center gap-0.5 hover:text-ink">tx<ArrowUpRight size={11} /></a>}
         </div>
@@ -70,16 +70,16 @@ function TradePost({ t, now }: { t: Trade; now: number }) {
   const buy = t.kind === 'buy';
   return (
     <Row avatar={<Identicon seed={t.from} size={38} />} who={shortAddr(t.from)} verb={<>{buy ? 'bought' : 'sold'} <b className="text-ink">${t.symbol}</b></>} when={now ? ago(t.t, now) : ''} src={`${CHAINS[t.chain].label} · ${q?.dexId ?? 'DEX'} · GeckoTerminal`} href={TX_EXPLORER[t.chain]?.(t.tx)}>
-      <div className="mt-2 flex items-center gap-3">
-        <div className={`flex min-w-0 flex-1 items-center gap-3 rounded-[12px] px-3 py-2.5 ${buy ? 'bg-up/10' : 'bg-down/10'}`}>
+      <div className="mt-1.5 md:mt-2 flex items-center gap-2 md:gap-3">
+        <div className={`flex min-w-0 flex-1 items-center gap-3 rounded-[10px] md:rounded-[12px] px-2.5 py-2 md:px-3 md:py-2.5 ${buy ? 'bg-up/10' : 'bg-down/10'}`}>
           <CoinAvatar symbol={t.symbol} image={q?.image} size={30} />
           <div className="min-w-0">
-            <p className={`mono text-[19px] font-bold leading-none ${buy ? 'text-up' : 'text-down'}`}>{buy ? '+' : '−'}{fmtUsd(t.usd)}</p>
+            <p className={`mono text-[1.0625rem] md:text-[19px] font-bold leading-none ${buy ? 'text-up' : 'text-down'}`}>{buy ? '+' : '−'}{fmtUsd(t.usd)}</p>
             <p className="mono mt-1 text-[11px] text-mute truncate">{fmtAmount(t.amount)} {t.symbol}</p>
           </div>
           {whale && <span className="chip chip-lime ml-auto">Whale</span>}
         </div>
-        {coinBySymbol(t.symbol) && <button onClick={() => openCall(t.symbol)} className="press h-10 shrink-0 rounded-[11px] px-3.5 text-[12.5px] font-bold hairline hover:bg-lime hover:text-[#0a1a00]">Raid it</button>}
+        {coinBySymbol(t.symbol) && <button onClick={() => openCall(t.symbol)} className="press h-9 md:h-10 shrink-0 rounded-[10px] md:rounded-[11px] px-3 md:px-3.5 text-[12px] md:text-[12.5px] font-bold hairline hover:bg-lime hover:text-[#0a1a00]">Raid it</button>}
       </div>
     </Row>
   );
@@ -91,10 +91,10 @@ function ChestPost({ tx, raid, now }: { tx: ChestTx; raid?: Raid; now: number })
   const icon = tx.method === 'call_raid' ? <Flag size={17} /> : tx.method === 'ft_transfer_call' ? <HandCoins size={17} /> : <Cpu size={17} />;
   const tg = raid ? target(raid) : null;
   return (
-    <Row avatar={<span className="grid h-[38px] w-[38px] place-items-center rounded-[9px] bg-brand text-white">{icon}</span>} who={shortAddr(tx.signer)} verb={verb} when={now ? ago(tx.t, now) : ''} src={`NearBlocks ${net}`} href={explorerTx(tx.hash, net)}>
+    <Row avatar={<span className="grid h-[2.375rem] w-[2.375rem] place-items-center rounded-[9px] bg-brand text-white">{icon}</span>} who={shortAddr(tx.signer)} verb={verb} when={now ? ago(tx.t, now) : ''} src={`NearBlocks ${net}`} href={explorerTx(tx.hash, net)}>
       {raid && tg && (
-        <Link href={`/raids/${raid.id}`} className="lift mt-2 flex items-center gap-3 rounded-[12px] hairline px-3 py-2.5">
-          <span className="wide text-[16px]">${tg.symbol}</span><span className="chip chip-lime">Line {xLabel(raid.target_x_bps)}</span>
+        <Link href={`/raids/${raid.id}`} className="lift mt-1.5 md:mt-2 flex items-center gap-2.5 md:gap-3 rounded-[10px] md:rounded-[12px] hairline px-2.5 py-2 md:px-3 md:py-2.5">
+          <span className="wide text-[1rem]">${tg.symbol}</span><span className="chip chip-lime">Line {xLabel(raid.target_x_bps)}</span>
           <span className="ml-auto mono text-[11px] text-mute">Raid #{raid.id}</span><ArrowUpRight size={15} className="text-mute" />
         </Link>
       )}
@@ -107,7 +107,7 @@ function LaunchPost({ l, now }: { l: Launch; now: number }) {
   const live = !l.finalized && l.endsAt > now;
   return (
     <Row avatar={<CoinAvatar symbol={l.symbol} image={l.image} size={38} />} who={`$${l.symbol}`} verb={<>launched on NEAR <span className="text-faint">by {shortAddr(l.owner)}</span></>} when={now ? ago(l.createdAt, now) : ''} src="meme.cooking" href={l.url}>
-      <div className="mt-2 rounded-[12px] hairline px-3 py-2.5">
+      <div className="mt-1.5 md:mt-2 rounded-[10px] md:rounded-[12px] hairline px-2.5 py-2 md:px-3 md:py-2.5">
         <div className="flex items-center justify-between text-[12px]"><span className="font-semibold truncate">{l.name}</span><span className="mono text-mute shrink-0">{l.raised.toFixed(1)} / {l.softCap.toFixed(0)} NEAR</span></div>
         <Bar value={l.raised / Math.max(1, l.softCap)} tone="lime" className="mt-2" />
         <div className="mt-1.5 flex items-center gap-2 text-[11px] text-mute"><Rocket size={12} />{live ? 'Raising now' : l.raised >= l.softCap ? 'Filled' : 'Ended under soft cap'} · {l.stakers} backers</div>

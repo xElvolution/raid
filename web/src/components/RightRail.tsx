@@ -13,19 +13,19 @@ export function RightRail() {
   const movers = [...(q.data ?? [])].sort((a, b) => Math.abs(b.change24h ?? 0) - Math.abs(a.change24h ?? 0)).slice(0, 6);
   const pot = (raids.data ?? []).reduce((s, r) => s + usdcOf(r.pot), 0);
   return (
-    <aside className="hidden xl:flex sticky top-[96px] self-start w-[320px] shrink-0 flex-col gap-4 pt-4 pb-10">
-      <section className="cobalt-field relative overflow-hidden rounded-[16px] p-5">
+    <aside className="hidden xl:flex sticky top-[96px] self-start w-[20rem] shrink-0 flex-col gap-4 pt-4 pb-10">
+      <section className="cobalt-field relative overflow-hidden rounded-[16px] p-3.5 md:p-5">
         <div className="dots absolute inset-0 opacity-50" />
         <div className="relative">
           <p className="eyebrow">War chest · all raids</p>
-          <div className="mt-3 flex min-w-0 items-end gap-2"><span className="wide-black min-w-0 truncate text-[44px] leading-[.85]"><CountUp value={pot} format={(n) => n.toFixed(2)} /></span><span className="wide shrink-0 pb-1 text-[13px]">USDC</span></div>
+          <div className="mt-3 flex min-w-0 items-end gap-2"><span className="wide-black min-w-0 truncate text-[2.0rem] leading-[.85] md:text-[44px]"><CountUp value={pot} format={(n) => n.toFixed(2)} /></span><span className="wide shrink-0 pb-1 text-[13px]">USDC</span></div>
           <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/20 pt-3 text-[12px]">
-            <div><p className="text-white/60">Raids called</p><p className="mono mt-0.5 text-[15px] font-bold">{raids.data?.length ?? '–'}</p></div>
-            <div><p className="text-white/60">Buyback reserve</p><p className="mono mt-0.5 text-[15px] font-bold">{bb.data !== undefined ? usdcOf(bb.data).toFixed(2) : '–'}</p></div>
+            <div><p className="text-white/60">Raids called</p><p className="mono mt-0.5 text-[0.9375rem] font-bold">{raids.data?.length ?? '–'}</p></div>
+            <div><p className="text-white/60">Buyback reserve</p><p className="mono mt-0.5 text-[0.9375rem] font-bold">{bb.data !== undefined ? usdcOf(bb.data).toFixed(2) : '–'}</p></div>
           </div>
         </div>
       </section>
-      <section className="panel p-4">
+      <section className="panel p-3 md:p-4">
         <div className="flex items-center justify-between"><h2 className="wide text-[13px]">Movers 24h</h2><span className="mono text-[10px] text-faint">DexScreener</span></div>
         <ul className="mt-2">
           {q.isLoading && [0, 1, 2, 3].map((i) => <li key={i} className="py-2"><Skeleton className="h-8" /></li>)}

@@ -25,10 +25,10 @@ export default function LivePage() {
   const topRaid = [...(raids.data ?? [])].sort((a, b) => Number(b.pot) - Number(a.pot))[0];
 
   return (
-    <Shell title={<div className="flex items-center gap-2.5"><h1 className="wide text-[19px] md:text-[22px]">Live</h1><span className="chip chip-lime"><span className="live-dot" />{lastHour} / hr</span></div>}>
-      {topRaid && <div className="mb-4"><p className="eyebrow mb-2">Biggest crew right now</p><RaidCard r={topRaid} /></div>}
+    <Shell title={<div className="flex items-center gap-2.5"><h1 className="wide text-[1.125rem] md:text-[22px]">Live</h1><span className="chip chip-lime"><span className="live-dot" />{lastHour} / hr</span></div>}>
+      {topRaid && <div className="mb-3 md:mb-4"><p className="eyebrow mb-1.5 md:mb-2">Biggest crew right now</p><RaidCard r={topRaid} /></div>}
       <div className="panel overflow-hidden">
-        <div className="flex items-center justify-between gap-2 border-b border-line px-3 py-2.5 md:px-4">
+        <div className="flex items-center justify-between gap-2 border-b border-line px-2.5 py-2 md:px-4 md:py-2.5">
           <Segmented id="feed" value={f} onChange={setF} options={[{ value: 'all', label: 'All' }, { value: 'raids', label: 'Raids' }, { value: 'tape', label: 'Tape' }, { value: 'launches', label: 'Launches' }]} />
           <span className="hidden sm:inline mono text-[10.5px] text-faint">auto-refresh 15s</span>
         </div>

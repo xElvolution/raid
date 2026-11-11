@@ -13,7 +13,7 @@ const TONES: Record<Tone, string> = {
   ink: 'bg-ink text-bg hover:opacity-90',
   danger: 'bg-down text-white',
 };
-const SIZES = { sm: 'h-9 px-3.5 text-[13px] rounded-[9px]', md: 'h-11 px-5 text-[14.5px] rounded-[11px]', lg: 'h-[52px] px-6 text-[15.5px] rounded-[13px]' };
+const SIZES = { sm: 'h-[2.375rem] md:h-9 px-3 md:px-3.5 text-[12.5px] md:text-[13px] rounded-[9px]', md: 'h-11 px-4 md:px-5 text-[14px] md:text-[14.5px] rounded-[10px] md:rounded-[11px]', lg: 'h-[2.875rem] md:h-[52px] px-5 md:px-6 text-[14px] md:text-[15.5px] rounded-[11px] md:rounded-[13px]' };
 
 export function Button({ tone = 'brand', size = 'md', className = '', children, ...rest }: HTMLMotionProps<'button'> & { tone?: Tone; size?: keyof typeof SIZES }) {
   return (
@@ -34,9 +34,9 @@ export function Skeleton({ className = '' }: { className?: string }) { return <d
 
 export function Empty({ title, body, action, art }: { title: string; body?: ReactNode; action?: ReactNode; art?: ReactNode }) {
   return (
-    <div className="flex flex-col items-center text-center px-6 py-12">
-      <div className="mb-5">{art ?? <PixelFlag />}</div>
-      <h3 className="wide text-[19px]">{title}</h3>
+    <div className="flex flex-col items-center text-center px-6 py-8 md:py-12">
+      <div className="mb-3 md:mb-5">{art ?? <PixelFlag />}</div>
+      <h3 className="wide text-[1.0625rem] md:text-[19px]">{title}</h3>
       {body && <p className="mt-2 max-w-[34ch] text-[14px] text-mute leading-relaxed">{body}</p>}
       {action && <div className="mt-5">{action}</div>}
     </div>
@@ -44,7 +44,7 @@ export function Empty({ title, body, action, art }: { title: string; body?: Reac
 }
 export function ErrorState({ title = 'Can’t reach the source', body, retry }: { title?: string; body?: ReactNode; retry?: () => void }) {
   return (
-    <div role="alert" className="panel flex items-start gap-3 p-4">
+    <div role="alert" className="panel flex items-start gap-3 p-3 md:p-4">
       <AlertTriangle size={18} className="mt-0.5 shrink-0 text-down" />
       <div className="min-w-0 flex-1">
         <p className="text-[14px] font-semibold">{title}</p>
@@ -67,6 +67,9 @@ export function PixelFlag({ size = 64 }: { size?: number }) {
   );
 }
 
+/** Avatar/logo size token: px on desktop, scaled by --av (globals.css) on phones. */
+export const av = (px: number) => `calc(${px}px * var(--av, 1))`;
+
 /** Deterministic 5x5 pixel avatar from any account id. */
 export function Identicon({ seed, size = 36, className = '' }: { seed: string; size?: number; className?: string }) {
   let h = 2166136261;
@@ -76,7 +79,7 @@ export function Identicon({ seed, size = 36, className = '' }: { seed: string; s
   const cells: [number, number][] = [];
   for (let y = 0; y < 5; y++) for (let x = 0; x < 3; x++) if ((h >>> (y * 3 + x)) & 1) { cells.push([x, y]); if (x < 2) cells.push([4 - x, y]); }
   return (
-    <svg width={size} height={size} viewBox="-1 -1 7 7" className={`shrink-0 rounded-[9px] bg-raised ${className}`} aria-hidden>
+    <svg width={size} height={size} style={{ width: av(size), height: av(size) }} viewBox="-1 -1 7 7" className={`shrink-0 rounded-[9px] bg-raised ${className}`} aria-hidden>
       {cells.map(([x, y], i) => <rect key={i} x={x} y={y} width="1.02" height="1.02" fill={fg} />)}
     </svg>
   );
@@ -89,8 +92,8 @@ export function CoinAvatar({ symbol, image, size = 36, className = '' }: { symbo
   const sources = [local, image].filter((x): x is string => !!x);
   const [failed, setFailed] = useState(0);
   const src = sources[failed];
-  if (src) return <img src={src} alt="" width={size} height={size} onError={() => setFailed((n) => n + 1)} className={`shrink-0 rounded-full object-cover bg-raised ${className}`} style={{ width: size, height: size }} />;
-  return <span className={`grid shrink-0 place-items-center rounded-full bg-raised mono font-bold text-ink ${className}`} style={{ width: size, height: size, fontSize: size * 0.34 }}>{symbol.slice(0, 2)}</span>;
+  if (src) return <img src={src} alt="" width={size} height={size} onError={() => setFailed((n) => n + 1)} className={`shrink-0 rounded-full object-cover bg-raised ${className}`} style={{ width: av(size), height: av(size) }} />;
+  return <span className={`grid shrink-0 place-items-center rounded-full bg-raised mono font-bold text-ink ${className}`} style={{ width: av(size), height: av(size), fontSize: av(size * 0.34) }}>{symbol.slice(0, 2)}</span>;
 }
 
 /** Number that counts up when it scrolls into view and re-animates on change. */
@@ -153,7 +156,7 @@ export function Segmented<T extends string>({ value, options, onChange, id, clas
   return (
     <div role="tablist" className={`inline-flex rounded-[10px] bg-raised p-[3px] ${className}`}>
       {options.map((o) => (
-        <button key={o.value} role="tab" aria-selected={value === o.value} onClick={() => onChange(o.value)} className={`relative h-8 px-3 text-[12.5px] font-semibold rounded-[8px] transition-colors ${value === o.value ? 'text-ink' : 'text-mute hover:text-ink'}`}>
+        <button key={o.value} role="tab" aria-selected={value === o.value} onClick={() => onChange(o.value)} className={`relative h-[2.125rem] md:h-8 px-2.5 md:px-3 text-[11.5px] md:text-[12.5px] font-semibold rounded-[8px] transition-colors ${value === o.value ? 'text-ink' : 'text-mute hover:text-ink'}`}>
           {value === o.value && <motion.span layoutId={`seg-${id}`} className="absolute inset-0 rounded-[8px] bg-panel shadow-[0_1px_0_rgb(0_0_0/.2),inset_0_0_0_1px_var(--color-line)]" transition={{ type: 'spring', stiffness: 500, damping: 38 }} />}
           <span className="relative mono uppercase tracking-wide">{o.label}</span>
         </button>
@@ -176,9 +179,9 @@ export function Modal({ open, onClose, children, label, wide }: { open: boolean;
         <motion.div className="fixed inset-0 z-[70] flex items-end md:items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <div className="absolute inset-0 bg-[#02030d]/70 backdrop-blur-sm" onClick={onClose} />
           <motion.div role="dialog" aria-modal="true" aria-label={label}
-            className={`relative w-full ${wide ? 'md:max-w-[620px]' : 'md:max-w-[480px]'} max-h-[92dvh] overflow-y-auto no-scrollbar bg-panel border border-line rounded-t-[22px] md:rounded-[20px] pb-[env(safe-area-inset-bottom)]`}
+            className={`relative w-full ${wide ? 'md:max-w-[620px]' : 'md:max-w-[480px]'} max-h-[92dvh] overflow-y-auto no-scrollbar bg-panel border border-line rounded-t-[18px] md:rounded-[20px] pb-[env(safe-area-inset-bottom)]`}
             initial={{ y: 60, opacity: 0.6 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }} transition={{ type: 'spring', stiffness: 420, damping: 38 }}>
-            <button onClick={onClose} aria-label="Close" className="press absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-raised text-mute hover:text-ink"><X size={18} /></button>
+            <button onClick={onClose} aria-label="Close" className="press absolute right-2.5 top-2.5 z-10 grid h-8 w-8 md:h-9 md:w-9 place-items-center rounded-full bg-raised text-mute hover:text-ink"><X size={16} /></button>
             {children}
           </motion.div>
         </motion.div>
@@ -190,7 +193,7 @@ export function Modal({ open, onClose, children, label, wide }: { open: boolean;
 export function SectionHead({ title, meta, action }: { title: ReactNode; meta?: ReactNode; action?: ReactNode }) {
   return (
     <div className="flex items-end justify-between gap-3 mb-3">
-      <div className="min-w-0"><h2 className="wide text-[15px] tracking-tight">{title}</h2>{meta && <p className="eyebrow mt-1.5">{meta}</p>}</div>
+      <div className="min-w-0"><h2 className="wide text-[0.9375rem] tracking-tight">{title}</h2>{meta && <p className="eyebrow mt-1.5">{meta}</p>}</div>
       {action}
     </div>
   );

@@ -38,22 +38,22 @@ export default function CallerPage({ params }: { params: Promise<{ handle: strin
   return (
     <Shell title="Caller card" back="/leaderboard" actions={acct === handle ? <button onClick={() => void disconnect()} aria-label="Disconnect wallet" className="press grid h-9 w-9 place-items-center rounded-[10px] text-mute hover:bg-raised"><LogOut size={17} /></button> : undefined}>
       <motion.section initial={{ rotateX: 12, y: 20, opacity: 0 }} animate={{ rotateX: 0, y: 0, opacity: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 22 }} style={{ perspective: 800 }}
-        className="cobalt-field relative overflow-hidden rounded-[22px] p-5 md:p-7">
+        className="cobalt-field relative overflow-hidden rounded-[14px] md:rounded-[22px] p-3.5 md:p-7">
         <div className="dots absolute inset-0 opacity-60" />
         <div className="relative">
           <div className="flex items-start justify-between"><Mark size={22} /><span className="mono text-[10.5px] text-white/60">CALLER · {NETWORK.toUpperCase()}</span></div>
-          <div className="mt-6 flex items-center gap-4">
-            <Identicon seed={handle} size={72} className="!bg-white/10 !rounded-[16px]" />
-            <div className="min-w-0"><h2 className="wide-black text-[21px] md:text-[34px] leading-[.95] truncate">{shortName(handle)}</h2>
+          <div className="mt-3 md:mt-6 flex items-center gap-3 md:gap-4">
+            <Identicon seed={handle} size={64} className="!bg-white/10 !rounded-[16px]" />
+            <div className="min-w-0"><h2 className="wide-black text-[1.3125rem] md:text-[34px] leading-[.95] truncate">{shortName(handle)}</h2>
               <a href={explorerAccount(handle, NETWORK)} target="_blank" rel="noreferrer" className="mt-1.5 inline-flex items-center gap-1 mono text-[11px] text-white/60 hover:text-white">{handle.length > 30 ? shortAddr(handle) : handle}<ArrowUpRight size={11} /></a></div>
           </div>
-          <div className="mt-6 grid grid-cols-4 gap-3 border-t border-white/20 pt-4">
+          <div className="mt-3.5 md:mt-6 grid grid-cols-4 gap-2 md:gap-3 border-t border-white/20 pt-3 md:pt-4">
             <S k="Called" v={s?.called ?? 0} /><S k="Hit" v={s?.hits ?? 0} /><S k="Hit rate" v={rate} suffix="%" /><S k="Rallied" v={s?.rallied ?? 0} dp={2} />
           </div>
-          <p className="mt-4 mono text-[11px] text-white/60">Claimable fees: {fees.data !== undefined ? `${usdcOf(fees.data).toFixed(2)} USDC` : '…'} · fees unlock only on hits</p>
+          <p className="mt-3 md:mt-4 mono text-[11px] text-white/60">Claimable fees: {fees.data !== undefined ? `${usdcOf(fees.data).toFixed(2)} USDC` : '…'} · fees unlock only on hits</p>
         </div>
       </motion.section>
-      <h3 className="wide mt-7 text-[15px]">Raids called</h3>
+      <h3 className="wide mt-5 md:mt-7 text-[0.9375rem]">Raids called</h3>
       <div className="mt-3 grid gap-3 md:grid-cols-2">{mine.map((r, i) => <RaidCard key={r.id} r={r} i={i} />)}</div>
       {!raids.isLoading && !mine.length && <p className="mt-2 text-[13.5px] text-mute">No raids called from this account yet. <Link href="/raids" className="text-brand font-semibold">Browse raids</Link></p>}
     </Shell>
@@ -61,5 +61,5 @@ export default function CallerPage({ params }: { params: Promise<{ handle: strin
 }
 
 function S({ k, v, suffix = '', dp = 0 }: { k: string; v: number | null; suffix?: string; dp?: number }) {
-  return <div className="min-w-0"><p className="wide-black text-[24px] md:text-[32px] leading-none truncate">{v === null ? '—' : <CountUp value={v} format={(n) => `${n.toFixed(dp)}${suffix}`} />}</p><p className="eyebrow mt-1.5 truncate">{k}</p></div>;
+  return <div className="min-w-0"><p className="wide-black text-[1.25rem] md:text-[32px] leading-none truncate">{v === null ? '—' : <CountUp value={v} format={(n) => `${n.toFixed(dp)}${suffix}`} />}</p><p className="eyebrow mt-1.5 truncate">{k}</p></div>;
 }

@@ -27,7 +27,7 @@ export function ThemeToggle() {
   const { theme, toggle } = useTheme();
   return (
     <button onClick={(e) => toggle({ x: e.clientX, y: e.clientY })} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} className="press grid h-9 w-9 place-items-center rounded-[10px] text-mute hover:text-ink hover:bg-raised">
-      {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+      {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
     </button>
   );
 }
@@ -41,7 +41,7 @@ export function WalletButton({ compact }: { compact?: boolean }) {
   );
   return (
     <button onClick={() => void connect()} className={`press flex h-9 items-center gap-2 rounded-[10px] px-3 text-[13px] font-semibold hairline hover:bg-raised ${compact ? 'w-9 justify-center !px-0' : ''}`} aria-label="Connect NEAR wallet">
-      <Wallet size={16} />{!compact && 'Connect'}
+      <Wallet size={15} />{!compact && 'Connect'}
     </button>
   );
 }
@@ -80,7 +80,7 @@ export function Shell({ children, title, back, actions, rail = true, flush }: { 
     <div className="min-h-dvh bg-bg">
       <div className="mx-auto flex max-w-[1440px]">
         {/* Desktop rail */}
-        <nav aria-label="Main" className="hidden md:flex sticky top-0 h-dvh w-[84px] xl:w-[244px] shrink-0 flex-col border-r border-line px-3 py-5">
+        <nav aria-label="Main" className="hidden md:flex sticky top-0 h-dvh w-[5.25rem] xl:w-[244px] shrink-0 flex-col border-r border-line px-3 py-5">
           <Link href="/" className="mb-6 flex h-10 items-center px-2.5" aria-label="RAID home"><span className="xl:hidden"><Mark size={26} /></span><span className="hidden xl:inline"><Wordmark size={24} /></span></Link>
           <div className="flex flex-col gap-1">
             {NAV.map(({ href, label, Icon }) => (
@@ -103,18 +103,18 @@ export function Shell({ children, title, back, actions, rail = true, flush }: { 
 
         <div className="min-w-0 flex-1">
           <div className="sticky top-0 z-30 bg-bg/85 backdrop-blur-xl">
-            <header className="flex h-[60px] items-center justify-between gap-3 px-4 md:px-6 border-b border-line">
+            <header className="flex h-[3.5rem] md:h-[60px] items-center justify-between gap-2 md:gap-3 px-3.5 md:px-6 border-b border-line">
               <div className="flex min-w-0 items-center gap-2.5">
-                {back ? <button onClick={() => (history.length > 1 ? router.back() : router.push(back))} aria-label="Back" className="press -ml-1.5 grid h-9 w-9 place-items-center rounded-[10px] hover:bg-raised"><ChevronLeft size={22} /></button>
+                {back ? <button onClick={() => (history.length > 1 ? router.back() : router.push(back))} aria-label="Back" className="press -ml-1.5 grid h-9 w-9 place-items-center rounded-[10px] hover:bg-raised"><ChevronLeft size={20} /></button>
                   : <Link href="/" className="md:hidden" aria-label="RAID home"><Mark size={22} /></Link>}
-                {typeof title === 'string' ? <h1 className="wide text-[19px] md:text-[22px] truncate">{title}</h1> : title}
+                {typeof title === 'string' ? <h1 className="wide text-[1.125rem] md:text-[22px] truncate">{title}</h1> : title}
               </div>
               <div className="flex shrink-0 items-center gap-1.5">{actions}<ThemeToggle /><span className="md:hidden"><WalletButton compact /></span><span className="hidden md:block"><WalletButton /></span></div>
             </header>
             <TickerTape />
           </div>
           <div className="flex justify-center gap-6 px-0 md:px-6">
-            <main className={`min-w-0 flex-1 ${rail ? 'max-w-[760px]' : 'max-w-[1100px]'} ${flush ? '' : 'px-4 md:px-0'} pt-4 pb-28 md:pb-12`}>{children}</main>
+            <main className={`min-w-0 flex-1 ${rail ? 'max-w-[760px]' : 'max-w-[1100px]'} ${flush ? '' : 'px-4 md:px-0'} pt-3 md:pt-4 pb-24 md:pb-12`}>{children}</main>
             {rail && <RightRail />}
           </div>
         </div>
@@ -122,15 +122,15 @@ export function Shell({ children, title, back, actions, rail = true, flush }: { 
 
       {/* Phone tabs */}
       <nav aria-label="Tabs" className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/92 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]">
-        <div className="grid h-[64px] grid-cols-5 px-1">
+        <div className="grid h-[3.625rem] grid-cols-5 px-1">
           {[NAV[0], NAV[2], null, NAV[3], NAV[1]].map((n) => n === null ? (
             <button key="call" onClick={() => openCall()} aria-label="Call a raid" className="grid place-items-center">
-              <motion.span whileTap={{ scale: 0.9 }} className="grid h-11 w-[58px] place-items-center rounded-[14px] bg-lime text-[#0a1a00] shadow-[0_6px_24px_-6px_rgb(198_255_61/.6)]"><Plus size={24} strokeWidth={3} /></motion.span>
+              <motion.span whileTap={{ scale: 0.9 }} className="grid h-[2.625rem] w-[3.25rem] place-items-center rounded-[12px] bg-lime text-[#0a1a00] shadow-[0_6px_24px_-6px_rgb(198_255_61/.6)]"><Plus size={22} strokeWidth={3} /></motion.span>
             </button>
           ) : (
-            <Link key={n.href} href={n.href} aria-current={on(n.href) ? 'page' : undefined} className={`relative flex flex-col items-center justify-center gap-1 text-[10px] font-bold uppercase tracking-[.08em] ${on(n.href) ? 'text-ink' : 'text-faint'}`}>
+            <Link key={n.href} href={n.href} aria-current={on(n.href) ? 'page' : undefined} className={`relative flex flex-col items-center justify-center gap-[3px] text-[9.5px] font-bold uppercase tracking-[.08em] ${on(n.href) ? 'text-ink' : 'text-faint'}`}>
               {on(n.href) && <motion.span layoutId="tab-on" className="absolute top-0 h-[3px] w-8 rounded-b-full bg-lime" />}
-              <n.Icon size={21} strokeWidth={on(n.href) ? 2.4 : 1.8} />{n.label}
+              <n.Icon size={20} strokeWidth={on(n.href) ? 2.4 : 1.8} />{n.label}
             </Link>
           ))}
         </div>
@@ -148,9 +148,9 @@ export function Toaster() {
         {list.map((t) => (
           <motion.div key={t.id} layout initial={{ opacity: 0, y: -16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, x: 40 }} transition={{ type: 'spring', stiffness: 460, damping: 34 }}
             className="pointer-events-auto w-full max-w-[360px] overflow-hidden rounded-[14px] border border-line bg-panel shadow-[0_18px_50px_-12px_rgb(0_0_0/.6)]">
-            <Link href={t.href ?? '#'} className="flex gap-3 p-3.5">
+            <Link href={t.href ?? '#'} className="flex gap-2.5 p-3 md:p-3.5">
               <span className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${t.tone === 'down' ? 'bg-down' : t.tone === 'brand' ? 'bg-brand' : 'bg-lime pulse-live'}`} />
-              <span className="min-w-0"><span className="block text-[14px] font-semibold">{t.title}</span>{t.body && <span className="mt-0.5 block text-[12.5px] text-mute">{t.body}</span>}</span>
+              <span className="min-w-0"><span className="block text-[13px] md:text-[14px] font-semibold">{t.title}</span>{t.body && <span className="mt-0.5 block text-[12px] md:text-[12.5px] text-mute">{t.body}</span>}</span>
             </Link>
             <motion.div className="h-[2px] bg-lime origin-left" initial={{ scaleX: 1 }} animate={{ scaleX: 0 }} transition={{ duration: 5.2, ease: 'linear' }} />
           </motion.div>

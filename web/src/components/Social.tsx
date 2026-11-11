@@ -58,11 +58,11 @@ export function Composer({ raidId, coin, replyTo, placeholder = 'Call it. What a
     finally { setSending(false); }
   }
   return (
-    <div className={`flex gap-3 ${compact ? '' : 'panel p-4'}`}>
+    <div className={`flex gap-2.5 md:gap-3 ${compact ? '' : 'panel p-3 md:p-4'}`}>
       <Identicon seed={sess?.account ?? acct ?? 'guest'} size={compact ? 30 : 40} />
       <div className="min-w-0 flex-1">
         <textarea value={text} onChange={(e) => setText(e.target.value.slice(0, 500))} placeholder={placeholder} rows={compact ? 1 : 2} aria-label={placeholder}
-          className="w-full resize-none bg-transparent text-[15px] leading-snug outline-none placeholder:text-faint" />
+          className="w-full resize-none bg-transparent text-[14px] md:text-[15px] leading-snug outline-none placeholder:text-faint" />
         <div className="mt-2 flex items-center gap-2">
           {raidId !== undefined && !replyTo && <span className="chip chip-ghost"><Swords size={12} />Raid #{raidId}</span>}
           <span className={`ml-auto mono text-[11px] ${left < 40 ? 'text-down' : 'text-faint'}`}>{text ? left : ''}</span>
@@ -96,17 +96,17 @@ export function PostCard({ p, i = 0, now, threaded = true }: { p: Post; i?: numb
     try { await social.follow(p.handle, on); } catch (e) { setFollowing(!on); const m = errMsg(e); if (m) toast({ title: 'Follow failed', body: m, tone: 'down' }); }
   }
   return (
-    <motion.article initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.035 }} className="flex gap-3 px-4 py-3.5">
+    <motion.article initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.035 }} className="flex gap-2.5 md:gap-3 px-3 py-3 md:px-4 md:py-3.5">
       <Identicon seed={p.near_account ?? p.handle} size={40} />
       <div className="min-w-0 flex-1">
-        <div className="flex min-w-0 items-center gap-1.5 text-[13.5px]">
+        <div className="flex min-w-0 items-center gap-1.5 text-[13px] md:text-[13.5px]">
           <span className="truncate font-semibold">{(p.display_name || p.handle).replace(/\s*\(demo\)$/i, '')}</span>
           {p.demo && <span className="chip chip-ghost !h-[18px] !px-1.5 !text-[9.5px]" title="Seeded demo account, not a real person">DEMO</span>}
           <span className="hidden truncate text-mute sm:inline">@{p.handle}</span>
           <span className="shrink-0 text-faint">· {now ? ago(new Date(p.created_at).getTime(), now) : ''}</span>
           {!mine && <button onClick={follow} aria-pressed={following} aria-label={following ? `Unfollow @${p.handle}` : `Follow @${p.handle}`} className={`press ml-auto flex h-7 shrink-0 items-center gap-1 rounded-full px-2.5 text-[11.5px] font-bold ${following ? 'hairline text-mute' : 'bg-ink text-bg'}`}>{following ? <><UserCheck size={13} /><span className="hidden sm:inline">Following</span></> : <><UserPlus size={13} /><span className="hidden sm:inline">Follow</span></>}</button>}
         </div>
-        <p className="mt-1 whitespace-pre-wrap break-words text-[15px] leading-snug"><Body text={p.body} /></p>
+        <p className="mt-0.5 md:mt-1 whitespace-pre-wrap break-words text-[14px] md:text-[15px] leading-snug"><Body text={p.body} /></p>
         {p.raid_id !== null && !p.reply_to && <Link href={`/raids/${p.raid_id}`} className="lift mt-2 inline-flex items-center gap-1.5 rounded-[10px] hairline px-2.5 py-1.5 text-[12px] font-semibold"><Swords size={13} className="text-lime" />Raid #{p.raid_id}{p.coin ? ` · $${p.coin}` : ''}</Link>}
         <div className="mt-2 flex items-center gap-5 text-[12.5px] text-mute">
           {threaded && <button onClick={() => setOpen((o) => !o)} aria-expanded={open} className="press flex items-center gap-1.5 hover:text-ink"><MessageCircle size={16} />{p.replies || ''}<span className="sr-only">replies</span></button>}
@@ -164,20 +164,20 @@ export function WhoToFollow() {
   const qc = useQueryClient();
   if (c.error || (c.data && !c.data.items.length)) return null;
   return (
-    <section className="panel p-4">
+    <section className="panel p-3 md:p-4">
       <p className="eyebrow">Callers to follow</p>
-      <ul className="mt-3 space-y-3">
-        {c.isLoading && [0, 1, 2].map((i) => <Skeleton key={i} className="h-9" />)}
+      <ul className="-mx-3 mt-2.5 flex gap-2 overflow-x-auto px-3 no-scrollbar md:mx-0 md:mt-3 md:block md:space-y-3 md:overflow-visible md:px-0">
+        {c.isLoading && [0, 1, 2].map((i) => <Skeleton key={i} className="h-9 max-md:w-[14.25rem] shrink-0" />)}
         {c.data?.items.map((u) => (
-          <li key={u.handle} className="flex items-center gap-2.5">
-            <Identicon seed={u.near_account ?? u.handle} size={34} />
-            <div className="min-w-0 flex-1"><p className="truncate text-[13px] font-semibold">{(u.display_name || u.handle).replace(/\s*\(demo\)$/i, "")}{u.demo && <span className="ml-1.5 mono text-[9.5px] text-faint">DEMO</span>}</p><p className="truncate mono text-[11px] text-mute">{u.followers} followers · {u.posts} posts</p></div>
+          <li key={u.handle} className="flex shrink-0 items-center gap-2 rounded-[10px] py-1.5 pl-1.5 pr-1.5 hairline max-md:w-[14.25rem] md:gap-2.5 md:rounded-none md:p-0 md:shadow-none">
+            <Identicon seed={u.near_account ?? u.handle} size={34} className="max-md:!h-7 max-md:!w-7 max-md:!rounded-[7px]" />
+            <div className="min-w-0 flex-1"><p className="truncate text-[12.5px] md:text-[13px] font-semibold">{(u.display_name || u.handle).replace(/\s*\(demo\)$/i, "")}{u.demo && <span className="ml-1.5 mono text-[9.5px] text-faint">DEMO</span>}</p><p className="truncate mono text-[10.5px] md:text-[11px] text-mute">{u.followers} followers · {u.posts} posts</p></div>
             <button onClick={async () => { if (!(await ensure())) return; await social.follow(u.handle, !u.following).catch(() => {}); void qc.invalidateQueries({ queryKey: ['callers'] }); void qc.invalidateQueries({ queryKey: ['feed'] }); }}
-              className={`press h-7 rounded-full px-2.5 text-[11.5px] font-bold ${u.following ? 'hairline text-mute' : 'bg-ink text-bg'}`}>{u.following ? 'Following' : 'Follow'}</button>
+              className={`press h-6 shrink-0 rounded-full px-2 text-[10.5px] md:h-7 md:px-2.5 md:text-[11.5px] font-bold ${u.following ? 'hairline text-mute' : 'bg-ink text-bg'}`}>{u.following ? 'Following' : 'Follow'}</button>
           </li>
         ))}
       </ul>
-      <p className="mt-3 text-[11px] text-faint">Accounts marked DEMO are seeded examples, not real people.</p>
+      <p className="mt-2 md:mt-3 text-[10.5px] md:text-[11px] text-faint">Accounts marked DEMO are seeded examples, not real people.</p>
     </section>
   );
 }

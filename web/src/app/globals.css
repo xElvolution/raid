@@ -110,3 +110,15 @@ html[data-theme="light"] :is(.text-white, .on-dark, .cobalt-field, [class*="bg-[
 html[data-theme="light"] :is(.on-dark, [class*="bg-[#0a1a00]"]).text-lime { color: var(--color-lime); }
 html[data-theme="light"] .mark-lime { fill: #7fc400; }
 html[data-theme="light"] :is(.text-white, .on-dark, .cobalt-field, [class*="bg-[#04061a]"], [class*="bg-brand"]) .mark-lime { fill: #c6ff3d; }
+
+/* ---- Compact phone scale (tokens, not per-element hacks) ----
+   Everything sized in rem (Tailwind spacing, h-11, text-[0.9375rem]...) shrinks with the root; text under 15px is
+   authored in px so small labels stay legible. --av scales coin logos and identicons. Desktop (md+) is untouched. */
+@media (max-width: 767.98px) {
+  html { font-size: 14px; --av: .78; }
+  .wide { font-stretch: 112%; letter-spacing: -0.012em; line-height: .95; }
+  .wide-black { font-stretch: 110%; letter-spacing: -0.018em; line-height: .92; }
+  .eyebrow { font-size: 9.5px; letter-spacing: .12em; }
+  .chip { height: 19px; padding: 0 6px; font-size: 9.5px; gap: 4px; letter-spacing: .06em; }
+  :root { --radius-card: 12px; }
+}
