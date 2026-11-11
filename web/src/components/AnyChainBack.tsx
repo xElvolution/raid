@@ -7,6 +7,8 @@ import { useAccount } from '@/lib/wallet';
 import { useChestConfig } from '@/lib/hooks';
 import { PayoutBox, RiskNote } from './Payout';
 import { Skeleton } from './ui';
+import { KeylessConnect, KeylessSign } from './KeylessBack';
+import type { KeylessWallet } from '@/lib/keyless';
 
 function useDebounced<T>(v: T, ms = 450) {
   const [d, setD] = useState(v);
@@ -23,7 +25,17 @@ export function AnyChainBack({ raidId, bps, open }: { raidId: number; bps: numbe
   const [who, setWho] = useState('');
   const [refund, setRefund] = useState('');
   const [copied, setCopied] = useState(false);
+  const [kw, setKw] = useState<KeylessWallet | null>(null);
   const o = ORIGINS.find((x) => x.key === origin)!;
+  const origins = kw ? ORIGINS.filter((x) => x.addr === (kw.kind === 'phantom' ? 'sol' : 'evm')) : ORIGINS;
+  function onWallet(w: KeylessWallet | null) {
+    setKw(w);
+    if (!w) return;
+    // The wallet's key owns the stake (its NEAR Intents account) and gets any refund on its own chain.
+    setWho(w.account); setRefund(w.address);
+    const next = w.kind === 'phantom' ? 'sol-USDC' : 'base-USDC';
+    setOrigin(next); setAmt('10');
+  }
   const beneficiary = (who || acct || '').trim().toLowerCase();
   const refundBad = !!refund && !(o.addr === 'sol' ? isSolAddr(refund) : isEvmAddr(refund));
   const whoBad = !!who && !isNearAccount(who.trim().toLowerCase());
@@ -42,9 +54,10 @@ export function AnyChainBack({ raidId, bps, open }: { raidId: number; bps: numbe
 
   return (
     <div>
+      <KeylessConnect wallet={kw} onWallet={onWallet} />
       <div className="mt-3 flex gap-1.5 overflow-x-auto no-scrollbar" role="radiogroup" aria-label="Pay with">
-        {ORIGINS.map((x) => (
-          <button key={x.key} role="radio" aria-checked={origin === x.key} onClick={() => { setOrigin(x.key); setRefund(''); setAmt(x.symbol === 'USDC' ? '10' : x.symbol === 'ETH' ? '0.005' : '0.1'); }}
+        {origins.map((x) => (
+          <button key={x.key} role="radio" aria-checked={origin === x.key} onClick={() => { setOrigin(x.key); if (!kw) setRefund(''); setAmt(x.symbol === 'USDC' ? '10' : x.symbol === 'ETH' ? '0.005' : '0.1'); }}
             className={`press h-9 shrink-0 rounded-full px-3 text-[12px] font-semibold ${origin === x.key ? 'bg-ink text-bg' : 'hairline text-mute hover:text-ink'}`}>
             {x.symbol} <span className={origin === x.key ? 'opacity-60' : 'text-faint'}>· {x.chainLabel}</span>
           </button>
@@ -106,6 +119,7 @@ export function AnyChainBack({ raidId, bps, open }: { raidId: number; bps: numbe
         </div>
       )}
 
+      {kw && <KeylessSign wallet={kw} raidId={raidId} usdc={usdc} />}
       {usdc > 0 && <PayoutBox stake={usdc} bps={bps} cfg={cfg.data} unit="USDC" className="mt-3" />}
       <RiskNote className="mt-3" />
     </div>

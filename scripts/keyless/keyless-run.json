@@ -8,5 +8,129 @@
     "step": "view get_backers(0) after upgrade",
     "at": "2026-11-11T17:30:23.370Z",
     "v": []
+  },
+  {
+    "step": "metamask (erc191): throwaway key signs back intent, verified",
+    "at": "2026-11-11T17:35:07.199Z",
+    "signer": "0x4a8586a241f4e123f209e0fff688b48327e8f5e3",
+    "salt": "252812b3",
+    "local": {
+      "ok": true,
+      "detail": "ERC-191 signature recovers 0x4a8586a241f4e123f209e0fff688b48327e8f5e3"
+    },
+    "verifier": {
+      "status": "signature_ok_no_balance",
+      "detail": "intents.near verified the signature for this account; it holds no USDC in NEAR Intents yet (expected in the demo).",
+      "network": "mainnet",
+      "method": "simulate_intents"
+    }
+  },
+  {
+    "step": "metamask control: amount changed after signing",
+    "at": "2026-11-11T17:35:07.292Z",
+    "local": {
+      "ok": false,
+      "detail": "signed by 0x79f78505e9d87d10e39660a77347734dd79b7eca, payload says 0x4a8586a241f4e123f209e0fff688b48327e8f5e3"
+    },
+    "verifier": {
+      "status": "invalid_signature",
+      "detail": "The signature recovers a different key than the signer account (payload changed after signing).",
+      "network": "mainnet",
+      "method": "simulate_intents"
+    }
+  },
+  {
+    "step": "phantom (raw_ed25519): throwaway key signs back intent, verified",
+    "at": "2026-11-11T17:35:07.401Z",
+    "solana_address": "GqENiyu7aL6PctKYbfWbhpTgSN1wX4VyYBmx4n88i5xm",
+    "signer": "eb3a4e2d73a992fea7f74698ddf733067c62ef5ba62be51444c57d181534cc2a",
+    "local": {
+      "ok": true,
+      "detail": "Ed25519 signature valid for eb3a4e2d73a992fea7f74698ddf733067c62ef5ba62be51444c57d181534cc2a"
+    },
+    "verifier": {
+      "status": "signature_ok_no_balance",
+      "detail": "intents.near verified the signature for this account; it holds no USDC in NEAR Intents yet (expected in the demo).",
+      "network": "mainnet",
+      "method": "simulate_intents"
+    }
+  },
+  {
+    "step": "phantom control: beneficiary swapped after signing",
+    "at": "2026-11-11T17:35:07.489Z",
+    "local": {
+      "ok": false,
+      "detail": "stake must be credited to the signer"
+    },
+    "verifier": {
+      "status": "invalid_signature",
+      "detail": "intents.near rejected the signature.",
+      "network": "mainnet",
+      "method": "simulate_intents"
+    }
+  },
+  {
+    "step": "keyless: call_raid $SHIB 2x by a plain NEAR account (not a crew)",
+    "at": "2026-11-11T17:35:10.093Z",
+    "id": 5,
+    "tx": "CckroL8CNXmrHyLCL96DCuodC7BhxXK4xiASvUuBmzQ6",
+    "ok": true,
+    "events": [
+      "raid_called"
+    ]
+  },
+  {
+    "step": "keyless: mint 15 tUSDC to the stand-in bridge (owner mint, testnet)",
+    "at": "2026-11-11T17:35:12.354Z",
+    "tx": "DitdCjbeKD4MXtBMGrWVqAtmEzEpk8jeuWfD8AdJB2xi",
+    "ok": true,
+    "events": []
+  },
+  {
+    "step": "keyless: stand-in bridge backs raid #5 for the MetaMask 0x account (msg {back, for})",
+    "at": "2026-11-11T17:35:16.774Z",
+    "for": "0x4a8586a241f4e123f209e0fff688b48327e8f5e3",
+    "tx": "2P2dXCD3Cms82DsFtPNzK7CYvVwh4XYu35NS4oevkmf4",
+    "ok": false,
+    "fails": [
+      "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"AccountDoesNotExist\":{\"account_id\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\"}}}}}"
+    ],
+    "events": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer",
+      "ft_transfer"
+    ]
+  },
+  {
+    "step": "keyless: stand-in bridge backs raid #5 for the Phantom 64-hex account (msg {back, for})",
+    "at": "2026-11-11T17:35:21.102Z",
+    "for": "eb3a4e2d73a992fea7f74698ddf733067c62ef5ba62be51444c57d181534cc2a",
+    "tx": "BtD4rP6JcPRndzd3AvsNMNxEfwGdoYqBaurbUCyYiUnb",
+    "ok": false,
+    "fails": [
+      "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"AccountDoesNotExist\":{\"account_id\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\"}}}}}"
+    ],
+    "events": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer",
+      "ft_transfer"
+    ]
+  },
+  {
+    "step": "keyless: get_backers(5) lists the keyless accounts",
+    "at": "2026-11-11T17:35:21.379Z",
+    "backers": [
+      [
+        "0x4a8586a241f4e123f209e0fff688b48327e8f5e3",
+        "8000000"
+      ],
+      [
+        "eb3a4e2d73a992fea7f74698ddf733067c62ef5ba62be51444c57d181534cc2a",
+        "7000000"
+      ]
+    ],
+    "called_ms": 1794418508986
   }
 ]
