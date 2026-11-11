@@ -48,7 +48,7 @@ export function HitVisual() {
     <motion.div {...pop} className="relative w-[270px] overflow-hidden rounded-[16px] bg-[#04061a] p-4 text-white shadow-[0_30px_60px_-20px_rgb(0_0_0/.6)]">
       <svg viewBox="0 0 240 80" className="h-20 w-full"><motion.path d="M0,70 L30,64 L60,66 L90,52 L120,55 L150,38 L180,30 L210,18 L240,8" fill="none" stroke="#fff" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.1 }} /><line x1="0" x2="240" y1="20" y2="20" stroke="#c6ff3d" strokeDasharray="5 4" strokeWidth="1.5" /></svg>
       <motion.p className="wide-black text-[34px] leading-none text-lime" initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.9, type: 'spring', stiffness: 400, damping: 14 }}>LINE HIT</motion.p>
-      <div className="mt-3 flex items-center gap-2 text-[12px] text-white/70"><Flame size={14} className="text-[#ffc23d]" />20% of profit buys back RAID and burns it</div>
+      <div className="mt-3 flex items-center gap-2 text-[12px] text-white/70"><Flame size={14} className="text-[#ffc23d]" />Backers net +45% at a 1.5x line</div>
     </motion.div>
   );
 }

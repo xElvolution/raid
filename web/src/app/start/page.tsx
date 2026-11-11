@@ -83,7 +83,7 @@ export default function Start() {
               <div className="flex flex-1 flex-col pt-8">
                 <h1 className="wide-black text-[34px] leading-[.9]">The chest has<br /><span className="text-brand">rules, not keys.</span></h1>
                 <ul className="mt-6 space-y-2">
-                  {[[ShieldCheck, 'Keyless', 'Funds move only against a 1Click quote the contract verifies itself.'], [Lock, 'Locked caller fee', 'Callers get paid only if the raid hits its line.'], [Flame, 'Buyback and burn', 'A share of every win buys RAID and burns it.']].map(([I, t, b], k) => { const Ico = I as typeof Lock; return (
+                  {[[ShieldCheck, 'Keyless', 'Funds move only against a 1Click quote the contract verifies itself.'], [Lock, 'Locked caller fee', 'Callers get paid only if the raid hits its line.'], [Flame, 'Backers keep 90%', 'Of the profit on a hit. A 1.5x line nets backers +45%. A miss pays no fees.']].map(([I, t, b], k) => { const Ico = I as typeof Lock; return (
                     <motion.li key={t as string} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 + k * 0.1 }} className="panel flex gap-3 p-4"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-raised text-lime"><Ico size={18} /></span><span><span className="block font-semibold">{t as string}</span><span className="text-[13.5px] text-mute">{b as string}</span></span></motion.li>
                   ); })}
                 </ul>

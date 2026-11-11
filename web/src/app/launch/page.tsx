@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowUpRight, ImagePlus, Rocket } from 'lucide-react';
 import { Shell } from '@/components/Shell';
 import { Bar, Button, CoinAvatar, Empty, ErrorState, Identicon, Modal, Segmented, Skeleton } from '@/components/ui';
-import { useLaunches, countdown, shortAddr, fmtUsd } from '@/lib/market';
+import { useLaunches, countdown, shortAddr, fmtUsd, fmtPrice, ago } from '@/lib/market';
 import { useChestConfig, useNow } from '@/lib/hooks';
 import { LAUNCHPAD_ID, NETWORK, coinMcap, coinPrice, curveProgress, launchApi, launchTx, usdcOf, type LaunchCoin } from '@/lib/raid';
 import { explorerAccount } from '@/lib/coins';
@@ -13,7 +13,6 @@ import { connect, send, useAccount } from '@/lib/wallet';
 import { toast } from '@/lib/bus';
 
 const useLaunchCoins = () => useQuery({ queryKey: ['lp-coins'], queryFn: launchApi.list, refetchInterval: 10_000 });
-const fmtTokPrice = (p: number) => p >= 0.01 ? `$${p.toFixed(4)}` : `$${p.toPrecision(3)}`;
 
 export default function LaunchPage() {
   const now = useNow();
@@ -128,14 +127,14 @@ function CoinCard({ c, i, onBuy, now }: { c: LaunchCoin; i: number; onBuy: () =>
       </div>
       {c.description && <p className="mt-2.5 line-clamp-2 text-[12.5px] text-mute">{c.description}</p>}
       <div className="mt-3 grid grid-cols-3 gap-2 mono text-[11.5px]">
-        <div><p className="eyebrow">Price</p><p className="mt-1 font-bold">{fmtTokPrice(coinPrice(c))}</p></div>
+        <div><p className="eyebrow">Price</p><p className="mt-1 font-bold">{fmtPrice(coinPrice(c))}</p></div>
         <div><p className="eyebrow">Mcap</p><p className="mt-1 font-bold">{fmtUsd(coinMcap(c))}</p></div>
         <div><p className="eyebrow">Raised</p><p className="mt-1 font-bold">{usdcOf(c.raised).toFixed(2)}</p></div>
       </div>
       <div className="mt-3 flex items-center justify-between text-[11px] text-mute"><span>Curve {(prog * 100).toFixed(prog < 0.01 ? 2 : 1)}%</span><span className="mono">{c.graduated ? 'closed' : 'graduates at 100%'}</span></div>
       <Bar value={prog} tone="lime" className="mt-1.5" />
       <div className="mt-3 flex items-center gap-2">
-        <Identicon seed={c.creator} size={20} className="!rounded-[5px]" /><span className="min-w-0 flex-1 truncate text-[11.5px] text-mute">by {shortAddr(c.creator)}{now ? ` · ${countdown(now - c.created_ms)} ago` : ''}</span>
+        <Identicon seed={c.creator} size={20} className="!rounded-[5px]" /><span className="min-w-0 flex-1 truncate text-[11.5px] text-mute">by {shortAddr(c.creator)}{now ? ` · ${ago(c.created_ms, now)} ago` : ''}</span>
         <Button size="sm" tone="lime" onClick={onBuy} disabled={c.graduated}>Buy</Button>
       </div>
     </motion.article>

@@ -102,7 +102,7 @@ export function AnyChainBack({ raidId, bps, open }: { raidId: number; bps: numbe
       ) : (
         <div className="mt-3 flex gap-2.5 rounded-[14px] border border-dashed border-line p-3.5 text-[12.5px] text-mute">
           <Info size={16} className="mt-0.5 shrink-0 text-brand" />
-          <span>{q.data?.reason ?? 'The deposit address appears here once the quote is live.'} When live, 1Click swaps your {o.symbol} to USDC on NEAR and hands it to the chest with <code className="mono text-[11px] text-ink">{q.data?.msg ?? '{"back":…}'}</code>, so the stake is yours, not the bridge’s. Anything that lands after the crew window or over the cap is kept claimable for you.</span>
+          <span className="min-w-0">{q.data?.reason ?? 'The deposit address appears here once the quote is live.'} When live, 1Click swaps your {o.symbol} to USDC on NEAR and hands it to the chest with <code className="mono text-[11px] text-ink break-all">{q.data?.msg ?? '{"back":…}'}</code>, so the stake is yours, not the bridge’s. Anything that lands after the crew window or over the cap is kept claimable for you.</span>
         </div>
       )}
 

@@ -155,7 +155,7 @@ function BackPanel({ id, open, bps, pot }: { id: number; open: boolean; bps: num
     finally { setBusy(false); }
   }
   return (
-    <section className="panel p-4">
+    <section className="panel min-w-0 p-4">
       <div className="flex items-center justify-between gap-2"><p className="eyebrow">Back this raid</p>{acct && <span className="mono text-[11px] text-mute">your stake {mine.toFixed(2)}</span>}</div>
       <Segmented id={`via-${id}`} className="mt-3 w-full [&>button]:flex-1" value={via} onChange={setVia} options={[{ value: 'near', label: 'NEAR wallet' }, { value: 'any', label: 'Solana / EVM' }]} />
       {via === 'any' ? <AnyChainBack raidId={id} bps={bps} open={open} /> : (

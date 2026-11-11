@@ -103,7 +103,7 @@ export default function Landing() {
           <div className="grid gap-4 text-[15px] leading-relaxed text-mute">
             <p><b className="text-ink">Callers earn a share of the profit, not of the hype.</b> The fee sits locked in the chest and pays out only when the raid hits its line. If it retreats, the fee is gone.</p>
             <p><b className="text-ink">No one can grab the pot.</b> The chest checks every 1Click quote’s signature, recipient and minimum return before it moves a cent. On mainnet the account’s keys are removed, so only the contract’s rules can move funds.</p>
-            <p><b className="text-ink">Winners feed the token.</b> A share of every winning raid buys back RAID and burns it.</p>
+            <p><b className="text-ink">Backers keep 90% of the profit.</b> The caller takes 2.5% and the buyback reserve 7.5%, only on a hit. A 1.5x line nets backers +45%, 2x nets +90%, 3x nets +180%. A miss pays no fees, and you can still lose the pot.</p>
           </div>
         </div>
       </section>

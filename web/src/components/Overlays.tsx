@@ -38,7 +38,7 @@ export function RaidHitOverlay() {
             </h2>
             <motion.p className="wide-black mt-4 text-[44px] md:text-[64px] text-lime" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}>{h.multiple}</motion.p>
             {h.profitUsd !== undefined && <p className="mono mt-2 text-[18px]">+<CountUp value={h.profitUsd} format={(n) => `$${n.toFixed(2)}`} /> crew profit</p>}
-            <p className="mt-4 max-w-[36ch] text-[14px] text-white/75">The chest sold at the line. The caller’s locked fee is released and the buyback share burns RAID.</p>
+            <p className="mt-4 max-w-[36ch] text-[14px] text-white/75">The chest sold at the line. Backers keep 90% of the profit. The caller’s locked fee is released.</p>
             <button onClick={() => setH(null)} className="press mt-8 h-12 rounded-[12px] bg-white px-8 font-semibold text-[#0b1fd1]">Collect</button>
           </div>
         </motion.div>

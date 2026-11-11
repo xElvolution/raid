@@ -11,14 +11,14 @@ export function PayoutBox({ stake, bps, cfg, unit, className = '' }: { stake: nu
   return (
     <div className={`overflow-hidden rounded-[14px] hairline ${className}`}>
       <div className="grid grid-cols-2">
-        <div className="p-3.5">
-          <p className="eyebrow">If it sells at {xLabel(bps)}</p>
-          <p className="mt-1.5 mono text-[22px] font-bold leading-none text-up">{fmt(p.payout)}<span className="ml-1 text-[11px] font-medium text-mute">{unit}</span></p>
+        <div className="min-w-0 p-3.5">
+          <p className="eyebrow truncate">Line hits · {xLabel(bps)}</p>
+          <p className="mt-1.5 whitespace-nowrap mono text-[19px] md:text-[22px] font-bold leading-none text-up">{fmt(p.payout)}<span className="ml-1 text-[11px] font-medium text-mute">{unit}</span></p>
           <p className="mt-1 mono text-[12px] text-up">{fmtPct(p.gainPct)} net</p>
         </div>
-        <div className="border-l border-line p-3.5">
-          <p className="eyebrow">If it retreats</p>
-          <p className="mt-1.5 mono text-[22px] font-bold leading-none text-down">0 – {fmt(stake)}<span className="ml-1 text-[11px] font-medium text-mute">{unit}</span></p>
+        <div className="min-w-0 border-l border-line p-3.5">
+          <p className="eyebrow truncate">Retreats</p>
+          <p className="mt-1.5 whitespace-nowrap mono text-[19px] md:text-[22px] font-bold leading-none text-down">0–{fmt(stake)}<span className="ml-1 text-[11px] font-medium text-mute">{unit}</span></p>
           <p className="mt-1 text-[12px] text-mute">sold at market price</p>
         </div>
       </div>
