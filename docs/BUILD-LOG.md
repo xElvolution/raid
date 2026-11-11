@@ -56,3 +56,24 @@ Times are WAT (UTC+1). Testnet only: no mainnet transaction, no money spent, not
 - With no matching raid, it offers "Call $SYM Nx". The bot only reads the chain; it never signs or holds funds.
 - The token comes only from `TELEGRAM_BOT_TOKEN`. Without it, `npm run telegram` refuses to start. `npm run telegram:mock` prints what it would post, against the live testnet chest, to a console Telegram (`evidence/telegram-mock-run.txt`).
 - Tests: `api/test/telegram.test.ts` (4) cover command parsing, raid choice, card → fill → held → hit, retreat, and no-raid. The bot has not run live; that needs a bot token from @BotFather.
+
+## 7. Judge-grade README, evidence, demo script, X post
+- `README.md` is rewritten as a one-line pitch, the problem, how it works (numbered), and the deal table.
+- **Partner table:** NEAR Intents, Chain Signatures, Sputnik DAO, and meme.cooking as a read-only feed. Rhea, HOT, HEX, Aurora and Trezu are listed as not used.
+- Also in the README: a mermaid architecture diagram, "Try it with no money", Evidence, Run it, Layout and honest limits.
+- **Tracks:** memecoins (primary), defi, open, social (Sputnik DAO crews).
+- `evidence/` contains `testnet-txs.json`, built by `scripts/receipts.mjs` from `testnet-run-mpc`, `testnet-v2-run`, `crews-run`, `keyless/keyless-run`, `judge-run` and `testnet-e2e-run`. It also holds `testnet-e2e-run.json` and `telegram-mock-run.txt`.
+- `docs/DEMO-SCRIPT.md` is the 2:30 script; no video has been recorded. `docs/X-POST.md` is a draft that has not been posted.
+
+## 8. Testnet E2E rehearsal
+- `scripts/testnet-e2e.mjs a|b` covers the following:
+  - A Frog Legion DAO proposal and two votes, after which the DAO calls raid #6 ($TRUMP 2x).
+  - Backs from a NEAR wallet (40), a MetaMask-derived account (12) and a Phantom-derived account (9). The MetaMask and Phantom signatures were verified by mainnet `intents.near` with a read-only check, and both accounts appear in `get_backers`.
+  - A NEP-413 sign-in, then a DEMO reel upload and a 30 tUSDC back through the reel. The API verified that back on chain.
+  - Raid War scoring.
+  - Launchpad create, buy, sell and claim of creator fees.
+  - `settle` and `claim_share_for`, both blocked by Intents.
+  - `payout_preview`.
+  - Chain Signatures `mpc_bootstrap` and `mpc_sign_buy`, which produced a valid signature over the whole pot.
+- **Result:** 21 pass, 4 blocked only by Intents, 0 fail. Checklist: `docs/TESTNET-E2E.md`. Screenshots: `scripts/shots/prod/v4/e2e/`.
+- **Raid page:** now shows the crew from `get_backers`, labelling each backer as NEAR wallet, MetaMask or Phantom.

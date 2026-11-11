@@ -5,6 +5,7 @@ import { raidApi } from './raid';
 
 export const useRaids = () => useQuery({ queryKey: ['raids'], queryFn: () => raidApi.list(0, 100), refetchInterval: 10_000 });
 export const useRaid = (id: number) => useQuery({ queryKey: ['raid', id], queryFn: () => raidApi.get(id), refetchInterval: 10_000 });
+export const useBackers = (id: number) => useQuery({ queryKey: ['backers', id], queryFn: () => raidApi.backers(id), refetchInterval: 15_000 });
 export const useChestConfig = () => useQuery({ queryKey: ['chest-config'], queryFn: raidApi.config, staleTime: 5 * 60_000 });
 export const useBuyback = () => useQuery({ queryKey: ['buyback'], queryFn: raidApi.buyback, refetchInterval: 30_000 });
 

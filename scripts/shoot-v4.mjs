@@ -10,6 +10,7 @@ const WIDTHS = (process.env.WIDTHS || "390,1440").split(",").map(Number);
 const THEMES = (process.env.THEMES || "dark,light").split(",");
 const FULL = process.env.FULL !== "0";
 const openCall = async (p) => { await p.getByRole("button", { name: "Call a raid" }).first().click(); await p.waitForTimeout(800); await p.getByRole("dialog").getByRole("button", { name: /\$PEPE/ }).first().click(); await p.waitForTimeout(900); };
+const toText = async (p, re) => { const el = p.getByText(re).first(); await el.waitFor({ timeout: 15000 }).catch(() => {}); await el.evaluate((e) => scrollTo(0, e.getBoundingClientRect().top + scrollY - 120)).catch(() => {}); await p.waitForTimeout(700); };
 const PAGES = [
   ["war", "/war"],
   ["judges", "/judges"],
@@ -20,6 +21,17 @@ const PAGES = [
   ["reels", "/reels"],
   ["reels-top", "/reels/top"],
   ["feed", "/feed"],
+  // Testnet E2E rehearsal (raid #6): one shot per step. Run with OUT=…/v4/e2e WIDTHS=390 node shoot-v4.mjs e2e-
+  ["e2e-01-war-score", "/war"],
+  ["e2e-02-crew-proposal", "/war", (p) => toText(p, /E2E rehearsal/)],
+  ["e2e-03-raid-called-by-dao", "/raids/6"],
+  ["e2e-04-backers", "/raids/6", (p) => toText(p, /^Crew · /)],
+  ["e2e-05-phantom-metamask", "/raids/6", async (p) => { const t = p.getByRole("tab", { name: /Phantom|MetaMask/ }).first(); await t.click(); await p.waitForTimeout(1500); await t.evaluate((e) => { const y = e.getBoundingClientRect().top + scrollY - 110; scrollTo(0, y); }); await p.waitForTimeout(400); }],
+  ["e2e-06-reel", "/reels"],
+  ["e2e-07-reel-board", "/reels/top"],
+  ["e2e-08-launchpad", "/launch", (p) => toText(p, /E2E Rehearsal|E2EF9TQM/)],
+  ["e2e-09-countdown-over-mpc", "/raids/6", (p) => toText(p, /^Raid progress$/i)],
+  ["e2e-10-reel-back-receipt", "/raids/6", (p) => toText(p, /^Back this raid$/i)],
 ];
 const metrics = () => {
   const vh = innerHeight, vw = innerWidth;
@@ -41,7 +53,7 @@ const metrics = () => {
 const b = await chromium.launch({ executablePath: "/usr/bin/google-chrome", args: ["--no-sandbox"] });
 const rows = [];
 for (const [name, path, act] of PAGES) {
-  if (only && !only.split(",").some((o) => name === o)) continue;
+  if (only && !only.split(",").some((o) => name === o || (o.endsWith("-") && name.startsWith(o)))) continue;
   for (const theme of THEMES) for (const W of WIDTHS) {
     const H = W === 360 ? 780 : W === 390 ? 844 : 900;
     const ctx = await b.newContext(W < 800 ? { viewport: { width: W, height: H }, deviceScaleFactor: 2, isMobile: true, hasTouch: true } : { viewport: { width: W, height: H } });

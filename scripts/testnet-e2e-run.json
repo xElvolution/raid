@@ -1,0 +1,454 @@
+{
+  "network": "testnet",
+  "chest": "raid-chest-mwab3vnk.testnet",
+  "steps": [
+    {
+      "id": "0",
+      "title": "Preflight: testnet chest, testnet USDC, NEAR Intents stand-in",
+      "result": "pass",
+      "at": "2026-11-11T17:57:31.954Z",
+      "chest": "raid-chest-mwab3vnk.testnet",
+      "usdc": "tusdc.raid-chest-mwab3vnk.testnet",
+      "intents": "intents-not-on-testnet.raid-chest-mwab3vnk.testnet",
+      "mpc": "v1.signer-prod.testnet",
+      "min_open_minutes": 10,
+      "buy_delay_minutes": 10
+    },
+    {
+      "id": "1",
+      "title": "Crew DAO proposal: Frog Legion proposes call_raid $TRUMP 2x",
+      "result": "pass",
+      "at": "2026-11-11T17:57:34.577Z",
+      "dao": "raid-frog-legion.sputnikv2.testnet",
+      "proposal": 2,
+      "tx": "AzaGzU2DzYMEQz2y3mY24V1PwC94dqcdnJpQJPapdBYF",
+      "block": "Hr3GSuqniehompfA791AcCpgsWmzh7MALqmhENVzcqhe",
+      "ok": true,
+      "topOk": true,
+      "events": [],
+      "value": "2"
+    },
+    {
+      "id": "2",
+      "title": "Crew vote 1/2: captain approves",
+      "result": "pass",
+      "at": "2026-11-11T17:57:36.967Z",
+      "dao": "raid-frog-legion.sputnikv2.testnet",
+      "proposal": 2,
+      "voter": "raid-capt-frogs-mwce6jqg.testnet",
+      "tx": "63D1m1ZrdNK9rWnhSTGYedxwenVtdPrnsuXHkTPsxyem",
+      "block": "8unGF7Z6FVsQ4YvrHbWgLfzqWvNh9tFE5AR2wiJvXBPo",
+      "ok": true,
+      "topOk": true,
+      "events": []
+    },
+    {
+      "id": "3",
+      "title": "Crew vote 2/2: member approves, proposal passes, the DAO calls the raid",
+      "result": "pass",
+      "at": "2026-11-11T17:57:41.137Z",
+      "dao": "raid-frog-legion.sputnikv2.testnet",
+      "proposal": 2,
+      "status": "Approved",
+      "voter": "raid-judge2-mwce6vli.testnet",
+      "raid": 6,
+      "caller": "raid-frog-legion.sputnikv2.testnet",
+      "events": [
+        "raid_called"
+      ],
+      "tx": "85jtMEp2Qxqa9KFpt21KnPBxsL9qMe5EBHofemUjXW12",
+      "block": "FD35bMXoCWW1ex1ijfqjHktWeWRWxeoL3ahGytPxXvP1"
+    },
+    {
+      "id": "4",
+      "title": "Back from a NEAR wallet: 40 tUSDC",
+      "result": "pass",
+      "at": "2026-11-11T17:57:48.129Z",
+      "raid": 6,
+      "backer": "raid-capt-dogs-mwce6nua.testnet",
+      "mint_tx": "4dcjPBWr8bX7xV16LYgsK1ufmqdWVtyA4EbLTh9SNTTQ",
+      "tx": "6R482mgBBYoRQm2D27MzW7TnmxTn2qkHHEYPrG9rYLZi",
+      "block": "EnB6cEW6a9xFWkWBSLhxvnbyaMD5XPHqjo2SgcaASrAh",
+      "ok": false,
+      "topOk": true,
+      "fails": [
+        {
+          "executor": "intents-not-on-testnet.raid-chest-mwab3vnk.testnet",
+          "err": "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"AccountDoesNotExist\":{\"account_id\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\"}}}}}"
+        }
+      ],
+      "events": [
+        "ft_transfer",
+        "raid_backed",
+        "ft_transfer",
+        "ft_transfer"
+      ],
+      "value": "\"40000000\"",
+      "intents_forward_failed_as_expected": true,
+      "stake": "40000000"
+    },
+    {
+      "id": "5a",
+      "title": "MetaMask (ERC-191) signs the back intent; intents.near on mainnet accepts the signature (simulate_intents, read-only)",
+      "result": "pass",
+      "at": "2026-11-11T17:57:48.352Z",
+      "intents_account": "0x9190ad48ed8d27ac8119c9f612c2d5abc9f443b1",
+      "local": {
+        "ok": true,
+        "detail": "ERC-191 signature recovers 0x9190ad48ed8d27ac8119c9f612c2d5abc9f443b1"
+      },
+      "verifier": {
+        "status": "signature_ok_no_balance",
+        "detail": "intents.near verified the signature for this account; it holds no USDC in NEAR Intents yet (expected in the demo).",
+        "network": "mainnet",
+        "method": "simulate_intents"
+      }
+    },
+    {
+      "id": "6a",
+      "title": "Phantom (raw Ed25519) signs the back intent; intents.near on mainnet accepts the signature (simulate_intents, read-only)",
+      "result": "pass",
+      "at": "2026-11-11T17:57:48.352Z",
+      "solana_address": "8u4LPS3RRHn7RpQmpGsbzsFLzuZR5gV3JfFuB1aP18Fb",
+      "intents_account": "7557c7d60b9888fb0f28c71417986b991e8f6f3da13be25ea0057ecfe6bc914a",
+      "local": {
+        "ok": true,
+        "detail": "Ed25519 signature valid for 7557c7d60b9888fb0f28c71417986b991e8f6f3da13be25ea0057ecfe6bc914a"
+      },
+      "verifier": {
+        "status": "signature_ok_no_balance",
+        "detail": "intents.near verified the signature for this account; it holds no USDC in NEAR Intents yet (expected in the demo).",
+        "network": "mainnet",
+        "method": "simulate_intents"
+      }
+    },
+    {
+      "id": "5b",
+      "title": "MetaMask-derived account backs 12 tUSDC (stand-in bridge delivers with for=0x…)",
+      "result": "pass",
+      "at": "2026-11-11T17:57:54.988Z",
+      "raid": 6,
+      "beneficiary": "0x9190ad48ed8d27ac8119c9f612c2d5abc9f443b1",
+      "mint_tx": "47qkZ5rzcSAwzED8fTdNC4hSvrswUJcRx1s848ik26pf",
+      "tx": "7CfiouYJWK9CThJXDjdFJmPQKitKUAu9cBNQLvZoVa91",
+      "block": "Euo4ygSDYsYKa5urKXWZFXCojd2hbcoqgkxkoZbsyeGs",
+      "ok": false,
+      "topOk": true,
+      "fails": [
+        {
+          "executor": "intents-not-on-testnet.raid-chest-mwab3vnk.testnet",
+          "err": "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"AccountDoesNotExist\":{\"account_id\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\"}}}}}"
+        }
+      ],
+      "events": [
+        "ft_transfer",
+        "raid_backed",
+        "ft_transfer",
+        "ft_transfer"
+      ],
+      "value": "\"12000000\"",
+      "intents_forward_failed_as_expected": true,
+      "note": "On mainnet NEAR Intents executes the signed intent (5a); testnet has no intents.near, so a stand-in account delivers."
+    },
+    {
+      "id": "6b",
+      "title": "Phantom-derived account backs 9 tUSDC (stand-in bridge delivers with for=<64-hex>)",
+      "result": "pass",
+      "at": "2026-11-11T17:57:59.613Z",
+      "raid": 6,
+      "beneficiary": "7557c7d60b9888fb0f28c71417986b991e8f6f3da13be25ea0057ecfe6bc914a",
+      "tx": "AqTUMBDUtajabaYq3vxSdMm8X6ocWmbDZWRUfLSfyZGn",
+      "block": "7ETQVyMYZVF4TwfP6kVJQxdrKXihPpwUZErFEBRK1dCg",
+      "ok": false,
+      "topOk": true,
+      "fails": [
+        {
+          "executor": "intents-not-on-testnet.raid-chest-mwab3vnk.testnet",
+          "err": "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"AccountDoesNotExist\":{\"account_id\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\"}}}}}"
+        }
+      ],
+      "events": [
+        "ft_transfer",
+        "raid_backed",
+        "ft_transfer",
+        "ft_transfer"
+      ],
+      "value": "\"9000000\"",
+      "intents_forward_failed_as_expected": true
+    },
+    {
+      "id": "7",
+      "title": "get_backers lists the NEAR, 0x and Ed25519 accounts with their stakes",
+      "result": "pass",
+      "at": "2026-11-11T17:57:59.760Z",
+      "raid": 6,
+      "backers": [
+        [
+          "raid-capt-dogs-mwce6nua.testnet",
+          "40000000"
+        ],
+        [
+          "0x9190ad48ed8d27ac8119c9f612c2d5abc9f443b1",
+          "12000000"
+        ],
+        [
+          "7557c7d60b9888fb0f28c71417986b991e8f6f3da13be25ea0057ecfe6bc914a",
+          "9000000"
+        ]
+      ]
+    },
+    {
+      "id": "8",
+      "title": "Reel creator signs in to the RAID API with NEP-413 (no gas)",
+      "result": "pass",
+      "at": "2026-11-11T17:57:59.993Z",
+      "account": "raid-judge3-mwce6zdz.testnet"
+    },
+    {
+      "id": "9",
+      "title": "Upload a DEMO reel (8 s mp4 rendered from real TRUMP candles) linked to the raid",
+      "result": "pass",
+      "at": "2026-11-11T17:58:02.948Z",
+      "reel": "4",
+      "duration_s": 8,
+      "raid": 6,
+      "bytes": 57141
+    },
+    {
+      "id": "10",
+      "title": "Back 30 tUSDC through the reel; API verifies the tx on chain and credits the reel (off-chain attribution, demo)",
+      "result": "pass",
+      "at": "2026-11-11T17:58:11.020Z",
+      "raid": 6,
+      "reel": "4",
+      "backer": "raid-capt-frogs-mwce6jqg.testnet",
+      "mint_tx": "G2BUnbwPR5apwrbGtUQDX5pjC45mdGYUAYeKgqXP1ixw",
+      "tx": "pQivDuLEL9DQWXJRrKQHpPDYTAr8xjDMGs2P7vdC9pt",
+      "block": "2KmYx2PPh5ePmULZUpD9nmbf4yCwZ18kCqG3P9Zcn4ks",
+      "ok": false,
+      "topOk": true,
+      "fails": [
+        {
+          "executor": "intents-not-on-testnet.raid-chest-mwab3vnk.testnet",
+          "err": "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"AccountDoesNotExist\":{\"account_id\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\"}}}}}"
+        }
+      ],
+      "events": [
+        "ft_transfer",
+        "raid_backed",
+        "ft_transfer",
+        "ft_transfer"
+      ],
+      "value": "\"30000000\"",
+      "intents_forward_failed_as_expected": true,
+      "attribution": {
+        "ok": true,
+        "status": 201,
+        "body": {
+          "ok": true,
+          "raidId": 6,
+          "amount": "30000000",
+          "attribution": "off-chain attribution, demo"
+        }
+      },
+      "leaderboard_row": {
+        "handle": "raidjudge3mwce6zdz",
+        "display_name": "raidjudge3mwce6zdz",
+        "demo": false,
+        "reels": 1,
+        "backs": 1,
+        "backed_raw": 30000000,
+        "hits": 0,
+        "earned_raw": 0
+      }
+    },
+    {
+      "id": "11",
+      "title": "Raid War scoring: the new DAO raid counts for Frog Legion's firepower",
+      "result": "pass",
+      "at": "2026-11-11T17:58:11.661Z",
+      "war": {
+        "start": 1794418080000,
+        "end": 1794504480000
+      },
+      "score": {
+        "raid-frog-legion.sputnikv2.testnet": {
+          "raids": [
+            3,
+            6
+          ],
+          "backed_usdc": 276,
+          "hits": 0
+        },
+        "raid-doge-pack.sputnikv2.testnet": {
+          "raids": [
+            4
+          ],
+          "backed_usdc": 130,
+          "hits": 0
+        }
+      },
+      "leader": "Frog Legion",
+      "note": "No raid has settled on testnet (settlement needs NEAR Intents), so hits = 0 and firepower = backed USDC."
+    },
+    {
+      "id": "12",
+      "title": "Launchpad: create $E2EF9TQM",
+      "result": "pass",
+      "at": "2026-11-11T17:58:13.861Z",
+      "coin": 1,
+      "ticker": "E2EF9TQM",
+      "creator": "raid-capt-dogs-mwce6nua.testnet",
+      "tx": "8xjYTUaBT6fTL16Ae1ezFRLzMauBcvZeziQZHURp3LJH",
+      "block": "AkZAyf9LMzhTzH7q8ZVjEm9tCFC41VM1sHsz6ReQoCWK",
+      "ok": true,
+      "topOk": true,
+      "events": [
+        "coin_created"
+      ],
+      "value": "1"
+    },
+    {
+      "id": "13",
+      "title": "Launchpad: buy with 10 tUSDC on the bonding curve",
+      "result": "pass",
+      "at": "2026-11-11T17:58:19.696Z",
+      "coin": 1,
+      "quote_tokens": "34277831558567",
+      "balance": "34277831558567",
+      "mint_tx": "7wuK2BiopsVkJ3Tv2S5mcwYSAW9raTcT3KD7HcYqeV1W",
+      "tx": "DhP5PWjB5x1v89RFxuaNwzm85M8H8gLCsi5fYduYAbYh",
+      "block": "FQkp6pR2fe8ZGu7ZQgPMaPf48YTnKKoyqLciCcvNvnoA",
+      "ok": true,
+      "topOk": true,
+      "events": [
+        "ft_transfer",
+        "trade"
+      ],
+      "value": "\"10000000\""
+    },
+    {
+      "id": "14",
+      "title": "Launchpad: sell half back to the curve",
+      "result": "pass",
+      "at": "2026-11-11T17:58:23.378Z",
+      "coin": 1,
+      "tokens": "17138915779283",
+      "quote_usdc": "4980046",
+      "balance_after": "17138915779284",
+      "tx": "FVwq4CT3JvWU9bd7XXy17qXggiRD9xHmq8EEdh41xaSF",
+      "block": "48HA5FXwJYo49tnQWzBFEuDdXhCom1wYD175i95ip1u9",
+      "ok": true,
+      "topOk": true,
+      "events": [
+        "trade",
+        "ft_transfer"
+      ],
+      "value": "true"
+    },
+    {
+      "id": "15",
+      "title": "Launchpad: creator claims trading fees (a real claim on testnet)",
+      "result": "pass",
+      "at": "2026-11-11T17:58:26.542Z",
+      "creator": "raid-capt-dogs-mwce6nua.testnet",
+      "fees_before": "150303",
+      "fees_after": "0",
+      "tx": "7tGeYWLFuX472tKvhXApQwRM2guGi5TAaZAT9eHYx5rN",
+      "block": "yJaRCSLLdS1Yyg7C8ntZRYj6dVDX9vZAyUvQP3Zuyf7",
+      "ok": true,
+      "topOk": true,
+      "events": [
+        "ft_transfer"
+      ],
+      "value": "true"
+    },
+    {
+      "id": "16",
+      "title": "settle(raid): reads the chest's intents.near balance after a buy or sell",
+      "result": "intents",
+      "at": "2026-11-11T17:58:28.796Z",
+      "raid": 6,
+      "ok": false,
+      "err": "Smart contract panicked: nothing to settle",
+      "why": "the raid can only reach Buying through execute_buy with a 1Click quote; 1Click and NEAR Intents are mainnet only, so there is nothing to settle"
+    },
+    {
+      "id": "17",
+      "title": "claim_share_for(raid, backer): pull a backer's share of a closed raid",
+      "result": "intents",
+      "at": "2026-11-11T17:58:31.040Z",
+      "raid": 6,
+      "ok": false,
+      "err": "Smart contract panicked: raid not closed",
+      "why": "the raid never closes on testnet because the buy and sell run through NEAR Intents"
+    },
+    {
+      "id": "18",
+      "title": "payout_preview: what the 40 tUSDC NEAR backer gets if the line hits (contract view)",
+      "result": "pass",
+      "at": "2026-11-11T17:58:31.182Z",
+      "preview": {
+        "stake": "40000000",
+        "payout_at_line": "76000000",
+        "net_gain_bps": 9000,
+        "caller_fee_bps": 250,
+        "buyback_bps": 750,
+        "worst_case": "can lose the stake: after retreat the chest sells at market"
+      }
+    },
+    {
+      "id": "19a",
+      "title": "Chain Signatures: the chest derives its own key from v1.signer-prod.testnet (mpc_bootstrap, anyone can call)",
+      "result": "pass",
+      "at": "2026-11-11T18:23:59.036Z",
+      "tx": "3JcLvFxqd5xxk6eUJqdGcig1SeabKgA7BjJWJLVb79Ym",
+      "block": "7CvreZ6xoYm6VExDKvs2ZTdmbL2ownD29ZV1QrdWbi4B",
+      "ok": true,
+      "topOk": true,
+      "events": [],
+      "value": "\"ed25519:7npGSZS4bSvSPA8CNEnVQqpwsgHUbqKoER1DkoEp9x5d\"",
+      "mpc_key": "ed25519:7npGSZS4bSvSPA8CNEnVQqpwsgHUbqKoER1DkoEp9x5d"
+    },
+    {
+      "id": "19",
+      "title": "Chain Signatures (v1.signer-prod.testnet) signs the chest's buy intent for the whole pot",
+      "result": "pass",
+      "at": "2026-11-11T18:24:06.464Z",
+      "raid": 6,
+      "pot": "91000000",
+      "tx": "FZGSY98xpwKyJoUuBRAJFW2o34HkNwiTYtNQqpiQXHBZ",
+      "block": "25R9JoMbp5jKWdu1equ44mUbf36Hws9e3vmh46G6Xc1v",
+      "ok": true,
+      "topOk": true,
+      "events": [
+        "mpc_signed"
+      ],
+      "value": "{\"standard\":\"raw_ed25519\",\"payload\":\"{\\\"signer_id\\\":\\\"raid-chest-mwab3vnk.testnet\\\",\\\"verifying_contract\\\":\\\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\\\",\\\"deadline\\\":\\\"2026-11-11T18:29:00.539Z\\\",\\\"nonce\\\":\\\"AAAAAIFCKZ5Nq9ri6Gik3fWUYaXZEP4OND6XNeX2qjs=\\\",\\\"intents\\\":[{\\\"intent\\\":\\\"token_diff\\\",\\\"diff\\\":{\\\"nep141:tusdc.raid-chest-mwab3vnk.testnet\\\":\\\"-91000000\\\",\\\"nep141:sol-c58e6539c2f2e097c251f8edf11f9c03e581f8d4.omft.near\\\":\\\"1\\\"}}]}\",\"public_key\":\"ed25519:7npGSZS4bSvSPA8CNEnVQqpwsgHUbqKoER1DkoEp9x5d\",\"signature\":\"ed25519:4gPjP3S2QbDQAQM4YfLbe5XfS4jaFC6Lh9Rby5Bndk5meUhaqqdzWCebzR7FqpyHqifXrxCNMkLEFcuYsBi74tJ9\"}",
+      "mpc_key": "ed25519:7npGSZS4bSvSPA8CNEnVQqpwsgHUbqKoER1DkoEp9x5d",
+      "signature_valid_for_payload": true,
+      "payload": "{\"signer_id\":\"raid-chest-mwab3vnk.testnet\",\"verifying_contract\":\"intents-not-on-testnet.raid-chest-mwab3vnk.testnet\",\"deadline\":\"2026-11-11T18:29:00.539Z\",\"nonce\":\"AAAAAIFCKZ5Nq9ri6Gik3fWUYaXZEP4OND6XNeX2qjs=\",\"intents\":[{\"intent\":\"token_diff\",\"diff\":{\"nep141:tusdc.raid-chest-mwab3vnk.testnet\":\"-91000000\",\"nep141:sol-c58e6539c2f2e097c251f8edf11f9c03e581f8d4.omft.near\":\"1\"}}]}"
+    },
+    {
+      "id": "20",
+      "title": "execute_buy / submit the signed intent to NEAR Intents and buy $TRUMP",
+      "result": "intents",
+      "at": "2026-11-11T18:24:06.464Z",
+      "raid": 6,
+      "why": "needs a 1Click quote signed by 1Click and a live intents.near; both exist only on mainnet. The signed payload above is what would be submitted."
+    },
+    {
+      "id": "21",
+      "title": "execute_sell at the line, settle, claim_share, claim / claim_into_intents",
+      "result": "intents",
+      "at": "2026-11-11T18:24:06.465Z",
+      "raid": 6,
+      "why": "follows a filled buy on NEAR Intents (mainnet only). Covered by contract unit tests: full_raid_lifecycle, miss_pays_no_fees_and_backers_can_lose, anyone_can_settle_a_keyless_backer_into_intents."
+    }
+  ],
+  "started": "2026-11-11T17:57:31.728Z",
+  "raid": 6,
+  "phase_a_done": "2026-11-11T17:58:31.183Z",
+  "buy_after_ms": 1794421058526,
+  "finished": "2026-11-11T18:24:06.465Z"
+}

@@ -1,7 +1,7 @@
 {
  "chest": "raid-chest-mwab3vnk.testnet",
  "network": "testnet",
- "generated": "2026-11-11T17:39:15.423Z",
+ "generated": "2026-11-11T18:26:57.673Z",
  "raids": {
   "0": {
    "call": {
@@ -35,7 +35,7 @@
    "backs": [
     {
      "tx": "3bqaP3UiJCqrZL3g6Ui2ehtziwBZmDsjXGYmoN3xuCu6",
-     "block": 277155655,
+     "block": null,
      "backer": "backer.raid-chest-mwab3vnk.testnet",
      "amount": "20000000"
     }
@@ -44,14 +44,14 @@
   "2": {
    "call": {
     "tx": "7kRCubGqZF2SYXQQLFeEwYwMsqv7ZMP8NQCj3K9PTF7g",
-    "block": 277158388,
+    "block": null,
     "caller": "backer.raid-chest-mwab3vnk.testnet",
     "signer": "backer.raid-chest-mwab3vnk.testnet"
    },
    "backs": [
     {
      "tx": "HMkA3MpyVS1YgG5XconmLYduGhcpmo4h4cp7nuJ2hkFE",
-     "block": 277158392,
+     "block": null,
      "backer": "backer.raid-chest-mwab3vnk.testnet",
      "amount": "5000000"
     }
@@ -98,6 +98,62 @@
      "block": 277246145,
      "backer": "raid-judge3-mwce6zdz.testnet",
      "amount": "40000000"
+    }
+   ]
+  },
+  "5": {
+   "call": {
+    "tx": "CckroL8CNXmrHyLCL96DCuodC7BhxXK4xiASvUuBmzQ6",
+    "block": 277246757,
+    "caller": "backer.raid-chest-mwab3vnk.testnet",
+    "signer": "backer.raid-chest-mwab3vnk.testnet"
+   },
+   "backs": [
+    {
+     "tx": "2P2dXCD3Cms82DsFtPNzK7CYvVwh4XYu35NS4oevkmf4",
+     "block": 277246765,
+     "backer": "0x4a8586a241f4e123f209e0fff688b48327e8f5e3",
+     "amount": "8000000"
+    },
+    {
+     "tx": "BtD4rP6JcPRndzd3AvsNMNxEfwGdoYqBaurbUCyYiUnb",
+     "block": 277246773,
+     "backer": "eb3a4e2d73a992fea7f74698ddf733067c62ef5ba62be51444c57d181534cc2a",
+     "amount": "7000000"
+    }
+   ]
+  },
+  "6": {
+   "call": {
+    "tx": "85jtMEp2Qxqa9KFpt21KnPBxsL9qMe5EBHofemUjXW12",
+    "block": 277249048,
+    "caller": "raid-frog-legion.sputnikv2.testnet",
+    "signer": "raid-judge2-mwce6vli.testnet"
+   },
+   "backs": [
+    {
+     "tx": "6R482mgBBYoRQm2D27MzW7TnmxTn2qkHHEYPrG9rYLZi",
+     "block": 277249059,
+     "backer": "raid-capt-dogs-mwce6nua.testnet",
+     "amount": "40000000"
+    },
+    {
+     "tx": "7CfiouYJWK9CThJXDjdFJmPQKitKUAu9cBNQLvZoVa91",
+     "block": 277249070,
+     "backer": "0x9190ad48ed8d27ac8119c9f612c2d5abc9f443b1",
+     "amount": "12000000"
+    },
+    {
+     "tx": "AqTUMBDUtajabaYq3vxSdMm8X6ocWmbDZWRUfLSfyZGn",
+     "block": 277249078,
+     "backer": "7557c7d60b9888fb0f28c71417986b991e8f6f3da13be25ea0057ecfe6bc914a",
+     "amount": "9000000"
+    },
+    {
+     "tx": "pQivDuLEL9DQWXJRrKQHpPDYTAr8xjDMGs2P7vdC9pt",
+     "block": 277249095,
+     "backer": "raid-capt-frogs-mwce6jqg.testnet",
+     "amount": "30000000"
     }
    ]
   }

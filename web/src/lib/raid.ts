@@ -48,6 +48,7 @@ export const raidApi = {
   mpc: () => view<{ public_key: string | null; registered: boolean }>('get_mpc'),
   stake: (id: number, account_id: string) => view<string>('get_stake', { id, account_id }),
   buyback: () => view<string>('get_buyback_bucket'),
+  backers: (id: number) => view<[string, string][]>('get_backers', { id, from: 0, limit: 100 }),
 };
 
 export const USDC_DECIMALS = 6;

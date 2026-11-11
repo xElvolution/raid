@@ -14,6 +14,9 @@ REELS = [
     {"coin": "DOGE", "raid": 4, "line": "3x", "color": (51, 85, 255), "hook": "DOGE PACK SAYS 3X"},
     {"coin": "BRETT", "raid": 2, "line": "2x", "color": (122, 224, 255), "hook": "BRETT ON BASE"},
 ]
+if len(sys.argv) > 2:  # one extra reel: COIN:RAID:LINE:HOOK (e.g. for the testnet E2E rehearsal), written as <COIN>-r<RAID>.mp4
+    c, rid, line, hook = sys.argv[2].split(":", 3)
+    REELS = [{"coin": c, "raid": int(rid), "line": line, "color": (198, 255, 61), "hook": hook, "name": f"{c}-r{rid}"}]
 f = lambda p, s: ImageFont.truetype(p, s)
 
 def fmt(p):
@@ -25,13 +28,13 @@ for r in REELS:
     data = json.load(urllib.request.urlopen(f"{BASE}/api/market/ohlcv?symbol={r['coin']}&tf=1h", timeout=30))
     closes = [c["c"] for c in data["candles"]][-72:]
     meta = {"coin": r["coin"], "source": data.get("source"), "tf": "1h", "fetched_at": datetime.datetime.now(datetime.timezone.utc).isoformat(), "candles": data["candles"][-72:], "label": "DEMO reel generated locally from real price candles"}
-    json.dump(meta, open(f"{OUT}/{r['coin']}.json", "w"))
+    json.dump(meta, open(f"{OUT}/{r.get('name', r['coin'])}.json", "w"))
     lo, hi = min(closes), max(closes)
     chg = (closes[-1] / closes[0] - 1) * 100
     x0, x1, y0, y1 = 36, W - 36, 330, 700
     pts = [(x0 + (x1 - x0) * i / (len(closes) - 1), y1 - (y1 - y0) * ((c - lo) / ((hi - lo) or 1))) for i, c in enumerate(closes)]
     proc = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
-                             "-c:v", "libx264", "-pix_fmt", "yuv420p", "-preset", "medium", "-crf", "26", "-movflags", "+faststart", f"{OUT}/{r['coin']}.mp4"], stdin=subprocess.PIPE)
+                             "-c:v", "libx264", "-pix_fmt", "yuv420p", "-preset", "medium", "-crf", "26", "-movflags", "+faststart", f"{OUT}/{r.get('name', r['coin'])}.mp4"], stdin=subprocess.PIPE)
     n = FPS * SECS
     for k in range(n):
         t = k / n

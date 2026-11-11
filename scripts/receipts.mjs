@@ -4,15 +4,17 @@
 import fs from "node:fs";
 const RPC = "https://archival-rpc.testnet.fastnear.com";
 const CHEST = "raid-chest-mwab3vnk.testnet";
-const logs = ["testnet-v2-run.json", "crews-run.json", "anychain-run.json", "judge-run.json"].filter((f) => fs.existsSync(f));
+const logs = ["testnet-run-mpc.json", "testnet-v2-run.json", "crews-run.json", "keyless/keyless-run.json", "judge-run.json", "testnet-e2e-run.json"].filter((f) => fs.existsSync(f));
+// Logs are arrays of steps, or { steps: [...] } (the E2E rehearsal). A step may carry a tx and a mint_tx.
+const entries = (f) => { const j = JSON.parse(fs.readFileSync(f)); const a = Array.isArray(j) ? j : j.steps ?? []; return a.flatMap((e) => [e.tx && { ...e, step: e.title ?? e.step }, e.mint_tx && { step: `${e.title ?? e.step} (mint tUSDC first)`, tx: e.mint_tx }].filter(Boolean)); };
 const rpc = async (method, params) => { for (let i = 0; i < 4; i++) { const r = await fetch(RPC, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) }).then((r) => r.json()).catch(() => null); if (r?.result) return r.result; await new Promise((s) => setTimeout(s, 800)); } return null; };
 const rpc1 = async (method, params) => (await fetch(RPC, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) }).then((r) => r.json()).catch(() => null))?.result ?? null;
-const crewLog = fs.existsSync("crews-run.json") ? JSON.parse(fs.readFileSync("crews-run.json")) : [];
-const SENDERS = [CHEST, `backer.${CHEST}`, `launch.${CHEST}`, `tusdc.${CHEST}`, ...new Set(crewLog.flatMap((x) => [x.account, x.voter, x.backer, x.to]).filter(Boolean)), ...new Set(fs.existsSync("anychain-run.json") ? JSON.parse(fs.readFileSync("anychain-run.json")).map((x) => x.signer).filter(Boolean) : [])];
+const all = logs.flatMap((f) => { const j = JSON.parse(fs.readFileSync(f)); return Array.isArray(j) ? j : j.steps ?? []; });
+const SENDERS = [CHEST, `backer.${CHEST}`, `launch.${CHEST}`, `tusdc.${CHEST}`, ...new Set(all.flatMap((x) => [x.account, x.voter, x.backer, x.to, x.creator, x.signer]).filter((a) => typeof a === "string" && a.endsWith(".testnet")))];
 const heights = new Map();
 const height = async (hash) => { if (!heights.has(hash)) heights.set(hash, (await rpc("block", { block_id: hash }))?.header?.height ?? null); return heights.get(hash); };
 const raids = {}; const txs = [];
-for (const f of logs) for (const e of JSON.parse(fs.readFileSync(f))) {
+for (const f of logs) for (const e of entries(f)) {
   if (!e.tx) continue;
   let st = null;
   for (const sender of SENDERS) { st = await rpc1("EXPERIMENTAL_tx_status", { tx_hash: e.tx, sender_account_id: sender, wait_until: "FINAL" }); if (st) break; }

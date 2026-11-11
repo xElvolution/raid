@@ -11,7 +11,7 @@ import { Button, CoinAvatar, Delta, Empty, ErrorState, Flash, Identicon, Segment
 import { PayoutBox, RiskNote } from '@/components/Payout';
 import { AnyChainBack } from '@/components/AnyChainBack';
 import { Composer, Feed } from '@/components/Social';
-import { useChestConfig, useNow, useRaid, useRaids } from '@/lib/hooks';
+import { useBackers, useChestConfig, useNow, useRaid, useRaids } from '@/lib/hooks';
 import { useQuote, fmtPrice, fmtUsd, countdown, shortAddr } from '@/lib/market';
 import { CHAINS, coinByAsset, explorerAccount, explorerTx } from '@/lib/coins';
 import { raidReceipt } from '@/components/JudgeKit';
@@ -101,6 +101,7 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
             <div className="min-w-0"><p className="font-semibold truncate group-hover:underline">{crew ? crew.name : shortAddr(r.caller)}</p>{crew && <p className="mono text-[10.5px] text-lime">Crew DAO · passed by vote</p>}<p className="text-[12px] text-mute">{callerRaids.length} raid{callerRaids.length === 1 ? '' : 's'} called · {callerRaids.filter((x) => x.hit).length} hit</p></div>
           </Link>
           <div className="mt-4 rounded-[12px] bg-raised p-3 text-[12.5px] text-mute"><Lock size={14} className="mb-1 text-lime" />The caller’s fee is locked until this raid hits {xLabel(r.target_x_bps)}. If it retreats, the fee is gone.</div>
+          <CrewList id={r.id} />
         </section>
       </div>
 
@@ -190,5 +191,27 @@ function BackPanel({ id, open, bps, pot }: { id: number; open: boolean; bps: num
         </>
       )}
     </section>
+  );
+}
+
+/** Who is in: get_backers on the chest. NEAR accounts, plus MetaMask (0x…) and Phantom (64-hex Ed25519) intents accounts. */
+function CrewList({ id }: { id: number }) {
+  const b = useBackers(id);
+  const rows = b.data ?? [];
+  if (!rows.length) return null;
+  const kind = (a: string) => (/^0x[0-9a-f]{40}$/.test(a) ? 'MetaMask · no NEAR account' : /^[0-9a-f]{64}$/.test(a) ? 'Phantom · no NEAR account' : 'NEAR wallet');
+  return (
+    <div className="mt-4">
+      <p className="eyebrow">Crew · {rows.length} backer{rows.length === 1 ? '' : 's'}</p>
+      <ul className="mt-2 divide-y divide-line">
+        {rows.map(([a, s]) => (
+          <li key={a} className="flex items-center gap-2 py-2">
+            <Identicon seed={a} size={24} className="!rounded-[7px]" />
+            <span className="min-w-0 flex-1"><span className="block truncate mono text-[12px]">{/^(0x[0-9a-f]{40}|[0-9a-f]{64})$/.test(a) ? `${a.slice(0, 10)}…${a.slice(-6)}` : a.replace(/\.(testnet|near)$/, '')}</span><span className="block text-[10.5px] text-mute">{kind(a)}</span></span>
+            <span className="mono text-[12.5px]">{usdcOf(s).toFixed(2)}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
