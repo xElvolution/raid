@@ -18,7 +18,9 @@
     "lint": "eslint src test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "seed": "tsx scripts/seed.ts",
-    "dev:local": "tsx src/dev.ts"
+    "dev:local": "tsx src/dev.ts",
+    "telegram": "tsx src/telegram/run.ts",
+    "telegram:mock": "tsx src/telegram/run.ts --mock"
   },
   "dependencies": {
     "@called/sdk": "file:../sdk",

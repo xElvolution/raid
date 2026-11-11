@@ -1,0 +1,22 @@
+
+[sendMessage → mock]
+<b>RAID #3 · $PEPE to 2x</b>
+⏳ Crew closes in <b>9h 34m</b>
+Pot: <b>185 USDC</b> of 1,000
+▰▰▱▱▱▱▱▱▱▱ 19%
+Caller: <code>raid-frog-legion.sputnikv2.testnet</code>
+<i>Rules on chain: the chest buys together, sells together at the line, and the caller earns only on a hit.</i>
+{"inline_keyboard":[[{"text":"Back raid #3","url":"http://localhost:3420/raids/3"}]]}
+
+[sendMessage → mock]
+<b>RAID #4 · $DOGE to 3x</b>
+⏳ Crew closes in <b>9h 34m</b>
+Pot: <b>130 USDC</b> of 1,000
+▰▱▱▱▱▱▱▱▱▱ 13%
+Caller: <code>raid-doge-pack.sputnikv2.testnet</code>
+<i>Rules on chain: the chest buys together, sells together at the line, and the caller earns only on a hit.</i>
+{"inline_keyboard":[[{"text":"Back raid #4","url":"http://localhost:3420/raids/4"}]]}
+
+[sendMessage → mock]
+No open <b>$TRUMP 2x</b> raid right now. Be the caller: you earn only if the crew hits the line.
+{"inline_keyboard":[[{"text":"Call $TRUMP 2x","url":"http://localhost:3420/coin/TRUMP?x=2"}]]}

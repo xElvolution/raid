@@ -47,3 +47,12 @@ Times are WAT (UTC+1). Testnet only: no mainnet transaction, no money spent, not
 - **Nav**: phone tabs are now Feed · Raids · + · Reels · War (5 slots). Launchpad, Live, Ranks and Judges moved to a slim link row on /raids; the desktop rail lists everything.
 - **Demo content**: 3 reels (`api/demo-reels/`, made by `scripts/reels/make-demo-reels.py`) are 8 s cards rendered from real 1 h candles (GeckoTerminal / CoinGecko). Each frame says "DEMO REEL" and "Demo content made by the RAID team. Not advice". The seeded authors are `demo_*` accounts. No real people.
 - Tests: API 35/35 (3 new reel tests), web 13/13 and tsc clean. Shots: `scripts/shots/prod/v4/reels-*-390-fold.png`, `reels-top-*`, `reels-dark-1440-fold.png`.
+
+## 6. Telegram raid bot (code only, not run live)
+
+- `api/src/telegram/bot.ts` holds the logic, with injected Telegram and chest clients. `run.ts` is the runner.
+- `/raid PEPE 2x` finds the open PEPE 2x raid on the chest (the one with the most time left). It posts a countdown card: phase, time left, pot with a fill bar against `max_pot`, the caller, and a **Back raid #N** button to `/raids/N`.
+- Every 30 s the bot edits the card (countdown, fill). It replies "+X USDC joined" when the pot grows, and announces **hit** or **retreat** with a Claim button, then stops tracking.
+- With no matching raid, it offers "Call $SYM Nx". The bot only reads the chain; it never signs or holds funds.
+- The token comes only from `TELEGRAM_BOT_TOKEN`. Without it, `npm run telegram` refuses to start. `npm run telegram:mock` prints what it would post, against the live testnet chest, to a console Telegram (`evidence/telegram-mock-run.txt`).
+- Tests: `api/test/telegram.test.ts` (4) cover command parsing, raid choice, card → fill → held → hit, retreat, and no-raid. The bot has not run live; that needs a bot token from @BotFather.
