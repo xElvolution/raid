@@ -1,14 +1,15 @@
 'use client';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowLeft, Check, Lock, Search, ShieldCheck, Flame } from 'lucide-react';
+import { ArrowLeft, Check, Lock, Search, ShieldCheck, Flame, Timer, Gauge } from 'lucide-react';
 import { CHAINS, COINS, type ChainKey, type Coin } from '@/lib/coins';
 import { useQuotes, fmtPrice, fmtUsd } from '@/lib/market';
 import { callSheet, toast } from '@/lib/bus';
 import { send, useAccount, connect } from '@/lib/wallet';
-import { tx, NETWORK, CHEST_ID } from '@/lib/raid';
+import { tx, NETWORK, CHEST_ID, usdcOf } from '@/lib/raid';
 import { useChestConfig } from '@/lib/hooks';
 import { Button, CoinAvatar, Delta, Modal } from './ui';
+import { PayoutBox, RiskNote, netLabel } from './Payout';
 
 const LINES = [{ bps: 15000, label: '1.5x', note: 'Quick flip' }, { bps: 20000, label: '2x', note: 'Double up' }, { bps: 30000, label: '3x', note: 'Full send' }] as const;
 const WINDOWS = [{ m: 15, l: '15m' }, { m: 60, l: '1h' }, { m: 360, l: '6h' }, { m: 1440, l: '24h' }];
@@ -99,12 +100,12 @@ export function CallRaidSheet() {
                 {LINES.map((l) => (
                   <button key={l.bps} onClick={() => setBps(l.bps)} aria-pressed={bps === l.bps} className={`press relative rounded-[14px] p-3 text-left transition-colors ${bps === l.bps ? 'bg-lime text-[#0a1a00]' : 'hairline hover:bg-raised'}`}>
                     <span className="wide-black block text-[30px] leading-none">{l.label}</span>
-                    <span className={`mt-2 block text-[11.5px] ${bps === l.bps ? 'text-[#0a1a00]/70' : 'text-mute'}`}>{l.note}</span>
+                    <span className={`mt-2 block text-[11.5px] ${bps === l.bps ? 'text-[#0a1a00]/70' : 'text-mute'}`}>Backers <b className="mono">{netLabel(l.bps, cfg.data)}</b></span>
                     <span className="mt-1 block mono text-[11px] truncate">{quote ? `@ ${fmtPrice(quote.priceUsd * l.bps / 1e4)}` : ''}</span>
                   </button>
                 ))}
               </div>
-              <p className="mt-2 text-[12px] text-faint">Line price is from today’s price. The real line is set from what the chest actually pays. Custom lines aren’t supported by the chest contract yet.</p>
+              <p className="mt-2 text-[12px] text-faint">Backer returns are net of fees if the chest sells exactly at the line. Line price uses today’s price; the real line is set from what the chest actually pays. The chest only allows 1.5x, 2x and 3x.</p>
               <p className="eyebrow mt-5">Crew window</p>
               <div className="mt-2 grid grid-cols-4 gap-1.5">{WINDOWS.map((w) => <Pick key={w.m} on={win === w.m} onClick={() => setWin(w.m)}>{w.l}</Pick>)}</div>
               <p className="eyebrow mt-4">Retreat if the line isn’t hit within</p>
@@ -127,11 +128,16 @@ export function CallRaidSheet() {
                   </div>
                 </div>
               </div>
+              <p className="eyebrow mt-5">What your crew gets, per 100 {NETWORK === 'testnet' ? 'tUSDC' : 'USDC'}</p>
+              <PayoutBox stake={100} bps={bps} cfg={cfg.data} unit={NETWORK === 'testnet' ? 'tUSDC' : 'USDC'} className="mt-2" />
               <ul className="mt-4 space-y-2.5 text-[13.5px]">
-                <Rule icon={<Lock size={15} />}>Your fee is locked in the chest. It pays out only if the raid hits the line. No hit, no fee — so there’s nothing to gain from dumping on your crew.</Rule>
+                <Rule icon={<Timer size={15} />}>When the crew window closes, a {cfg.data?.buy_delay_minutes ?? 10}-minute public countdown runs before the chest can buy. Target and buy time are public. No surprise buys.</Rule>
+                <Rule icon={<Gauge size={15} />}>Size caps: {cfg.data?.max_pot ? `${usdcOf(cfg.data.max_pot).toLocaleString()} per raid, ${usdcOf(cfg.data.max_back ?? '0').toLocaleString()} per backer` : 'per raid and per backer'}. Anything over the cap is refunded.</Rule>
+                <Rule icon={<Lock size={15} />}>Your {feePct}% fee is a share of profit, locked until the raid hits the line. No hit, no fee, so dumping on your crew earns you nothing.</Rule>
                 <Rule icon={<ShieldCheck size={15} />}>The chest only accepts a 1Click quote whose signed minimum return meets the line. No one holds a key that can move the funds.</Rule>
-                <Rule icon={<Flame size={15} />}>{cfg.data ? `${cfg.data.buyback_bps / 100}%` : 'A share'} of every winning raid’s profit goes to the buyback-and-burn bucket.</Rule>
+                <Rule icon={<Flame size={15} />}>{cfg.data ? `${cfg.data.buyback_bps / 100}%` : 'A share'} of a winning raid’s profit goes to the buyback reserve. The chest has no method to withdraw it.</Rule>
               </ul>
+              <RiskNote className="mt-4" />
               <details className="mt-4 rounded-[12px] bg-raised px-3.5 py-3 text-[12px]">
                 <summary className="cursor-pointer font-semibold text-mute">What your wallet will sign</summary>
                 <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all mono text-[11px] text-mute">{`${CHEST_ID}.call_raid(${JSON.stringify(call.args, null, 1)})`}</pre>
