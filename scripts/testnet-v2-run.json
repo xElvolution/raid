@@ -1,0 +1,178 @@
+[
+  {
+    "step": "deploy chest v2",
+    "at": "2026-11-11T02:45:43.435Z",
+    "tx": "5aLp3MvaVQxyK7WVYMaReFQvip2B4QbAqhqpdzqJrstv"
+  },
+  {
+    "step": "migrate_v2 (fresh state, new rules)",
+    "at": "2026-11-11T02:45:45.038Z",
+    "tx": "EQ2pdVj3gNDCNbSYNsbJgNmDMhjczCvFFRVzRZKCZM2k",
+    "ok": true,
+    "logs": []
+  },
+  {
+    "step": "create launch account",
+    "at": "2026-11-11T02:45:47.443Z",
+    "tx": "zf4qAL2DJeJm6iP2Lq3P2d8wcEKLdikDB5uSwBhPWc9"
+  },
+  {
+    "step": "deploy launchpad",
+    "at": "2026-11-11T02:45:49.391Z",
+    "tx": "AXMpvjssax6uj3L8YinUBp7vy59U4Mj8NkaAjkt1kAde"
+  },
+  {
+    "step": "init launchpad",
+    "at": "2026-11-11T02:45:50.548Z",
+    "tx": "DK5QKnnEucukqMAV6CJeD3bxQNdgi3w2Fr86oNKLMmnR",
+    "ok": true,
+    "logs": []
+  },
+  {
+    "step": "deploy tusdc fix",
+    "at": "2026-11-11T02:45:52.538Z",
+    "tx": "6kmJmYGkKPsgtTRvyJsW4gXWWrzvacP2HdJvPVnEj1XK"
+  },
+  {
+    "step": "call_raid (web tx.callRaid)",
+    "at": "2026-11-11T02:45:58.644Z",
+    "id": 0,
+    "tx": "CqMscZaysodEPjwENV8WmLCdBKEhoJqg4eNf4uoFVnHE",
+    "ok": true,
+    "logs": [
+      "raid_called"
+    ]
+  },
+  {
+    "step": "mint 300 tUSDC to backer (owner mint, testnet)",
+    "at": "2026-11-11T02:46:00.785Z",
+    "tx": "HaQPbcQjVa5jy35Djwpe6TCNhatqRpXTubpSLHT2knH8",
+    "ok": true,
+    "logs": []
+  },
+  {
+    "step": "back 5 tUSDC (web tx.back)",
+    "at": "2026-11-11T02:46:05.153Z",
+    "tx": "CzeS4dAgf8C2iQbhke6XQrrGinvkAphK23KjGJ3XJfG",
+    "ok": false,
+    "logs": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer",
+      "ft_transfer"
+    ]
+  },
+  {
+    "step": "back 260 tUSDC: per-backer cap 250 -> 15 refunded",
+    "at": "2026-11-11T02:46:10.094Z",
+    "tx": "5xSuDjitZZagba2Ufo6HNVbCiAhkrYe3pVputB7bPyYj",
+    "ok": false,
+    "logs": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer",
+      "ft_transfer",
+      "ft_transfer"
+    ]
+  },
+  {
+    "step": "stake after caps",
+    "at": "2026-11-11T02:46:10.402Z",
+    "stake": "250000000",
+    "raid": {
+      "id": 0,
+      "caller": "raid-chest-mwab3vnk.testnet",
+      "title": "Raid $PEPE to 1.5x",
+      "target": "nep141:eth-0x6982508145454ce325ddbe47a25d4ec3d2311933.omft.near",
+      "target_x_bps": 15000,
+      "opens_until_ms": 1794451557566,
+      "buy_after_ms": 1794452157566,
+      "retreat_at_ms": 1794711357566,
+      "pot": "250000000",
+      "entry_cost": "0",
+      "held": "0",
+      "proceeds": "0",
+      "pending_min_out": "0",
+      "pending_deadline_ms": 0,
+      "status": "Open",
+      "hit": false,
+      "buy_quote_hash": null,
+      "sell_quote_hash": null,
+      "caller_cut": "0",
+      "buyback": "0",
+      "for_backers": "0"
+    }
+  },
+  {
+    "step": "payout_preview 1.5x / 100 tUSDC",
+    "at": "2026-11-11T02:46:10.549Z",
+    "v": {
+      "stake": "100000000",
+      "payout_at_line": "145000000",
+      "net_gain_bps": 4500,
+      "caller_fee_bps": 250,
+      "buyback_bps": 750,
+      "worst_case": "can lose the stake: after retreat the chest sells at market"
+    }
+  },
+  {
+    "step": "call_raid DOGE 2x",
+    "at": "2026-11-11T02:46:11.619Z",
+    "tx": "H3Duup41dvMZHCeUkhy5ZXsv8zoBHmYRQDVEKuiWB3Zd",
+    "ok": true,
+    "logs": [
+      "raid_called"
+    ]
+  },
+  {
+    "step": "create_coin (web Launchpad)",
+    "at": "2026-11-11T02:46:14.185Z",
+    "tx": "5hBuJt8Quy6b1JSgiJ4MC2yU9m1ji8tdD2h6ieDJkfpq",
+    "ok": true,
+    "logs": [
+      "coin_created"
+    ]
+  },
+  {
+    "step": "buy 20 tUSDC on the curve",
+    "at": "2026-11-11T02:46:17.157Z",
+    "quote": "66433395872420",
+    "tx": "6VQ2nuMe4HaCWiv9SFbTzsvD4Yp2NEdMJaiQx24LhqNB",
+    "ok": true,
+    "logs": [
+      "ft_transfer",
+      "trade"
+    ]
+  },
+  {
+    "step": "sell half back",
+    "at": "2026-11-11T02:46:20.697Z",
+    "quote": "10114101",
+    "tx": "5RvUw4cm8q6ey3AUEJZ7zb15cGegZhCxkjko7hxdpnzf",
+    "ok": true,
+    "logs": [
+      "trade",
+      "ft_transfer"
+    ]
+  },
+  {
+    "step": "coin state",
+    "at": "2026-11-11T02:46:20.970Z",
+    "coin": {
+      "id": 0,
+      "creator": "backer.raid-chest-mwab3vnk.testnet",
+      "name": "Raid Frog (testnet)",
+      "ticker": "RFROG",
+      "description": "Testnet demo coin made by the RAID test run.",
+      "image": null,
+      "created_ms": 1794365173358,
+      "v_usdc": "309583737",
+      "v_tokens": "1039783302063790",
+      "raised": "9583737",
+      "sold": "33216697936210",
+      "trades": 2,
+      "graduated": false
+    },
+    "creator_fees": "302162"
+  }
+]

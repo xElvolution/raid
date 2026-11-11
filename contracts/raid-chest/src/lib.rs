@@ -37,11 +37,18 @@ const MAX_QUOTE_AGE_MS: u64 = 10 * 60 * 1000;
 #[derive(BorshStorageKey)]
 #[near]
 enum Key {
+    // v1 prefixes (testnet v1 state may still hold entries under these; never reuse them)
     Raids,
     Stakes,
     Accounted,
     Inflight,
     Claimable,
+    // v2
+    RaidsV2,
+    StakesV2,
+    AccountedV2,
+    InflightV2,
+    ClaimableV2,
 }
 
 #[near(serializers = [borsh, json])]
@@ -189,18 +196,27 @@ impl Chest {
         parse_ed25519_key(&cfg.oneclick_key);
         Self {
             cfg,
-            raids: IterableMap::new(Key::Raids),
+            raids: IterableMap::new(Key::RaidsV2),
             next_id: 0,
-            stakes: LookupMap::new(Key::Stakes),
-            accounted: LookupMap::new(Key::Accounted),
-            inflight: LookupMap::new(Key::Inflight),
-            claimable: LookupMap::new(Key::Claimable),
+            stakes: LookupMap::new(Key::StakesV2),
+            accounted: LookupMap::new(Key::AccountedV2),
+            inflight: LookupMap::new(Key::InflightV2),
+            claimable: LookupMap::new(Key::ClaimableV2),
             buyback_bucket: 0,
             mpc_public_key: None,
             mpc_registered: false,
             mpc_nonce_counter: 0,
             last_mpc_signed: None,
         }
+    }
+
+    /// Testnet only: re-initialise over v1 state with fresh storage prefixes (v1 had no live funds in Intents).
+    /// `#[private]`: only the chest account itself can call it. The mainnet chest is deployed fresh and keyless.
+    #[init(ignore_state)]
+    #[private]
+    pub fn migrate_v2(cfg: Config) -> Self {
+        require!(env::current_account_id().as_str().ends_with(".testnet"), "testnet only");
+        Self::new(cfg)
     }
 
     // ---------- calling and backing ----------
