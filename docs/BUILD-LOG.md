@@ -38,3 +38,12 @@ Times are WAT (UTC+1). Testnet only: no mainnet transaction, no money spent, not
 - Founder line: `web/src/lib/judges.ts` `FOUNDER_LINE` is empty on purpose; it renders on /judges once Elvis writes it.
 - Honest notes on /judges: testnet, no swaps on testnet, not audited.
 - Copy fix: landing no longer says "RAID gets burned" (the RAID token is cut).
+
+## 5. Reels (vertical video feed that sells raids)
+
+- **API** (`api/src/reels.ts`, tables `reels` + `reel_backs`): upload a raw `video/mp4` up to 60 s (duration read from the mp4 `mvhd` box, 40 MB cap, stored under `.data/reels/`, served with HTTP Range), or paste an `https://` X / Instagram / TikTok link (an embed card). Every reel can name a coin and a raid.
+- **Attribution**: the Back button opens `/raids/:id?reel=ID`; after a back succeeds, the web posts `{tx, backer}` to `/v1/raid/reels/:id/backs`. The API checks the tx on the testnet RPC (`raid_backed` event, same raid, same backer) before it counts. On a hit, the reel creator is credited 20% of the caller's 2.5% fee (= 0.5% of profit), pro rata to the stake their reel brought. **This is off-chain attribution, demo**: the deployed chest contract is unchanged, and the UI says so.
+- **Web**: `/reels` is a snap-scroll vertical feed (autoplays muted only when on screen; tap to unmute) with a coin chip, live raid phase from the chest, 24h change, and an inline Back / Buy / Raid-it button. `/reels/top` ranks creators by hits, then by USDC backed through their reels. "+ Reel" opens a composer (upload or link, coin, raid, sign-in with no gas).
+- **Nav**: phone tabs are now Feed · Raids · + · Reels · War (5 slots). Launchpad, Live, Ranks and Judges moved to a slim link row on /raids; the desktop rail lists everything.
+- **Demo content**: 3 reels (`api/demo-reels/`, made by `scripts/reels/make-demo-reels.py`) are 8 s cards rendered from real 1 h candles (GeckoTerminal / CoinGecko). Each frame says "DEMO REEL" and "Demo content made by the RAID team. Not advice". The seeded authors are `demo_*` accounts. No real people.
+- Tests: API 35/35 (3 new reel tests), web 13/13 and tsc clean. Shots: `scripts/shots/prod/v4/reels-*-390-fold.png`, `reels-top-*`, `reels-dark-1440-fold.png`.

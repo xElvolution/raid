@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { Fragment, use, useMemo, useState } from 'react';
+import { Fragment, use, useEffect, useMemo, useState } from 'react';
 import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowUpRight, Flame, Gauge, Lock, ShieldCheck, Timer, TimerReset } from 'lucide-react';
@@ -16,6 +16,7 @@ import { useQuote, fmtPrice, fmtUsd, countdown, shortAddr } from '@/lib/market';
 import { CHAINS, coinByAsset, explorerAccount, explorerTx } from '@/lib/coins';
 import { raidReceipt } from '@/components/JudgeKit';
 import { crewByDao } from '@/lib/crews';
+import { attributeReel, rememberReel } from '@/lib/reels';
 import { CHEST_ID, NETWORK, STEPS, raidApi, stepIndex, target, tx, usdcOf, xLabel, liveMultiple } from '@/lib/raid';
 import { send, useAccount, connect } from '@/lib/wallet';
 import { toast } from '@/lib/bus';
@@ -24,6 +25,7 @@ import type { ChartLine } from '@/components/chart/CoinChart';
 export default function RaidPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const raid = useRaid(Number(id));
+  useEffect(() => { const ref = new URLSearchParams(location.search).get('reel'); if (ref && /^\d+$/.test(ref)) rememberReel(Number(id), ref); }, [id]);
   const all = useRaids();
   const cfg = useChestConfig();
   const now = useNow();
@@ -165,7 +167,7 @@ function BackPanel({ id, open, bps, pot }: { id: number; open: boolean; bps: num
     if (!acct) return void connect();
     if (!cfg.data) return;
     setBusy(true);
-    try { await send(tx.back(cfg.data.usdc, id, String(Math.round(n * 1e6)))); toast({ title: `You’re in the crew`, body: `Backed raid #${id} with ${fits} ${unit}${n > fits ? `; ${(n - fits).toFixed(2)} over the cap is refunded` : ''}.`, tone: 'lime' }); }
+    try { const h = await send(tx.back(cfg.data.usdc, id, String(Math.round(n * 1e6)))); void attributeReel(h, acct); toast({ title: `You’re in the crew`, body: `Backed raid #${id} with ${fits} ${unit}${n > fits ? `; ${(n - fits).toFixed(2)} over the cap is refunded` : ''}.`, tone: 'lime' }); }
     catch (e) { if ((e as Error).message !== 'connect_wallet') toast({ title: 'Wallet didn’t sign', body: (e as Error).message.slice(0, 120), tone: 'down' }); }
     finally { setBusy(false); }
   }

@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useState } from 'react';
 import { Shell } from '@/components/Shell';
 import { RaidCard, RaidCardSkeleton } from '@/components/RaidCard';
@@ -34,6 +35,9 @@ export default function RaidsPage() {
         </div>
       </section>
 
+      <nav aria-label="More" className="mt-2.5 flex gap-1.5 md:hidden">
+        {[['/launch', 'Launchpad'], ['/live', 'Live tape'], ['/leaderboard', 'Ranks'], ['/judges', 'Judges']].map(([h, l]) => <Link key={h} href={h!} className="press flex h-8 flex-1 items-center justify-center rounded-[9px] text-[11.5px] font-semibold hairline">{l}</Link>)}
+      </nav>
       <JudgeBox className="mt-3 md:mt-4" />
 
       <div className="mt-4 md:mt-5">

@@ -17,6 +17,7 @@ import { courtResolve } from './resolution.js';
 import { registerOpening } from './opening.js';
 import { registerSocial } from './social.js';
 import { registerRaidSocial } from './raid-social.js';
+import { registerReels, type ReelChain } from './reels.js';
 import { DraftResponse, isExcludedMarket, POLICY_MESSAGE } from './workers.js';
 
 export interface Deps {
@@ -30,6 +31,8 @@ export interface Deps {
   /** On-chain verification for NEAR tips (see near-tips.ts). */
   verifyTip?: (hash: string, from: string, to: string, yocto: bigint) => Promise<boolean>;
   nearTransfer?: (hash: string, from: string, to: string) => Promise<bigint>;
+  /** RAID reels: where uploaded mp4s live and how backs/raids are checked on chain. Reels are off when absent. */
+  reels?: { dir: string; chain: ReelChain };
   nearTreasury?: string;
   nearPlayRate?: number;
   /** Privy access-token verifier; null/undefined disables /v1/auth/privy (503). */
@@ -289,6 +292,7 @@ export function buildApp(deps: Deps) {
   registerGrowth(app, { db: db.primary, requireUser, awardXp, nearTransfer: deps.nearTransfer, treasury: deps.nearTreasury, rate: deps.nearPlayRate ?? 5, demo: !!deps.config.demo });
   registerSocial(app, { db, bus, kv, jobs, requireUser, notify, awardXp, verifyTip: deps.verifyTip, demo: deps.config.demo });
   registerRaidSocial(app, { db, kv, bus, requireUser, notify });
+  if (deps.reels) registerReels(app, { db, kv, requireUser, ...deps.reels });
 
   // Live AI preview for the create screen. Nothing is stored; the real draft is made when the post is published.
   const PreviewBody = z.object({ text: z.string().trim().min(8).max(1000) });

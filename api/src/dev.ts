@@ -14,7 +14,8 @@ import type { Database, Db } from './db/index.js';
 import { migrate } from './db/migrate.js';
 import { MemoryBus, MemoryKv } from './infra/bus.js';
 import { MemoryJobs } from './infra/queue.js';
-import { seedRaidDemo } from './raid-demo-seed.js';
+import { seedRaidDemo, seedReelsDemo } from './raid-demo-seed.js';
+import { rpcReelChain } from './reels.js';
 
 const dir = new URL('../.data/', import.meta.url);
 fs.mkdirSync(dir, { recursive: true });
@@ -23,10 +24,12 @@ if (!fs.existsSync(secretFile)) fs.writeFileSync(secretFile, randomBytes(32).toS
 const pg = new PGlite(new URL('pglite', dir).pathname);
 const db: Db = { query: async (sql, params) => (await pg.query(sql, params as unknown[])).rows as never };
 await migrate(db);
-if (process.env.SEED_DEMO === '1') console.log('demo seed:', await seedRaidDemo(db));
+const reelDir = new URL('reels/', dir).pathname;
+if (process.env.SEED_DEMO === '1') { console.log('demo seed:', await seedRaidDemo(db)); console.log('demo reels:', await seedReelsDemo(db, reelDir)); }
 const database: Database = { primary: db, replica: db, close: () => pg.close() };
 const app = buildApp({
   db: database, bus: new MemoryBus(), kv: new MemoryKv(), jobs: new MemoryJobs(),
+  reels: { dir: reelDir, chain: rpcReelChain(process.env.NEAR_RPC_URL ?? 'https://rpc.testnet.fastnear.com', process.env.RAID_CHEST ?? 'raid-chest-mwab3vnk.testnet') },
   checkKey: rpcKeyChecker(process.env.NEAR_RPC_URL ?? 'https://rpc.testnet.fastnear.com'),
   config: {
     jwtSecret: fs.readFileSync(secretFile, 'utf8'),

@@ -4,6 +4,9 @@
  * Raid ids refer to the testnet chest (raid-chest-mwab3vnk.testnet).
  */
 import type { Db } from './db/index.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { mp4Duration } from './reels.js';
 import { must } from './must.js';
 
 const USERS = [
@@ -38,4 +41,31 @@ export async function seedRaidDemo(db: Db): Promise<string> {
   await db.query('INSERT INTO post_likes (user_id, post_id) VALUES ($1, $3), ($2, $3), ($1, $4)', [ids.get('demo_frogwatch'), ids.get('demo_dogdays'), postIds[0], postIds[2]]);
   await db.query('INSERT INTO follows (follower_id, followee_id) VALUES ($1, $2), ($3, $2)', [ids.get('demo_frogwatch'), ids.get('demo_linecaller'), ids.get('demo_dogdays')]);
   return `seeded ${USERS.length} demo accounts, ${POSTS.length + 2} posts`;
+}
+
+/** Demo reels: animated price cards rendered locally from real 1h candles (scripts/reels/make-demo-reels.py), posted by the
+ *  demo accounts above. Each is flagged reels.demo = true and the video itself says DEMO REEL. No people appear in them. */
+const REELS: [string, string, string, number][] = [
+  ['demo_frogwatch', 'PEPE', 'Frog Legion called $PEPE to 2x by DAO vote. Crew window is open.', 3],
+  ['demo_dogdays', 'DOGE', 'Doge Pack wants 3x on $DOGE. Long ride, 72 h retreat.', 4],
+  ['demo_linecaller', 'BRETT', '$BRETT on Base, 2x line. Backed from testnet tUSDC.', 2],
+];
+export async function seedReelsDemo(db: Db, dir: string, src = new URL('../demo-reels/', import.meta.url).pathname): Promise<string> {
+  const [have] = await db.query<{ n: number }>('SELECT count(*)::int AS n FROM reels WHERE demo');
+  if ((have?.n ?? 0) > 0) return 'already seeded';
+  fs.mkdirSync(dir, { recursive: true });
+  let n = 0;
+  for (const [handle, coin, caption, raid] of REELS) {
+    const file = path.join(src, `${coin}.mp4`);
+    if (!fs.existsSync(file)) continue;
+    const [u] = await db.query<{ id: string }>('SELECT id::text FROM users WHERE handle = $1', [handle]);
+    if (!u) continue;
+    const buf = fs.readFileSync(file);
+    const [r] = await db.query<{ id: string }>("INSERT INTO reels (author_id, kind, caption, coin, raid_id, duration_s, demo) VALUES ($1,'video',$2,$3,$4,$5,true) RETURNING id::text", [u.id, caption, coin, raid, mp4Duration(buf)]);
+    const id = must(r, 'demo reel').id;
+    fs.writeFileSync(path.join(dir, `${id}.mp4`), buf);
+    await db.query('UPDATE reels SET video_file = $1 WHERE id = $2', [`${id}.mp4`, id]);
+    n++;
+  }
+  return `seeded ${n} demo reels`;
 }

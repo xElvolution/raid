@@ -64,22 +64,30 @@ export async function connect(): Promise<void> {
 export async function disconnect(): Promise<void> {
   if (judge()) { leaveJudgeMode(); return; } const sel = await selector(); if (sel.isSignedIn()) await (await sel.wallet()).signOut(); }
 
-export async function send(call: WalletCall): Promise<void> {
+/** Signs and sends; resolves with the tx hash when the wallet reports one (judge mode always does). */
+export async function send(call: WalletCall): Promise<string | undefined> {
   const j = judge();
-  if (j) { await judgeSend(j, call); return; }
+  if (j) { const o = await judgeSend(j, call) as { transaction_outcome?: { id: string }; transaction?: { hash: string } }; return o?.transaction_outcome?.id ?? o?.transaction?.hash; }
   const sel = await selector();
   if (!sel.isSignedIn()) { await connect(); throw new Error('connect_wallet'); }
   const wallet = await sel.wallet();
   const { actionCreators } = await import('@near-wallet-selector/core');
-  await wallet.signAndSendTransaction({ receiverId: call.receiverId, actions: [actionCreators.functionCall(call.method, call.args, BigInt(call.gas), BigInt(call.deposit))] });
+  const o = await wallet.signAndSendTransaction({ receiverId: call.receiverId, actions: [actionCreators.functionCall(call.method, call.args, BigInt(call.gas), BigInt(call.deposit))] }) as { transaction_outcome?: { id: string }; transaction?: { hash: string } } | void;
+  return o ? (o.transaction_outcome?.id ?? o.transaction?.hash) : undefined;
 }
 
 /** NEP-413 signed message (used to sign in to the RAID social API; no transaction, no gas). */
 export async function signMessage(p: { message: string; recipient: string; nonceB64: string }) {
+  const j = judge();
+  const { Buffer } = await import('buffer');
+  if (j) {
+    const { KeyPairSigner } = await import('@near-js/signers');
+    const m = await KeyPairSigner.fromSecretKey(j.key as `ed25519:${string}`).signNep413Message(p.message, j.accountId, p.recipient, Buffer.from(p.nonceB64, 'base64'));
+    return { accountId: j.accountId, publicKey: m.publicKey.toString(), signature: Buffer.from(m.signature).toString('base64') };
+  }
   const sel = await selector();
   if (!sel.isSignedIn()) { await connect(); throw new Error('connect_wallet'); }
   const wallet = await sel.wallet();
-  const { Buffer } = await import('buffer');
   const r = await wallet.signMessage({ message: p.message, recipient: p.recipient, nonce: Buffer.from(p.nonceB64, 'base64') });
   if (!r) throw new Error('wallet_redirect');
   return r;

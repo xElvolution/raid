@@ -386,3 +386,32 @@ CREATE INDEX IF NOT EXISTS posts_raid ON posts (raid_id, created_at DESC) WHERE 
 CREATE INDEX IF NOT EXISTS posts_coin ON posts (coin, created_at DESC) WHERE coin IS NOT NULL;
 -- Seeded demo accounts are flagged so the app can label them; they are never shown as real people.
 ALTER TABLE users ADD COLUMN IF NOT EXISTS demo BOOLEAN NOT NULL DEFAULT false;
+
+-- ===== RAID reels: short vertical videos (or X / Instagram / TikTok links) that market a coin or a raid =====
+CREATE TABLE IF NOT EXISTS reels (
+  id          BIGSERIAL PRIMARY KEY,
+  author_id   BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  kind        TEXT NOT NULL CHECK (kind IN ('video','embed')),
+  video_file  TEXT,
+  embed_url   TEXT,
+  provider    TEXT,
+  caption     TEXT NOT NULL DEFAULT '',
+  coin        TEXT,
+  raid_id     BIGINT,
+  launch_id   BIGINT,
+  duration_s  REAL,
+  demo        BOOLEAN NOT NULL DEFAULT false,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS reels_created ON reels (created_at DESC, id DESC);
+-- Off-chain attribution (demo): a back on the chest that came through a reel. The tx is checked on NEAR RPC before it counts.
+CREATE TABLE IF NOT EXISTS reel_backs (
+  tx          TEXT PRIMARY KEY,
+  reel_id     BIGINT NOT NULL REFERENCES reels(id) ON DELETE CASCADE,
+  raid_id     BIGINT NOT NULL,
+  backer      TEXT NOT NULL,
+  amount      NUMERIC NOT NULL,
+  demo        BOOLEAN NOT NULL DEFAULT false,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS reel_backs_reel ON reel_backs (reel_id);
