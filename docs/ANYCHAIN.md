@@ -21,7 +21,7 @@ NEAR Intents and 1Click run on mainnet only. Live deposit addresses are issued o
 Otherwise the route requests a real **dry** quote (indicative price and fees, no deposit address) using a preview refund address and `intents.near` as recipient, and the UI explains why in a dashed reason box.
 
 ## Tested
-- Contract: `bridged_beneficiary_and_overflow` unit test (stake to `for`, overflow parked as claimable).
+- Contract: `bridged_backing_credits_the_beneficiary_and_parks_overflow` unit test (stake to `for`, overflow parked as claimable).
 - Testnet: bridged back of 20 tUSDC for a beneficiary on raid 1, tx `3bqaP3UiJCqrZL3g6Ui2ehtziwBZmDsjXGYmoN3xuCu6` (a stand-in account plays the bridge: beneficiary stake 20, bridge stake 0).
 - 1Click: live (non-dry) quote requests return real deposit addresses when the recipient account exists and the refund address is valid; no deposit was ever sent.
 
