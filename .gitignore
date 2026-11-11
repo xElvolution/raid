@@ -10,3 +10,4 @@ secrets/
 scripts/go-no-go-*.json
 scripts/shots/
 inspo/
+api/.data/

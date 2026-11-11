@@ -16,6 +16,7 @@ import type { Chain } from './chain.js';
 import { courtResolve } from './resolution.js';
 import { registerOpening } from './opening.js';
 import { registerSocial } from './social.js';
+import { registerRaidSocial } from './raid-social.js';
 import { DraftResponse, isExcludedMarket, POLICY_MESSAGE } from './workers.js';
 
 export interface Deps {
@@ -166,10 +167,10 @@ export function buildApp(deps: Deps) {
     return { token: await tokens.issue(String(u.id), '12h'), user };
   });
 
-  app.post('/v1/auth/nonce', async () => ({ nonce: makeNonce(), recipient: deps.config.signInRecipient, message: 'Sign in to Called' }));
+  app.post('/v1/auth/nonce', async () => ({ nonce: makeNonce(), recipient: deps.config.signInRecipient, message: 'Sign in to RAID' }));
 
   const SignIn = z.object({
-    signed: z.object({ accountId: z.string().min(2).max(64), publicKey: z.string(), signature: z.string(), message: z.literal('Sign in to Called'), nonce: z.string(), recipient: z.string() }),
+    signed: z.object({ accountId: z.string().min(2).max(64), publicKey: z.string(), signature: z.string(), message: z.literal('Sign in to RAID'), nonce: z.string(), recipient: z.string() }),
     handle: Handle.optional(),
   });
   app.post('/v1/auth/signin', async (req, reply) => {
@@ -288,6 +289,7 @@ export function buildApp(deps: Deps) {
   registerLeaderboard(app, { db });
   registerGrowth(app, { db: db.primary, requireUser, awardXp, nearTransfer: deps.nearTransfer, treasury: deps.nearTreasury, rate: deps.nearPlayRate ?? 5, demo: !!deps.config.demo });
   registerSocial(app, { db, bus, kv, jobs, requireUser, notify, awardXp, verifyTip: deps.verifyTip, demo: deps.config.demo });
+  registerRaidSocial(app, { db, kv, bus, requireUser, notify });
 
   // Live AI preview for the create screen. Nothing is stored; the real draft is made when the post is published.
   const PreviewBody = z.object({ text: z.string().trim().min(8).max(1000) });

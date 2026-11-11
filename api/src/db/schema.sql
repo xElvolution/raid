@@ -21,7 +21,7 @@ CREATE INDEX IF NOT EXISTS follows_followee ON follows (followee_id);
 
 CREATE TABLE IF NOT EXISTS markets (
   id          BIGSERIAL PRIMARY KEY,
-  venue       TEXT NOT NULL CHECK (venue IN ('called','polymarket','kalshi')),
+  venue       TEXT NOT NULL CHECK (venue IN ('called')),
   external_id TEXT NOT NULL,
   question    TEXT NOT NULL,
   rules       TEXT NOT NULL DEFAULT '',
@@ -212,26 +212,9 @@ ALTER TABLE resolutions ADD COLUMN IF NOT EXISTS request_json TEXT;
 ALTER TABLE resolutions ADD COLUMN IF NOT EXISTS response_json TEXT;
 ALTER TABLE resolutions ADD COLUMN IF NOT EXISTS demo BOOLEAN NOT NULL DEFAULT false;
 
--- Polymarket CLOB token ids [yes, no] so the trade screen can read the live book.
-ALTER TABLE markets ADD COLUMN IF NOT EXISTS clob_token_ids JSONB;
-
--- Every external (real-money) order attempt, accepted or not, for audit and support.
-CREATE TABLE IF NOT EXISTS external_orders (
-  id            BIGSERIAL PRIMARY KEY,
-  user_id       BIGINT NOT NULL REFERENCES users(id),
-  market_id     BIGINT NOT NULL REFERENCES markets(id),
-  venue         TEXT NOT NULL,
-  outcome       SMALLINT NOT NULL CHECK (outcome IN (0,1)),
-  side          TEXT NOT NULL CHECK (side IN ('buy','sell')),
-  order_type    TEXT NOT NULL CHECK (order_type IN ('market','limit')),
-  amount        NUMERIC(20,6) NOT NULL,
-  limit_price   NUMERIC(8,6),
-  status        TEXT NOT NULL,
-  venue_order_id TEXT,
-  error         TEXT,
-  created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-CREATE INDEX IF NOT EXISTS external_orders_user ON external_orders (user_id, created_at DESC);
+-- Removed for RAID: external venues (Polymarket/Kalshi) and their order audit table.
+ALTER TABLE markets DROP COLUMN IF EXISTS clob_token_ids;
+DROP TABLE IF EXISTS external_orders;
 
 -- ===== Social layer: profiles, threads, reactions, channels, tips, DMs, copy calls =====
 ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT NOT NULL DEFAULT '';
@@ -395,3 +378,11 @@ CREATE TABLE IF NOT EXISTS faucet_claims (
   ts      TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS faucet_claims_user ON faucet_claims (user_id, ts DESC);
+
+-- ===== RAID social: posts on raids and coins, demo labelling =====
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS raid_id BIGINT;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS coin TEXT CHECK (coin IS NULL OR coin ~ '^[A-Z0-9]{2,12}$');
+CREATE INDEX IF NOT EXISTS posts_raid ON posts (raid_id, created_at DESC) WHERE raid_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS posts_coin ON posts (coin, created_at DESC) WHERE coin IS NOT NULL;
+-- Seeded demo accounts are flagged so the app can label them; they are never shown as real people.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS demo BOOLEAN NOT NULL DEFAULT false;

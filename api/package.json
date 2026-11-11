@@ -1,8 +1,8 @@
 {
-  "name": "@called/api",
+  "name": "@raid/api",
   "version": "0.1.0",
   "private": true,
-  "description": "Called API: REST + realtime WebSockets, indexer, job queues",
+  "description": "RAID API: social feed (posts, replies, likes, follows), NEP-413 sign-in, realtime",
   "type": "module",
   "engines": {
     "node": ">=20"
@@ -17,7 +17,8 @@
     "test": "vitest run",
     "lint": "eslint src test",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "dev:local": "tsx src/dev.ts"
   },
   "dependencies": {
     "@called/sdk": "file:../sdk",

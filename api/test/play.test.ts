@@ -54,12 +54,12 @@ describe('play routes', () => {
     expect(top.items[0].handle).toBe('trader');
   });
 
-  it('rejects external markets, guests, and keeps demo sign-in off by default', async () => {
+  it('rejects guests and keeps demo sign-in off by default', async () => {
     const a = await t.signIn('trader2.testnet', 'trader2');
-    const ext = String(await market('polymarket', 'pm1'));
-    expect((await t.app.inject({ method: 'POST', url: '/v1/play/trade', headers: a.auth, payload: { marketId: ext, outcome: 1, side: 'buy', amount: 5 } })).json().error).toBe('external_market');
-    expect((await t.app.inject({ method: 'POST', url: '/v1/play/trade', payload: { marketId: ext, outcome: 1, side: 'buy', amount: 5 } })).statusCode).toBe(401);
+    const m = String(await market('called', 'c-guest'));
+    expect((await t.app.inject({ method: 'POST', url: '/v1/play/trade', payload: { marketId: m, outcome: 1, side: 'buy', amount: 5 } })).statusCode).toBe(401);
     expect((await t.app.inject({ method: 'POST', url: '/v1/auth/demo' })).statusCode).toBe(404);
+    await t.app.inject({ method: 'GET', url: '/v1/play/account', headers: a.auth });
     const d = (await t.app.inject({ method: 'POST', url: '/v1/play/deposit', headers: a.auth, payload: { amount: 250 } })).json();
     expect(d.balance).toBe(1250);
     expect((await t.app.inject({ method: 'POST', url: '/v1/play/withdraw', headers: a.auth, payload: { amount: 5000 } })).statusCode).toBe(409);

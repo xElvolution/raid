@@ -68,7 +68,7 @@ const posts: [string, string, number | null, number][] = [
   ['leo', 'NEAR above $5 by end of November. Chain abstraction season.', 2, 6],
   ['kemi', 'Rain on Nov 1 in Lagos, bet.', 3, 5],
   ['ada', 'First week on Called and my streak is already at 4 days', null, 3],
-  ['nia', 'Who else is watching the Polymarket NBA odds swing tonight?', null, 2],
+  ['nia', 'Who else is watching the NBA odds swing tonight?', null, 2],
   ['ada', 'Hot take: Afrobeats gets a Grammy sweep next year.', null, 1],
 ];
 const existing = await db.primary.query<{ n: string }>('SELECT count(*)::text AS n FROM posts');
