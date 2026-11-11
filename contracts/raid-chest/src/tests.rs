@@ -177,3 +177,51 @@ fn real_oneclick_dry_quote_signature_verifies() {
     assert!(verify_quote_sig(sj, sig, real));
     assert!(!verify_quote_sig(&sj.replace("\"amount\":\"1000000\"", "\"amount\":\"1000001\""), sig, real));
 }
+
+#[test]
+fn backers_and_call_time_are_listed() {
+    let mut c = chest();
+    ctx(accounts(1), T - 60 * 60_000);
+    let id = c.call_raid("Raid PEPE".into(), PEPE.into(), 15000, 10, 24);
+    assert_eq!(c.get_called_ms(id), Some(T - 60 * 60_000));
+    ctx("usdc.near".parse().unwrap(), T - 59 * 60_000);
+    let _ = c.ft_on_transfer(accounts(2), U128(300_000), r#"{"back":0}"#.into());
+    let _ = c.ft_on_transfer(accounts(2), U128(100_000), r#"{"back":0}"#.into());
+    // a Solana-keyed intents account (64-hex implicit) and an EVM one (0x…) back through intents.near ft_withdraw msg
+    let sol = "64e2b3b98f7da5dd6ed0fa4183337c806aadcb40642103aa1d766285e511bb18";
+    let evm = "0xca67c1bb3fd69857e5edaf6aa1c65371bf46a464";
+    let _ = c.ft_on_transfer("intents.near".parse().unwrap(), U128(200_000), format!(r#"{{"back":0,"for":"{sol}"}}"#));
+    let _ = c.ft_on_transfer("intents.near".parse().unwrap(), U128(100_000), format!(r#"{{"back":0,"for":"{evm}"}}"#));
+    let b = c.get_backers(id, None, None);
+    assert_eq!(b.len(), 3);
+    assert_eq!(b[0], (accounts(2), U128(400_000)));
+    assert_eq!(b[1].0.as_str(), sol);
+    assert_eq!(b[2].1, U128(100_000));
+}
+
+#[test]
+fn anyone_can_settle_a_keyless_backer_into_intents() {
+    let mut c = chest();
+    ctx(accounts(1), T - 60 * 60_000);
+    let id = c.call_raid("Raid PEPE".into(), PEPE.into(), 15000, 10, 24);
+    let evm: AccountId = "0xca67c1bb3fd69857e5edaf6aa1c65371bf46a464".parse().unwrap();
+    ctx("usdc.near".parse().unwrap(), T - 59 * 60_000);
+    let _ = c.ft_on_transfer("intents.near".parse().unwrap(), U128(1_000_000), format!(r#"{{"back":0,"for":"{evm}"}}"#));
+    ctx(accounts(4), T - 4 * 60_000);
+    let q = quote("nep141:usdc.near", PEPE, 700_000, 900, false);
+    let _ = c.execute_buy(id, q.clone(), sign(&q));
+    c.on_balance(id, PEPE.into(), "buy".into(), Ok(U128(1000)));
+    let s = quote(PEPE, "nep141:usdc.near", 1000, 1_400_000, false);
+    let _ = c.execute_sell(id, s.clone(), sign(&s));
+    c.on_balance(id, "nep141:usdc.near".into(), "sell".into(), Ok(U128(1_400_000)));
+    // a stranger triggers the payout; it can only land on the backer's own account
+    ctx(accounts(5), T);
+    let share = c.claim_share_for(id, evm.clone());
+    assert_eq!(share.0, c.get_raid(id).unwrap().for_backers.0);
+    let parked = c.get_claimable(evm.clone()).0;
+    assert!(parked > share.0); // share + the 0.3 that didn't fit the cap
+    let _ = c.claim_into_intents(evm.clone());
+    assert_eq!(c.get_claimable(evm.clone()).0, 0);
+    let again = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| { let mut c2 = chest_clone(&c); c2.claim_share_for(id, evm.clone()); }));
+    assert!(again.is_err(), "no double claim");
+}

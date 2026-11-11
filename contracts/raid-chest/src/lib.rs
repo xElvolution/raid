@@ -261,6 +261,8 @@ impl Chest {
             for_backers: U128(0),
         };
         log_event("raid_called", json!({"id": id, "caller": raid.caller, "target": raid.target, "target_x_bps": target_x_bps, "buy_after_ms": raid.buy_after_ms}));
+        // Side record (raw key, outside the state struct so the code upgrade keeps v2 state readable): when it was called.
+        env::storage_write(&side_key(b"c:", id), &now.to_le_bytes());
         self.raids.insert(id, raid);
         id
     }
@@ -290,6 +292,7 @@ impl Chest {
             raid.pot = U128(raid.pot.0 + take);
             self.stakes.insert(k, s + take);
             self.raids.insert(m.back, raid);
+            if s == 0 { push_backer(m.back, &backer); }
         }
         if parked > 0 { let c = self.claimable.get(&backer).copied().unwrap_or(0); self.claimable.insert(backer.clone(), c + parked); }
         let kept = take + parked;
@@ -603,10 +606,45 @@ impl Chest {
 #[near]
 impl Chest {
     /// Backer pulls their pro-rata share of a closed raid into `claimable`.
-    pub fn claim_share(&mut self, id: u64) -> U128 {
+    pub fn claim_share(&mut self, id: u64) -> U128 { self.claim_share_inner(id, env::predecessor_account_id()) }
+
+    /// Anyone may move a backer's pro-rata share into the backer's own `claimable` (it can only ever go to them).
+    /// Needed for stakes held by Solana/EVM-keyed intents accounts (e.g. "0xabc…" or a 64-hex ed25519 account)
+    /// that back through NEAR Intents and never sign a NEAR transaction.
+    pub fn claim_share_for(&mut self, id: u64, account_id: AccountId) -> U128 { self.claim_share_inner(id, account_id) }
+
+    /// Anyone may push an account's `claimable` USDC into NEAR Intents under that same account (intents.near
+    /// `mt_transfer` from the chest's own balance). The owner then spends or withdraws it with their own wallet
+    /// signature (ERC-191 for MetaMask, raw_ed25519 for Phantom), so no NEAR account or NEAR gas is needed.
+    pub fn claim_into_intents(&mut self, account_id: AccountId) -> Promise {
+        let amt = self.claimable.get(&account_id).copied().unwrap_or(0);
+        require!(amt > 0, "nothing to claim");
+        self.claimable.remove(&account_id);
+        let usdc = self.usdc_asset();
+        self.sub_accounted(&usdc, amt);
+        log_event("claim_into_intents", json!({"account": account_id, "amount": U128(amt)}));
+        ext_intents::ext(self.cfg.intents.clone())
+            .with_attached_deposit(ONE_YOCTO)
+            .with_static_gas(GAS_TRANSFER)
+            .mt_transfer(account_id, usdc, U128(amt), None, Some("RAID loot".into()))
+    }
+
+    /// When the raid was called (ms). `None` for raids called before this side record existed.
+    pub fn get_called_ms(&self, id: u64) -> Option<u64> {
+        env::storage_read(&side_key(b"c:", id)).and_then(|v| v.try_into().ok()).map(u64::from_le_bytes)
+    }
+
+    /// Backers of a raid with their current stake (recorded from the first back after this code was deployed).
+    pub fn get_backers(&self, id: u64, from: Option<u32>, limit: Option<u32>) -> Vec<(AccountId, U128)> {
+        read_backers(id).into_iter().skip(from.unwrap_or(0) as usize).take(limit.unwrap_or(100) as usize)
+            .map(|a| { let s = self.stakes.get(&(id, a.clone())).copied().unwrap_or(0); (a, U128(s)) }).collect()
+    }
+}
+
+impl Chest {
+    fn claim_share_inner(&mut self, id: u64, who: AccountId) -> U128 {
         let raid = self.raid_or_panic(id);
         require!(raid.status == Status::Closed, "raid not closed");
-        let who = env::predecessor_account_id();
         let k = (id, who.clone());
         let stake = self.stakes.get(&k).copied().unwrap_or(0);
         require!(stake > 0, "no stake");
@@ -619,6 +657,19 @@ impl Chest {
 }
 
 fn now_ms() -> u64 { env::block_timestamp_ms() }
+
+const MAX_LISTED_BACKERS: usize = 2000;
+fn side_key(tag: &[u8], id: u64) -> Vec<u8> { [tag, &id.to_le_bytes()[..]].concat() }
+fn read_backers(id: u64) -> Vec<AccountId> {
+    env::storage_read(&side_key(b"b:", id)).and_then(|v| near_sdk::borsh::from_slice::<Vec<AccountId>>(&v).ok()).unwrap_or_default()
+}
+fn push_backer(id: u64, who: &AccountId) {
+    let mut v = read_backers(id);
+    if v.len() < MAX_LISTED_BACKERS && !v.contains(who) {
+        v.push(who.clone());
+        env::storage_write(&side_key(b"b:", id), &near_sdk::borsh::to_vec(&v).unwrap_or_default());
+    }
+}
 
 fn log_event(event: &str, data: Value) {
     env::log_str(&format!("EVENT_JSON:{}", json!({"standard": "raid", "version": "1.0.0", "event": event, "data": [data]})));
