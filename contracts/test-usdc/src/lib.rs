@@ -88,7 +88,7 @@ impl StorageManagement for Contract {
         let who = account_id.unwrap_or_else(env::predecessor_account_id);
         self.ensure(&who);
         let d = env::attached_deposit();
-        if d > NearToken::from_yoctonear(0) { near_sdk::Promise::new(env::predecessor_account_id()).transfer(d); }
+        if d > NearToken::from_yoctonear(0) { near_sdk::Promise::new(env::predecessor_account_id()).transfer(d).detach(); }
         StorageBalance { total: NearToken::from_yoctonear(0), available: NearToken::from_yoctonear(0) }
     }
     #[payable]

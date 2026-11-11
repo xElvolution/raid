@@ -59,8 +59,8 @@ fn full_raid_lifecycle() {
     let id = c.call_raid("Raid PEPE".into(), PEPE.into(), 15000, 10, 24);
     assert_eq!(c.get_raid(id).unwrap().buy_after_ms, T - 45 * 60_000); // 10 min crew + 5 min public countdown
     ctx("usdc.near".parse().unwrap(), T - 59 * 60_000);
-    c.ft_on_transfer(accounts(2), U128(600_000), r#"{"back":0}"#.into());
-    c.ft_on_transfer(accounts(3), U128(400_000), r#"{"back":0}"#.into());
+    let _ = c.ft_on_transfer(accounts(2), U128(600_000), r#"{"back":0}"#.into());
+    let _ = c.ft_on_transfer(accounts(3), U128(400_000), r#"{"back":0}"#.into());
     assert_eq!(c.get_raid(id).unwrap().pot.0, 1_000_000);
     // the buy is refused during the public countdown
     ctx(accounts(4), T - 47 * 60_000);
@@ -117,7 +117,7 @@ fn size_caps_refund_the_excess() {
     match c.ft_on_transfer(accounts(2), U128(900_000), r#"{"back":0}"#.into()) { PromiseOrValue::Value(v) => assert_eq!(v.0, 200_000), _ => panic!() }
     match c.ft_on_transfer(accounts(3), U128(700_000), r#"{"back":0}"#.into()) { PromiseOrValue::Value(v) => assert_eq!(v.0, 200_000), _ => panic!() }
     assert_eq!(c.get_raid(id).unwrap().pot.0, 1_200_000);
-    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| { let mut c2 = chest_clone(&c); c2.ft_on_transfer(accounts(4), U128(100_000), r#"{"back":0}"#.into()); }));
+    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| { let mut c2 = chest_clone(&c); let _ = c2.ft_on_transfer(accounts(4), U128(100_000), r#"{"back":0}"#.into()); }));
     assert!(r.is_err(), "full raid refuses new backing");
 }
 
@@ -125,7 +125,7 @@ fn size_caps_refund_the_excess() {
 fn crew_window_has_a_minimum() {
     let mut c = chest();
     ctx(accounts(1), T);
-    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| { let mut c2 = chest_clone(&c); c2.call_raid("x".into(), PEPE.into(), 15000, 5, 24); }));
+    let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| { let mut c2 = chest_clone(&c); let _ = c2.call_raid("x".into(), PEPE.into(), 15000, 5, 24); }));
     assert!(r.is_err());
     c.call_raid("ok".into(), PEPE.into(), 15000, 10, 24);
 }
