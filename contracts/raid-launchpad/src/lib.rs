@@ -271,11 +271,12 @@ mod tests {
         assert_eq!(buy(&mut l, accounts(2), id, 10 * UNIT), 0);
         assert_eq!(l.balance_of(id, accounts(2)).0, q);
         assert_eq!(l.fees_of(accounts(1)).0, 100_000); // 1% of 10 USDC to the creator
+        // an immediate round trip loses the fees both ways
+        assert!(l.quote_sell(id, U128(q)).0 < 10 * UNIT);
         let p1 = price_e12(&l.get_coin(id).unwrap());
         buy(&mut l, accounts(3), id, 50 * UNIT);
         assert!(price_e12(&l.get_coin(id).unwrap()) > p1, "price rises with buys");
-        // sell quote is below what was paid (fees both ways), never above
-        assert!(l.quote_sell(id, U128(q)).0 < 10 * UNIT);
+        assert!(l.quote_sell(id, U128(q)).0 > 10 * UNIT, "early buyer is up after later buys");
         // huge buy fills the curve, refunds the excess and graduates
         let refund = buy(&mut l, accounts(4), id, 5_000 * UNIT);
         let c = l.get_coin(id).unwrap();
