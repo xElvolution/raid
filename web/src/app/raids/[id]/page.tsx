@@ -18,7 +18,7 @@ import { useBackers, useChestConfig, useNow, useRaid, useRaids } from '@/lib/hoo
 import { useQuote, fmtPrice, countdown, shortAddr } from '@/lib/market';
 import { coinByAsset, explorerAccount, explorerTx } from '@/lib/coins';
 import { LifecycleReceipts, raidReceipt } from '@/components/JudgeKit';
-import { crewByDao } from '@/lib/crews';
+import { crewName } from '@/lib/crews';
 import { attributeReel, rememberReel } from '@/lib/reels';
 import { CHEST_ID, NETWORK, raidApi, target, tx, usdcOf, xLabel, liveMultiple } from '@/lib/raid';
 import { send, useAccount, connect } from '@/lib/wallet';
@@ -63,7 +63,8 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   const inCountdown = r.status === 'Open' && !open && !!r.buy_after_ms && now > 0 && now < r.buy_after_ms;
   const callerRaids = (all.data ?? []).filter((x) => x.caller === r.caller);
   const rc = raidReceipt(r.id);
-  const crew = crewByDao(r.caller);
+  const crewLabel = crewName(r.caller);
+  const crew = crewLabel ? { name: crewLabel } : null;
 
   const tabs = [{ key: 'room', label: 'Room' }, { key: 'crew', label: 'Crew' }, { key: 'chart', label: 'Chart' }, { key: 'rules', label: 'Receipts' }] as const;
   return (

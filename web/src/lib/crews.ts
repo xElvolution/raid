@@ -11,6 +11,16 @@ export const CREWS: Crew[] = [
   { key: 'dogs', name: 'Doge Pack', dao: `raid-doge-pack.${DAO_FACTORY}`, tag: 'DGP', color: '#3a3b42', ink: '#ffffff' },
 ];
 export const crewByDao = (dao: string) => CREWS.find((c) => c.dao === dao);
+/** Crew DAOs that call raids on the current chest but are not in a war: the lifecycle crew (purpose "RAID crew (testnet)"). */
+const OTHER_CREWS: Record<string, string> = { [`raid-crew-mwgr1iba.${DAO_FACTORY}`]: 'RAID Crew' };
+/** A human name for a crew DAO caller, or null when the account is not a Sputnik DAO. */
+export function crewName(account: string): string | null {
+  const c = crewByDao(account);
+  if (c) return c.name;
+  if (OTHER_CREWS[account]) return OTHER_CREWS[account]!;
+  if (account.endsWith(`.${DAO_FACTORY}`)) return account.slice(0, -DAO_FACTORY.length - 1).replace(/-[a-z0-9]{6,}$/, '').split('-').map((w) => (w === 'raid' ? 'RAID' : w[0]!.toUpperCase() + w.slice(1))).join(' ');
+  return null;
+}
 
 /** War #1: Frog Legion vs Doge Pack, 24 h from the crews' first proposals (2026-11-11 17:28 UTC = 18:28 WAT). */
 export const WAR = { id: 1, start: 1794418080000, end: 1794418080000 + 24 * 3600_000, crews: ['frogs', 'dogs'] as const };

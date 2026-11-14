@@ -4,11 +4,12 @@
  * from the chest contract and the social API. They are labelled "testnet account" wherever they appear.
  */
 import list from './people.json';
+import { crewName } from './crews';
 export interface Person { handle: string; account: string | null; name: string; bio: string; crew: string; hue: number }
 export const PEOPLE = list as Person[];
 export const personByAccount = (a?: string | null) => (a ? PEOPLE.find((p) => p.account === a) : undefined);
 export const personByHandle = (h?: string | null) => (h ? PEOPLE.find((p) => p.handle === h) : undefined);
 /** Resolve a URL segment (handle or account id) to an account id. */
 export const resolveAccount = (seg: string) => personByHandle(seg)?.account ?? seg;
-export const displayName = (a: string) => personByAccount(a)?.name ?? a.replace(/\.(testnet|near)$/, '').replace(/^(.{14}).+$/, '$1…');
+export const displayName = (a: string) => personByAccount(a)?.name ?? crewName(a) ?? a.replace(/\.(testnet|near)$/, '').replace(/^(.{14}).+$/, '$1…');
 export const profileHref = (a: string) => `/u/${personByAccount(a)?.handle ?? a}`;

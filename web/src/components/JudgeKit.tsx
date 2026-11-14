@@ -78,30 +78,30 @@ export function PayoutSlider({ className = '' }: { className?: string }) {
   const missBack = (stake * exit) / 100;
   const f = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   return (
-    <section className={`panel p-3 md:p-4 ${className}`}>
+    <section className={`panel rounded-[28px] p-5 ${className}`}>
       <div className="flex items-center justify-between gap-2">
-        <p className="eyebrow">What you’d get</p>
+        <p className="text-[14px] text-mute">Pick a line</p>
         <Segmented id="pay-line" value={bps} onChange={setBps} options={[{ value: '15000', label: '1.5x' }, { value: '20000', label: '2x' }, { value: '30000', label: '3x' }]} />
       </div>
       <label className="mt-3 block">
-        <span className="flex justify-between text-[12.5px]"><span className="text-mute">Back</span><b className="mono">{stake} USDC</b></span>
+        <span className="flex justify-between text-[14px]"><span className="text-mute">Back</span><b className="mono">{stake} tUSDC</b></span>
         <input type="range" min={1} max={250} value={stake} onChange={(e) => setStake(Number(e.target.value))} className="mt-1.5 w-full accent-[#ff5a1f]" aria-label="Stake" />
       </label>
       <div className="mt-2.5 grid grid-cols-2 gap-2">
         <div className="rounded-[20px] bg-raised/60 p-3">
           <p className="eyebrow">Hits {xLabel(Number(bps))}</p>
-          <p className="mono mt-1 text-[1.0625rem] md:text-[20px] font-bold text-up">{f(p.payout)}</p>
+          <p className="mono mt-1.5 text-[22px] font-semibold text-up">{f(p.payout)}</p>
           <p className="mono mt-0.5 text-[11px] text-up">{fmtPct(p.gainPct)} net</p>
           <p className="mt-1.5 text-[10.5px] text-mute leading-snug">Caller {f(p.callerFee)} · reserve {f(p.buyback)}, from profit only</p>
         </div>
         <div className="rounded-[20px] bg-raised/60 p-3">
           <p className="eyebrow">Miss · sells {(exit / 100).toFixed(2)}x</p>
-          <p className="mono mt-1 text-[1.0625rem] md:text-[20px] font-bold text-down">{f(missBack)}</p>
+          <p className="mono mt-1.5 text-[22px] font-semibold text-down">{f(missBack)}</p>
           <p className="mono mt-0.5 text-[11px] text-down">{fmtPct(exit - 100)} · no fees</p>
           <input type="range" min={0} max={100} value={exit} onChange={(e) => setExit(Number(e.target.value))} className="mt-1.5 w-full accent-[#e0353f]" aria-label="Retreat price" />
         </div>
       </div>
-      <p className="mt-2 text-[10.5px] leading-snug md:text-[11px] text-faint">{fee.caller_fee_bps / 100}% caller fee and {fee.buyback_bps / 100}% buyback, taken from profit only if the raid hits. Max 250 USDC per backer, 1,000 per raid.</p>
+      <p className="mt-3 text-[12.5px] leading-relaxed text-faint">{fee.caller_fee_bps / 100}% caller fee and {fee.buyback_bps / 100}% buyback, taken from profit only if the raid hits. Max 250 USDC per backer, 1,000 per raid.</p>
     </section>
   );
 }
@@ -133,7 +133,7 @@ export function WhyNow({ className = '' }: { className?: string }) {
 
 export function HonestNotes({ className = '' }: { className?: string }) {
   return (
-    <ul className={`grid gap-1 text-[11.5px] md:text-[12px] text-mute leading-snug ${className}`}>
+    <ul className={`grid gap-3 text-[14.5px] text-mute leading-relaxed ${className}`}>
       <li>• <b className="text-ink">Testnet.</b> Raids, backs, crew DAOs and votes are real NEAR testnet transactions. tUSDC is a testnet faucet token with no value.</li>
       <li>• <b className="text-ink">No swaps on testnet.</b> NEAR Intents only runs on mainnet, so testnet backs show a failed forward to Intents; the stake is still recorded.</li>
       <li>• <b className="text-ink">Not audited.</b> The chest has unit tests, not an audit. Tiny amounts only if it ever goes to mainnet.</li>

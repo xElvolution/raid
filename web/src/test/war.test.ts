@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Raid } from '../lib/raid';
-import { CREWS, raidCall, votesNeeded, warLeader, warScore, type Policy, type Proposal } from '../lib/crews';
+import { CHEST_ID, type Raid } from '../lib/raid';
+import { CREWS, crewName, raidCall, votesNeeded, warLeader, warScore, type Policy, type Proposal } from '../lib/crews';
 
 const raid = (o: Partial<Raid> = {}): Raid => ({ id: 0, caller: CREWS[0]!.dao, title: 't', target: 'nep141:doge.omft.near', target_x_bps: 20000, opens_until_ms: 1000, retreat_at_ms: 5000, pot: '100000000', entry_cost: '0', held: '0', proceeds: '0', pending_min_out: '0', pending_deadline_ms: 0, status: 'Open', hit: false, buy_quote_hash: null, sell_quote_hash: null, ...o });
 
@@ -31,8 +31,14 @@ describe('raid war', () => {
   });
   it('decodes a call_raid FunctionCall proposal', () => {
     const args = Buffer.from(JSON.stringify({ title: 'Raid $PEPE to 2x', target: 'nep141:x', target_x_bps: 20000, open_minutes: 600, retreat_hours: 72 })).toString('base64');
-    const p = { kind: { FunctionCall: { receiver_id: 'raid-chest-mwab3vnk.testnet', actions: [{ method_name: 'call_raid', args }] } } } as unknown as Proposal;
+    const p = { kind: { FunctionCall: { receiver_id: CHEST_ID, actions: [{ method_name: 'call_raid', args }] } } } as unknown as Proposal;
     expect(raidCall(p)?.target_x_bps).toBe(20000);
     expect(raidCall({ kind: { Vote: {} } } as unknown as Proposal)).toBeNull();
+  });
+  it('names crew DAO callers', () => {
+    expect(crewName(CREWS[0]!.dao)).toBe('Frog Legion');
+    expect(crewName('raid-crew-mwgr1iba.sputnikv2.testnet')).toBe('RAID Crew');
+    expect(crewName('raid-moon-squad-abc123x.sputnikv2.testnet')).toBe('RAID Moon Squad');
+    expect(crewName('someone.testnet')).toBeNull();
   });
 });
