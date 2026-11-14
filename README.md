@@ -7,7 +7,7 @@
 - **Landing page:** [https://raid.5-189-170-85.sslip.io](https://raid.5-189-170-85.sslip.io)
 
 > NEAR HACKATHON, Nov 2026. Tracks: `memecoins` (primary), `defi`, `open`, `social` (crews are Sputnik DAOs).
-> Status: **NEAR testnet**. Nothing is deployed to mainnet and no real funds are used. Every number below links to a testnet transaction. One raid has gone the whole way on testnet: Open, Bought, Held, Sold at the line, Closed, every backer and the caller paid (raid #1 below).
+> Status: **NEAR testnet**. Nothing is deployed to mainnet and no real funds are used. Every number below links to a testnet transaction. One raid has gone the whole way on testnet: Open, Bought, Held, Sold at the line, Closed, every backer and the caller paid (raid #1 below). A second raid missed the line after retreat, sold at market, paid no fees, and returned what came back to the backer (raid #2 below).
 > Baseline disclosure (Q-003/Q-004): the social app shell comes from the team's earlier project *Called* (`docs/REUSE-MAP.md`).
 > Everything else is new in the window: the chest and launchpad contracts, raids, Raid War, crews, reels, keyless backing, the judge kit and the Telegram bot.
 
@@ -128,7 +128,21 @@ Result: 120 tUSDC in, 246 tUSDC out. Profit 126. Caller (the crew DAO) 3.15 (2.5
 | EVM and Solana-style backers paid into their own accounts (23.34 and 15.56 tUSDC) | [`4SQyjpdMT5…`](https://testnet.nearblocks.io/txns/4SQyjpdMT5iY4A5kcB1nSrPgNnxnHNi5tm2myN81ryVa) / [`5dwWAmaUnq…`](https://testnet.nearblocks.io/txns/5dwWAmaUnqhV9pZr5zUE99ZCnnkCstiWdcXHK9mgKCLu) |
 | Crew DAO votes to claim its 3.15 tUSDC caller fee into the crew treasury | [`E7UXmuFB22…`](https://testnet.nearblocks.io/txns/E7UXmuFB22hhqnoTc3pWrFwoam2MuStw4TEWDCLkk2M) |
 
-A second raid (#2, 3x line, 1 h retreat) is bought and held to test the retreat path: after the deadline the chest may sell at market, and a miss pays no fees. See the log for its result.
+### Miss path on testnet (raid #2)
+Same script, later steps: `node testnet-lifecycle.mjs retreat-a`, then `retreat-b` after the 1 hour deadline. Log: `evidence/testnet-lifecycle-run.json`. Receipt list: `evidence/lifecycle-receipts.json`.
+
+Raid #2 was called directly by `raidcaller-mwgr1iba.testnet` with a 3x line and a 1 hour retreat. backer2 staked 20 tUSDC. The chest bought and held. After the retreat deadline it sold at market at 0.7x (the solver set that price, on the same Intents stand-in as raid #1). Result: 20 tUSDC in, 14 tUSDC out. `hit` is false. Caller fee 0, buyback 0, `for_backers` 14.00. The backer claimed 14.00 tUSDC. No fees were taken on the miss.
+
+| Step | Tx (NearBlocks testnet) |
+|---|---|
+| Raid #2 called (3x line, 1 h retreat) | [`2x1vabeLnE…`](https://testnet.nearblocks.io/txns/2x1vabeLnEx5kzmuUoYgeQ9V1f1hd8VqwrAWNv1RNkQS) |
+| Backer 2 backs 20 tUSDC | [`7mN9aKXCrL…`](https://testnet.nearblocks.io/txns/7mN9aKXCrLiVYdUfUo2afWcEG6zyK6AtmrZkA4cPHcYJ) |
+| `execute_buy` | [`3Y47rc4LH6…`](https://testnet.nearblocks.io/txns/3Y47rc4LH6618UtcRDy9CGqTpNNn8F6zSTEsHYyWPoUZ) |
+| Solver delivers 20 tPEPE; `settle`: Held | [`8pihWe91HP…`](https://testnet.nearblocks.io/txns/8pihWe91HPdAbaDVbq7oH71ptHuMKERTurec4bEwMvdk) / [`6Uj76G8SW2…`](https://testnet.nearblocks.io/txns/6Uj76G8SW2dyJ3DzmS68T6gPAJ4J6EfpNH2vjib7EpLx) |
+| After retreat, `execute_sell` at market (0.7x) | [`JBECpgPFy5…`](https://testnet.nearblocks.io/txns/JBECpgPFy5cn7Yv1nL8xmVyvjBphRfngUBfN48NDdNV2) |
+| Solver pays 14 tUSDC; `settle`: Closed, miss, no fees | [`Czq9P7oA27…`](https://testnet.nearblocks.io/txns/Czq9P7oA272av1rwLHWNYzxRyxBrNiNc85hbCcS58yWX) / [`Fk2k5zgfNK…`](https://testnet.nearblocks.io/txns/Fk2k5zgfNKGc1bDVTUmSueZAqG73Vm2jTBi7pBLhSLGP) |
+| Backer 2 claims 14.00 tUSDC (staked 20) | [`HxA7yWXE6W…`](https://testnet.nearblocks.io/txns/HxA7yWXE6WZtCyjKemRThvzhLRELH5xMWFjyhn1XkeLQ) |
+
 
 ### Earlier testnet runs
 - `evidence/testnet-e2e-run.json`: the full **testnet rehearsal**, one script (`scripts/testnet-e2e.mjs`), with a pass/fail checklist in `docs/TESTNET-E2E.md` and a 390 px screenshot per step in `scripts/shots/prod/v4/e2e/`.

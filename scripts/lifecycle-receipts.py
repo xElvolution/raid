@@ -1,4 +1,5 @@
-# Builds web/src/lib/receipts.json from evidence/testnet-lifecycle-run.json (the testnet lifecycle run).
+# Builds evidence/lifecycle-receipts.json from evidence/testnet-lifecycle-run.json (the testnet lifecycle run).
+# Set RAID_WRITE_WEB_RECEIPTS=1 to also write web/src/lib/receipts.json.
 import json, re
 d = json.load(open('evidence/testnet-lifecycle-run.json'))
 txof = lambda x: x.get('tx') or (re.search(r'txns/(\w+)', x.get('url', '')) or [None, None])[1]
@@ -52,5 +53,10 @@ for k, v in raids.items():
     st = [s for s in v['steps'] if s['label'] == 'Vote passes, the DAO calls the raid']
     v['call'] = {'tx': st[0]['tx'] if st else None, 'block': None, 'caller': 'raid-crew-mwgr1iba.sputnikv2.testnet', 'signer': 'raid-crew-mwgr1iba.sputnikv2.testnet'}
 out = {'chest': 'raidchest-mwgr1bk0.testnet', 'network': 'testnet', 'generated_from': 'evidence/testnet-lifecycle-run.json', 'raids': raids}
-json.dump(out, open('web/src/lib/receipts.json', 'w'), indent=1)
+json.dump(out, open('evidence/lifecycle-receipts.json', 'w'), indent=1)
+# The web copy is optional. The UI worker owns web/. Set RAID_WRITE_WEB_RECEIPTS=1 to update it.
+import os
+if os.environ.get('RAID_WRITE_WEB_RECEIPTS') == '1':
+    json.dump(out, open('web/src/lib/receipts.json', 'w'), indent=1)
 print({k: (len(v['backs']), len(v['steps'])) for k, v in raids.items()})
+print('wrote evidence/lifecycle-receipts.json')

@@ -749,5 +749,80 @@
     "at": "2026-11-14T18:57:12.875Z",
     "status": "Buying",
     "retreat_at": "2026-11-14T19:56:56.793Z"
+  },
+  {
+    "step": "raid B: after retreat the chest may sell at market (0.7x, a loss)",
+    "at": "2026-11-14T19:57:56.139Z",
+    "tx": "JBECpgPFy5cn7Yv1nL8xmVyvjBphRfngUBfN48NDdNV2",
+    "url": "https://testnet.nearblocks.io/txns/JBECpgPFy5cn7Yv1nL8xmVyvjBphRfngUBfN48NDdNV2",
+    "ok": true,
+    "events": [
+      "raid_sell"
+    ],
+    "sim": [
+      "sim_transfer raidchest-mwgr1bk0.testnet -> raidsolver-mwgr1iba.testnet nep141:raidpepe-mwgr1iba.testnet 20000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "raid B: solver fills",
+    "at": "2026-11-14T19:57:58.517Z",
+    "tx": "Czq9P7oA272av1rwLHWNYzxRyxBrNiNc85hbCcS58yWX",
+    "url": "https://testnet.nearblocks.io/txns/Czq9P7oA272av1rwLHWNYzxRyxBrNiNc85hbCcS58yWX",
+    "ok": true,
+    "events": [],
+    "sim": [
+      "sim_transfer raidsolver-mwgr1iba.testnet -> raidchest-mwgr1bk0.testnet nep141:raidusdc-mwgr1iba.testnet 14000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "raid B: settle -> Closed (miss)",
+    "at": "2026-11-14T19:58:01.599Z",
+    "tx": "Fk2k5zgfNKGc1bDVTUmSueZAqG73Vm2jTBi7pBLhSLGP",
+    "url": "https://testnet.nearblocks.io/txns/Fk2k5zgfNKGc1bDVTUmSueZAqG73Vm2jTBi7pBLhSLGP",
+    "ok": true,
+    "ret": "settled",
+    "events": [
+      "raid_pool",
+      "raid_closed"
+    ],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "raid B closed: a miss pays no fees",
+    "at": "2026-11-14T19:58:01.805Z",
+    "status": "Closed",
+    "hit": false,
+    "proceeds": "14000000",
+    "caller_cut": "0",
+    "buyback": "0",
+    "for_backers": "14000000"
+  },
+  {
+    "step": "raid B: backer2 claim_share",
+    "at": "2026-11-14T19:58:04.038Z",
+    "tx": "5yquXiBmELKtkkczbkUJfxUrFmYGrzUerbHzwpwMXF7M",
+    "url": "https://testnet.nearblocks.io/txns/5yquXiBmELKtkkczbkUJfxUrFmYGrzUerbHzwpwMXF7M",
+    "ok": true,
+    "ret": "14000000",
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "raid B: backer2 claim",
+    "at": "2026-11-14T19:58:07.702Z",
+    "tx": "HxA7yWXE6WZtCyjKemRThvzhLRELH5xMWFjyhn1XkeLQ",
+    "url": "https://testnet.nearblocks.io/txns/HxA7yWXE6WZtCyjKemRThvzhLRELH5xMWFjyhn1XkeLQ",
+    "ok": true,
+    "events": [
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_withdraw raidchest-mwgr1bk0.testnet -> raidbacker2-mwgr1iba.testnet nep141:raidusdc-mwgr1iba.testnet 14000000"
+    ],
+    "fails": []
   }
 ]

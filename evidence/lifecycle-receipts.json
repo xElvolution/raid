@@ -1,0 +1,197 @@
+{
+ "chest": "raidchest-mwgr1bk0.testnet",
+ "network": "testnet",
+ "generated_from": "evidence/testnet-lifecycle-run.json",
+ "raids": {
+  "0": {
+   "call": {
+    "tx": "CEHwwEAnBgoqsNyHR7RecW4ACZ33QLw19NqGeVvKmPtt",
+    "block": null,
+    "caller": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "signer": "raid-crew-mwgr1iba.sputnikv2.testnet"
+   },
+   "backs": [
+    {
+     "tx": "BH5aVs1HpAxABcuSj5oZdLTHeyFRijTMacVkcmycixtG",
+     "block": null,
+     "backer": "raidbacker1-mwgr1iba.testnet",
+     "amount": "40000000"
+    },
+    {
+     "tx": "EH8az67VcrosULzMx4yxAKJixNqgMnYhCZ8zg5hxtqwE",
+     "block": null,
+     "backer": "raidbacker2-mwgr1iba.testnet",
+     "amount": "60000000"
+    }
+   ],
+   "steps": [
+    {
+     "label": "Crew DAO proposes the raid",
+     "tx": "6XREjHi4tzkHzhs3oKByfubdYQ6GaHhsK7txeE9c3xsk"
+    },
+    {
+     "label": "Vote passes, the DAO calls the raid",
+     "tx": "CEHwwEAnBgoqsNyHR7RecW4ACZ33QLw19NqGeVvKmPtt"
+    }
+   ]
+  },
+  "1": {
+   "call": {
+    "tx": "3u2Pq3Xo2MxMHPJN1XovnG8Pz4ZfT4Ryhb6cppHdfwiH",
+    "block": null,
+    "caller": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "signer": "raid-crew-mwgr1iba.sputnikv2.testnet"
+   },
+   "backs": [
+    {
+     "tx": "926u4adPKprVd8usCwVB41RSXQTNBHfqDG6JubvvavTw",
+     "block": null,
+     "backer": "raidbacker1-mwgr1iba.testnet",
+     "amount": "40000000"
+    },
+    {
+     "tx": "A1KD7xXLaaNc98XcRr5DVDPkvqVHUQeT5dhuzLaS3Krf",
+     "block": null,
+     "backer": "raidbacker2-mwgr1iba.testnet",
+     "amount": "60000000"
+    },
+    {
+     "tx": "4v9ENX4evPEweLBfwZZvJS3vaoGXmGcujQGTEWDACNpQ",
+     "block": null,
+     "backer": "0x51bbf98c6d19352beeb9793d856806f94cc6704f",
+     "amount": "12000000"
+    },
+    {
+     "tx": "EEVbKKCpbxKyL1cU598HtxNRKtEL5Bk5EQvM8Bhv2yc1",
+     "block": null,
+     "backer": "34ba76c31ebfe413118d303b343681802eb2ef9eb53883b5655b0fa48cd20c4b",
+     "amount": "8000000"
+    }
+   ],
+   "steps": [
+    {
+     "label": "Crew DAO proposes the raid",
+     "tx": "GGiw91WZCcLEGWTfbMELAuf7QvQJEYqKXyxfYUFVXof7"
+    },
+    {
+     "label": "Vote passes, the DAO calls the raid",
+     "tx": "3u2Pq3Xo2MxMHPJN1XovnG8Pz4ZfT4Ryhb6cppHdfwiH"
+    },
+    {
+     "label": "Buy during the countdown: refused",
+     "tx": "6uiyrF13ukVV5pwMjTiQ6Ey5tRQtiVXXZ9C2skT8h1MG"
+    },
+    {
+     "label": "Chain Signatures signs the buy intent",
+     "tx": "6NwhdgXto9XCY8UHzFek9PTB5i9GPUqBvMsFdmE85S25"
+    },
+    {
+     "label": "Buy with a bad quote signature: refused",
+     "tx": "3e1PB5CnsjeRoa3po875qWcwVTbEGUMrtedS1HRXpYeA"
+    },
+    {
+     "label": "Buy: signed quote checked, pot sent",
+     "tx": "8vyn1cobJW5XnTWipsnVDguhNptLWmpv9QY2Bc4RnDeH"
+    },
+    {
+     "label": "Solver delivers the coin",
+     "tx": "FkriFSmyHZd1JxNj1vuYFQCa55wFp5CVxFsg19Hf3mHN"
+    },
+    {
+     "label": "Settle: Held",
+     "tx": "6vbQR9VHE8WSLW2kSZneFsA8dp4iGKJSyKvjYHBbFh6d"
+    },
+    {
+     "label": "Sell below the line: refused",
+     "tx": "2fiYC5wgbzWrgkwRooQb5BwB72zqEtT4NMkdseTdrN1Z"
+    },
+    {
+     "label": "Sell at the line",
+     "tx": "H7DsY6BADvKxqgVDc2aWQKYnK2w7psTE5usB9sgGxQKe"
+    },
+    {
+     "label": "Solver pays tUSDC",
+     "tx": "26bNN6MzfY7yFvWSX8kNpVG8nUUKAT12njhkuwJpabuY"
+    },
+    {
+     "label": "Settle: Closed, fees split",
+     "tx": "9sBPwXS8mYkj1HM2mgojvrcUChuecNSFknEumtfrbpvn"
+    },
+    {
+     "label": "Backer 1 paid",
+     "tx": "8kgEN3TVqc6uw2SEGYmW8knAFtxyvEUa47ySrXhYhXhw"
+    },
+    {
+     "label": "Backer 2 paid",
+     "tx": "ELDuyT3ygU83vHrWKcxi2fFpxiWo8YGm7nzVHPaduKAF"
+    },
+    {
+     "label": "Any-chain backer paid",
+     "tx": "4SQyjpdMT5iY4A5kcB1nSrPgNnxnHNi5tm2myN81ryVa"
+    },
+    {
+     "label": "Any-chain backer paid",
+     "tx": "5dwWAmaUnqhV9pZr5zUE99ZCnnkCstiWdcXHK9mgKCLu"
+    },
+    {
+     "label": "Crew DAO claims the caller fee",
+     "tx": "E7UXmuFB22hhqnoTc3pWrFwoam2MuStw4TEWDCLkk2M"
+    }
+   ]
+  },
+  "2": {
+   "call": {
+    "tx": "2x1vabeLnEx5kzmuUoYgeQ9V1f1hd8VqwrAWNv1RNkQS",
+    "block": null,
+    "caller": "raidcaller-mwgr1iba.testnet",
+    "signer": "raidcaller-mwgr1iba.testnet"
+   },
+   "backs": [
+    {
+     "tx": "7mN9aKXCrLiVYdUfUo2afWcEG6zyK6AtmrZkA4cPHcYJ",
+     "block": null,
+     "backer": "raidbacker2-mwgr1iba.testnet",
+     "amount": "20000000"
+    }
+   ],
+   "steps": [
+    {
+     "label": "backer2 backs 20 tUSDC",
+     "tx": "7mN9aKXCrLiVYdUfUo2afWcEG6zyK6AtmrZkA4cPHcYJ"
+    },
+    {
+     "label": "execute_buy",
+     "tx": "3Y47rc4LH6618UtcRDy9CGqTpNNn8F6zSTEsHYyWPoUZ"
+    },
+    {
+     "label": "solver fills",
+     "tx": "8pihWe91HPdAbaDVbq7oH71ptHuMKERTurec4bEwMvdk"
+    },
+    {
+     "label": "settle -> Held",
+     "tx": "6Uj76G8SW2dyJ3DzmS68T6gPAJ4J6EfpNH2vjib7EpLx"
+    },
+    {
+     "label": "after retreat the chest may sell at market (0.7x, a loss)",
+     "tx": "JBECpgPFy5cn7Yv1nL8xmVyvjBphRfngUBfN48NDdNV2"
+    },
+    {
+     "label": "solver fills",
+     "tx": "Czq9P7oA272av1rwLHWNYzxRyxBrNiNc85hbCcS58yWX"
+    },
+    {
+     "label": "settle -> Closed (miss)",
+     "tx": "Fk2k5zgfNKGc1bDVTUmSueZAqG73Vm2jTBi7pBLhSLGP"
+    },
+    {
+     "label": "backer2 claim_share",
+     "tx": "5yquXiBmELKtkkczbkUJfxUrFmYGrzUerbHzwpwMXF7M"
+    },
+    {
+     "label": "backer2 claim",
+     "tx": "HxA7yWXE6WZtCyjKemRThvzhLRELH5xMWFjyhn1XkeLQ"
+    }
+   ]
+  }
+ }
+}
