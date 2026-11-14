@@ -1,159 +1,163 @@
 {
- "chest": "raid-chest-mwab3vnk.testnet",
+ "chest": "raidchest-mwgr1bk0.testnet",
  "network": "testnet",
- "generated": "2026-11-11T18:26:57.673Z",
+ "generated_from": "evidence/testnet-lifecycle-run.json",
  "raids": {
   "0": {
    "call": {
-    "tx": "CqMscZaysodEPjwENV8WmLCdBKEhoJqg4eNf4uoFVnHE",
-    "block": 277155409,
-    "caller": "raid-chest-mwab3vnk.testnet",
-    "signer": "raid-chest-mwab3vnk.testnet"
+    "tx": "CEHwwEAnBgoqsNyHR7RecW4ACZ33QLw19NqGeVvKmPtt",
+    "block": null,
+    "caller": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "signer": "raid-crew-mwgr1iba.sputnikv2.testnet"
    },
    "backs": [
     {
-     "tx": "CzeS4dAgf8C2iQbhke6XQrrGinvkAphK23KjGJ3XJfG",
-     "block": 277155417,
-     "backer": "backer.raid-chest-mwab3vnk.testnet",
-     "amount": "5000000"
+     "tx": "BH5aVs1HpAxABcuSj5oZdLTHeyFRijTMacVkcmycixtG",
+     "block": null,
+     "backer": "raidbacker1-mwgr1iba.testnet",
+     "amount": "40000000"
     },
     {
-     "tx": "5xSuDjitZZagba2Ufo6HNVbCiAhkrYe3pVputB7bPyYj",
-     "block": 277155425,
-     "backer": "backer.raid-chest-mwab3vnk.testnet",
-     "amount": "245000000"
+     "tx": "EH8az67VcrosULzMx4yxAKJixNqgMnYhCZ8zg5hxtqwE",
+     "block": null,
+     "backer": "raidbacker2-mwgr1iba.testnet",
+     "amount": "60000000"
+    }
+   ],
+   "steps": [
+    {
+     "label": "Crew DAO proposes the raid",
+     "tx": "6XREjHi4tzkHzhs3oKByfubdYQ6GaHhsK7txeE9c3xsk"
+    },
+    {
+     "label": "Vote passes, the DAO calls the raid",
+     "tx": "CEHwwEAnBgoqsNyHR7RecW4ACZ33QLw19NqGeVvKmPtt"
     }
    ]
   },
   "1": {
    "call": {
-    "tx": "H3Duup41dvMZHCeUkhy5ZXsv8zoBHmYRQDVEKuiWB3Zd",
-    "block": 277155431,
-    "caller": "raid-chest-mwab3vnk.testnet",
-    "signer": "raid-chest-mwab3vnk.testnet"
+    "tx": "3u2Pq3Xo2MxMHPJN1XovnG8Pz4ZfT4Ryhb6cppHdfwiH",
+    "block": null,
+    "caller": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "signer": "raid-crew-mwgr1iba.sputnikv2.testnet"
    },
    "backs": [
     {
-     "tx": "3bqaP3UiJCqrZL3g6Ui2ehtziwBZmDsjXGYmoN3xuCu6",
+     "tx": "926u4adPKprVd8usCwVB41RSXQTNBHfqDG6JubvvavTw",
      "block": null,
-     "backer": "backer.raid-chest-mwab3vnk.testnet",
-     "amount": "20000000"
+     "backer": "raidbacker1-mwgr1iba.testnet",
+     "amount": "40000000"
+    },
+    {
+     "tx": "A1KD7xXLaaNc98XcRr5DVDPkvqVHUQeT5dhuzLaS3Krf",
+     "block": null,
+     "backer": "raidbacker2-mwgr1iba.testnet",
+     "amount": "60000000"
+    },
+    {
+     "tx": "4v9ENX4evPEweLBfwZZvJS3vaoGXmGcujQGTEWDACNpQ",
+     "block": null,
+     "backer": "0x51bbf98c6d19352beeb9793d856806f94cc6704f",
+     "amount": "12000000"
+    },
+    {
+     "tx": "EEVbKKCpbxKyL1cU598HtxNRKtEL5Bk5EQvM8Bhv2yc1",
+     "block": null,
+     "backer": "34ba76c31ebfe413118d303b343681802eb2ef9eb53883b5655b0fa48cd20c4b",
+     "amount": "8000000"
+    }
+   ],
+   "steps": [
+    {
+     "label": "Crew DAO proposes the raid",
+     "tx": "GGiw91WZCcLEGWTfbMELAuf7QvQJEYqKXyxfYUFVXof7"
+    },
+    {
+     "label": "Vote passes, the DAO calls the raid",
+     "tx": "3u2Pq3Xo2MxMHPJN1XovnG8Pz4ZfT4Ryhb6cppHdfwiH"
+    },
+    {
+     "label": "Buy during the countdown: refused",
+     "tx": "6uiyrF13ukVV5pwMjTiQ6Ey5tRQtiVXXZ9C2skT8h1MG"
+    },
+    {
+     "label": "Chain Signatures signs the buy intent",
+     "tx": "6NwhdgXto9XCY8UHzFek9PTB5i9GPUqBvMsFdmE85S25"
+    },
+    {
+     "label": "Buy with a bad quote signature: refused",
+     "tx": "3e1PB5CnsjeRoa3po875qWcwVTbEGUMrtedS1HRXpYeA"
+    },
+    {
+     "label": "Buy: signed quote checked, pot sent",
+     "tx": "8vyn1cobJW5XnTWipsnVDguhNptLWmpv9QY2Bc4RnDeH"
+    },
+    {
+     "label": "Solver delivers the coin",
+     "tx": "FkriFSmyHZd1JxNj1vuYFQCa55wFp5CVxFsg19Hf3mHN"
+    },
+    {
+     "label": "Settle: Held",
+     "tx": "6vbQR9VHE8WSLW2kSZneFsA8dp4iGKJSyKvjYHBbFh6d"
+    },
+    {
+     "label": "Sell below the line: refused",
+     "tx": "2fiYC5wgbzWrgkwRooQb5BwB72zqEtT4NMkdseTdrN1Z"
+    },
+    {
+     "label": "Sell at the line",
+     "tx": "H7DsY6BADvKxqgVDc2aWQKYnK2w7psTE5usB9sgGxQKe"
+    },
+    {
+     "label": "Solver pays tUSDC",
+     "tx": "26bNN6MzfY7yFvWSX8kNpVG8nUUKAT12njhkuwJpabuY"
+    },
+    {
+     "label": "Settle: Closed, fees split",
+     "tx": "9sBPwXS8mYkj1HM2mgojvrcUChuecNSFknEumtfrbpvn"
+    },
+    {
+     "label": "Backer 1 paid",
+     "tx": "8kgEN3TVqc6uw2SEGYmW8knAFtxyvEUa47ySrXhYhXhw"
+    },
+    {
+     "label": "Backer 2 paid",
+     "tx": "ELDuyT3ygU83vHrWKcxi2fFpxiWo8YGm7nzVHPaduKAF"
+    },
+    {
+     "label": "Any-chain backer paid",
+     "tx": "4SQyjpdMT5iY4A5kcB1nSrPgNnxnHNi5tm2myN81ryVa"
+    },
+    {
+     "label": "Any-chain backer paid",
+     "tx": "5dwWAmaUnqhV9pZr5zUE99ZCnnkCstiWdcXHK9mgKCLu"
+    },
+    {
+     "label": "Crew DAO claims the caller fee",
+     "tx": "E7UXmuFB22hhqnoTc3pWrFwoam2MuStw4TEWDCLkk2M"
     }
    ]
   },
   "2": {
    "call": {
-    "tx": "7kRCubGqZF2SYXQQLFeEwYwMsqv7ZMP8NQCj3K9PTF7g",
+    "tx": "2x1vabeLnEx5kzmuUoYgeQ9V1f1hd8VqwrAWNv1RNkQS",
     "block": null,
-    "caller": "backer.raid-chest-mwab3vnk.testnet",
-    "signer": "backer.raid-chest-mwab3vnk.testnet"
+    "caller": "raidcaller-mwgr1iba.testnet",
+    "signer": "raidcaller-mwgr1iba.testnet"
    },
    "backs": [
     {
-     "tx": "HMkA3MpyVS1YgG5XconmLYduGhcpmo4h4cp7nuJ2hkFE",
+     "tx": "7mN9aKXCrLiVYdUfUo2afWcEG6zyK6AtmrZkA4cPHcYJ",
      "block": null,
-     "backer": "backer.raid-chest-mwab3vnk.testnet",
-     "amount": "5000000"
+     "backer": "raidbacker2-mwgr1iba.testnet",
+     "amount": "20000000"
     }
-   ]
-  },
-  "3": {
-   "call": {
-    "tx": "6Y2dgEiRSRYnqUJhTwoh63Kb9HGAUtT6tKUCUvAjBm5N",
-    "block": 277246073,
-    "caller": "raid-frog-legion.sputnikv2.testnet",
-    "signer": "raid-judge1-mwce6ry3.testnet"
-   },
-   "backs": [
+   ],
+   "steps": [
     {
-     "tx": "At2y885aPopYdmXHtf4TsqdJHxarVpV8MSTwSsW9gSU7",
-     "block": 277246112,
-     "backer": "raid-capt-frogs-mwce6jqg.testnet",
-     "amount": "120000000"
-    },
-    {
-     "tx": "8mPv6nijiR64qQTSXjSHHdmMwcMV5ZDMXpZCXWsKxZcT",
-     "block": 277246123,
-     "backer": "raid-judge1-mwce6ry3.testnet",
-     "amount": "60000000"
-    }
-   ]
-  },
-  "4": {
-   "call": {
-    "tx": "431hUSjo8UKM7LjEwNG3wSRkqNiwv88YTJo4RHWYCkn4",
-    "block": 277246086,
-    "caller": "raid-doge-pack.sputnikv2.testnet",
-    "signer": "raid-judge3-mwce6zdz.testnet"
-   },
-   "backs": [
-    {
-     "tx": "7Xg5QncwX6VTKHd6CrsgDjVvfvaaJBSKdUT34PDGPLTk",
-     "block": 277246133,
-     "backer": "raid-capt-dogs-mwce6nua.testnet",
-     "amount": "90000000"
-    },
-    {
-     "tx": "8hv7F6cMcyeuNCj7Hhj29hm6DrA5ExQaGg1VRYx6AbPA",
-     "block": 277246145,
-     "backer": "raid-judge3-mwce6zdz.testnet",
-     "amount": "40000000"
-    }
-   ]
-  },
-  "5": {
-   "call": {
-    "tx": "CckroL8CNXmrHyLCL96DCuodC7BhxXK4xiASvUuBmzQ6",
-    "block": 277246757,
-    "caller": "backer.raid-chest-mwab3vnk.testnet",
-    "signer": "backer.raid-chest-mwab3vnk.testnet"
-   },
-   "backs": [
-    {
-     "tx": "2P2dXCD3Cms82DsFtPNzK7CYvVwh4XYu35NS4oevkmf4",
-     "block": 277246765,
-     "backer": "0x4a8586a241f4e123f209e0fff688b48327e8f5e3",
-     "amount": "8000000"
-    },
-    {
-     "tx": "BtD4rP6JcPRndzd3AvsNMNxEfwGdoYqBaurbUCyYiUnb",
-     "block": 277246773,
-     "backer": "eb3a4e2d73a992fea7f74698ddf733067c62ef5ba62be51444c57d181534cc2a",
-     "amount": "7000000"
-    }
-   ]
-  },
-  "6": {
-   "call": {
-    "tx": "85jtMEp2Qxqa9KFpt21KnPBxsL9qMe5EBHofemUjXW12",
-    "block": 277249048,
-    "caller": "raid-frog-legion.sputnikv2.testnet",
-    "signer": "raid-judge2-mwce6vli.testnet"
-   },
-   "backs": [
-    {
-     "tx": "6R482mgBBYoRQm2D27MzW7TnmxTn2qkHHEYPrG9rYLZi",
-     "block": 277249059,
-     "backer": "raid-capt-dogs-mwce6nua.testnet",
-     "amount": "40000000"
-    },
-    {
-     "tx": "7CfiouYJWK9CThJXDjdFJmPQKitKUAu9cBNQLvZoVa91",
-     "block": 277249070,
-     "backer": "0x9190ad48ed8d27ac8119c9f612c2d5abc9f443b1",
-     "amount": "12000000"
-    },
-    {
-     "tx": "AqTUMBDUtajabaYq3vxSdMm8X6ocWmbDZWRUfLSfyZGn",
-     "block": 277249078,
-     "backer": "7557c7d60b9888fb0f28c71417986b991e8f6f3da13be25ea0057ecfe6bc914a",
-     "amount": "9000000"
-    },
-    {
-     "tx": "pQivDuLEL9DQWXJRrKQHpPDYTAr8xjDMGs2P7vdC9pt",
-     "block": 277249095,
-     "backer": "raid-capt-frogs-mwce6jqg.testnet",
-     "amount": "30000000"
+     "label": "backer2 backs 20 tUSDC",
+     "tx": "7mN9aKXCrLiVYdUfUo2afWcEG6zyK6AtmrZkA4cPHcYJ"
     }
    ]
   }

@@ -1,9 +1,0 @@
-{
-  "name": "@called/deploy",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Preview edge: one port that routes /v1 + websockets to the API and everything else to the web app",
-  "type": "module",
-  "scripts": { "proxy": "node proxy.mjs", "test": "node --test" },
-  "dependencies": { "http-proxy": "^1.18.1" }
-}

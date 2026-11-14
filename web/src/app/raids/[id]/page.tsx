@@ -14,7 +14,7 @@ import { Composer, Feed } from '@/components/Social';
 import { useBackers, useChestConfig, useNow, useRaid, useRaids } from '@/lib/hooks';
 import { useQuote, fmtPrice, fmtUsd, countdown, shortAddr } from '@/lib/market';
 import { CHAINS, coinByAsset, explorerAccount, explorerTx } from '@/lib/coins';
-import { raidReceipt } from '@/components/JudgeKit';
+import { LifecycleReceipts, raidReceipt } from '@/components/JudgeKit';
 import { crewByDao } from '@/lib/crews';
 import { attributeReel, rememberReel } from '@/lib/reels';
 import { CHEST_ID, NETWORK, STEPS, raidApi, stepIndex, target, tx, usdcOf, xLabel, liveMultiple } from '@/lib/raid';
@@ -125,13 +125,14 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
         </ul>
         <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 border-t border-line pt-3 mono text-[11px]">
           <dt className="text-faint">Chest</dt><dd className="truncate text-right"><a className="hover:text-ink text-mute inline-flex items-center gap-0.5" href={explorerAccount(CHEST_ID, NETWORK)} target="_blank" rel="noreferrer">{shortAddr(CHEST_ID)}<ArrowUpRight size={11} /></a></dd>
-          {rc?.call && <><dt className="text-faint">Called in</dt><dd className="truncate text-right"><a className="hover:text-ink text-mute" href={explorerTx(rc.call.tx, NETWORK)} target="_blank" rel="noreferrer">{rc.call.tx.slice(0, 10)}… · block {rc.call.block?.toLocaleString('en-US')}</a></dd></>}
+          {rc?.call?.tx && <><dt className="text-faint">Called in</dt><dd className="truncate text-right"><a className="hover:text-ink text-mute" href={explorerTx(rc.call.tx, NETWORK)} target="_blank" rel="noreferrer">{rc.call.tx.slice(0, 10)}…{rc.call.block ? ` · block ${rc.call.block.toLocaleString('en-US')}` : ''}</a></dd></>}
           {rc?.backs?.map((b) => <Fragment key={b.tx}><dt className="text-faint">Back {usdcOf(b.amount).toFixed(0)}</dt><dd className="truncate text-right"><a className="hover:text-ink text-mute" href={explorerTx(b.tx, NETWORK)} target="_blank" rel="noreferrer">{shortAddr(b.backer)} · {b.tx.slice(0, 8)}…</a></dd></Fragment>)}
           <dt className="text-faint">Target asset</dt><dd className="truncate text-right text-mute">{r.target}</dd>
           <dt className="text-faint">Buy quote</dt><dd className="truncate text-right text-mute">{r.buy_quote_hash ?? 'not yet'}</dd>
           <dt className="text-faint">Sell quote</dt><dd className="truncate text-right text-mute">{r.sell_quote_hash ?? 'not yet'}</dd>
         </dl>
       </section>
+      <LifecycleReceipts id={r.id} className="mt-4" />
     </Shell>
   );
 }

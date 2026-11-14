@@ -1,27 +1,26 @@
-# @called/web
+# RAID web app
 
-Next.js 16 app for Called: every product screen, Duolingo-style design system, realtime odds and feed over websockets.
+Next.js 16 app for RAID on NEAR testnet. Live at https://app.raid.5-189-170-85.sslip.io
 
-## Screens
-| Route | Screen |
+## Pages
+| Route | What you see |
 |---|---|
-| `/welcome` | Onboarding with Calli (4 steps, topic picker) |
-| `/signin` | NEAR wallet sign-in (NEP-413 signMessage via wallet-selector: Meteor, MyNearWallet) |
-| `/` | Home feed: For you / Following, composer with "Make it a market", live "new calls" pill |
-| `/markets`, `/markets/[id]` | Called markets: live probability + sparkline, Yes/No trade panel (contract), activity, AI verdict proof |
-| `/external`, `/external/[id]` | Live Polymarket markets (synced odds, search), region-aware trade buttons |
-| `/create` | Post → AI market draft, drafts list (clarity, rules, sources) |
-| `/leaderboard` | Divisions Bronze→Diamond, volume leaderboards (24h / 7d / 30d) |
-| `/u/[handle]` | Profile: streak, XP, league, calls, follow |
-| `/notifications` | Live alerts |
-
-## Design system
-Tokens in `src/app/globals.css` (Called Green `#58CC02`, Sky, Sun, Coral; Nunito). `src/components/ui.tsx`: chunky 3D `Button` (bottom edge collapses on press), `Card`, `Pill`, `Progress`, `Segmented`, `Avatar`. `Calli.tsx`: SVG mascot with moods. `lib/fx.ts`: confetti + haptics (`navigator.vibrate` on mobile). Motion respects `prefers-reduced-motion`. XP/streaks/leagues are non-monetary.
+| `/` | Home: live raids, coins you can raid, the judge box |
+| `/raids`, `/raids/[id]` | Raid list and one raid: phase, pot, backers, back form, receipts and its testnet transactions |
+| `/judges` | One-click testnet judge account (judge faucet), payout slider, links to check every contract |
+| `/war` | Raid War: two crews (Sputnik DAOs) scored from chest records |
+| `/launch` | Bonding-curve launchpad on testnet, plus live meme.cooking launches (read-only) |
+| `/feed`, `/reels`, `/leaderboard`, `/u/[handle]` | Social feed, reels, callers, profiles (RAID API) |
 
 ## Run
 ```
-cp .env.example .env.local
-npm i && npm run dev        # expects the API on the same origin or NEXT_PUBLIC_API_URL
-npm test && npm run lint && npm run typecheck && npm run build
+cd ../sdk && npm ci && npm run build
+cd ../web && npm ci && npm run build && npx next start -p 3420
 ```
-Trading on Called markets is disabled in the UI until `NEXT_PUBLIC_CONTRACT_ID` is set.
+Env (all optional, testnet defaults shown in `src/lib/raid.ts`):
+- `NEXT_PUBLIC_RAID_CHEST`: chest contract (live app: `raidchest-mwgr1bk0.testnet`)
+- `NEXT_PUBLIC_RAID_API`: RAID API origin for the feed and reels
+- `NEXT_PUBLIC_RAID_RPC`: NEAR RPC
+- Judge faucet, server only: `RAID_FAUCET_ACCOUNT`, `RAID_FAUCET_KEY` (owner of the testnet tUSDC), `RAID_FAUCET_USDC`, optional `RAID_FAUCET_LAUNCH_USDC`. The browser makes the judge key; only its public key reaches the server.
+
+`npm test`, `npm run lint` and `npm run typecheck` run the checks.

@@ -5,8 +5,8 @@ import { ArrowRight, CheckCircle2, ExternalLink, KeyRound, LogOut } from 'lucide
 import { Shell } from '@/components/Shell';
 import { Identicon } from '@/components/ui';
 import { HonestNotes, PayoutSlider, WhyNow } from '@/components/JudgeKit';
-import { JUDGES, FOUNDER_LINE } from '@/lib/judges';
-import { enterJudgeMode, leaveJudgeMode, useAccount, isJudgeMode } from '@/lib/wallet';
+import { FOUNDER_LINE } from '@/lib/judges';
+import { createJudgeAccount, enterJudgeMode, leaveJudgeMode, useAccount, isJudgeMode } from '@/lib/wallet';
 import { explorerAccount } from '@/lib/coins';
 import { CHEST_ID, NETWORK } from '@/lib/raid';
 import { CREWS } from '@/lib/crews';
@@ -14,13 +14,20 @@ import { toast } from '@/lib/bus';
 
 export default function JudgesPage() {
   const acct = useAccount();
-  const [pick, setPick] = useState<string>(JUDGES[0].accountId);
+  const [pick, setPick] = useState('');
   const [key, setKey] = useState('');
   const [busy, setBusy] = useState(false);
+  const [making, setMaking] = useState(false);
   const judging = !!acct && isJudgeMode();
+  const make = async () => {
+    setMaking(true);
+    try { const r = await createJudgeAccount(); toast({ title: 'Testnet account ready', body: r.warning ?? `Signing as ${r.accountId}. It holds testnet NEAR and 500 tUSDC.`, tone: r.warning ? 'down' : 'lime' }); }
+    catch (e) { toast({ title: 'Faucet did not answer', body: (e as Error).message, tone: 'down' }); }
+    finally { setMaking(false); }
+  };
   const go = async () => {
     setBusy(true);
-    try { await enterJudgeMode(pick, key); setKey(''); toast({ title: 'Judge mode on', body: `Signing as ${pick} on NEAR testnet.`, tone: 'lime' }); }
+    try { await enterJudgeMode(pick.trim(), key); setKey(''); toast({ title: 'Judge mode on', body: `Signing as ${pick} on NEAR testnet.`, tone: 'lime' }); }
     catch (e) { toast({ title: 'Key not accepted', body: (e as Error).message, tone: 'down' }); }
     finally { setBusy(false); }
   };
@@ -29,7 +36,7 @@ export default function JudgesPage() {
       <section className="panel overflow-hidden">
         <div className="border-b border-line px-3 py-2.5 md:px-4 md:py-3">
           <p className="wide text-[1rem] md:text-[20px]">Try a raid in 2 minutes</p>
-          <p className="mt-1 text-[12.5px] md:text-[13px] text-mute">No wallet install, no money. Three judge accounts on NEAR testnet hold 10 testnet NEAR and 500 tUSDC each.</p>
+          <p className="mt-1 text-[12.5px] md:text-[13px] text-mute">No wallet install, no money. One click makes a NEAR testnet account in this browser with testnet NEAR and 500 tUSDC.</p>
         </div>
         {judging ? (
           <div className="flex items-center gap-2.5 px-3 py-3 md:px-4">
@@ -39,26 +46,25 @@ export default function JudgesPage() {
           </div>
         ) : (
           <div className="grid gap-2 px-3 py-3 md:px-4">
-            <div className="grid grid-cols-3 gap-1.5">
-              {JUDGES.map((j) => (
-                <button key={j.accountId} onClick={() => setPick(j.accountId)} aria-pressed={pick === j.accountId} className={`press flex min-w-0 items-center gap-1.5 rounded-[9px] p-1.5 text-left hairline ${pick === j.accountId ? 'bg-raised ring-1 ring-lime' : ''}`}>
-                  <Identicon seed={j.accountId} size={22} className="!rounded-[6px]" />
-                  <span className="min-w-0"><span className="block truncate text-[12px] font-semibold">{j.label}</span><span className="block truncate text-[9.5px] text-mute">{j.crew}</span></span>
-                </button>
-              ))}
-            </div>
-            <label className="flex h-10 items-center gap-2 rounded-[10px] bg-raised px-2.5 hairline">
-              <KeyRound size={15} className="shrink-0 text-mute" />
-              <input value={key} onChange={(e) => setKey(e.target.value)} type="password" autoComplete="off" spellCheck={false} placeholder="Paste judge key (ed25519:…)" className="min-w-0 flex-1 bg-transparent text-[12.5px] outline-none placeholder:text-faint" />
-            </label>
-            <button disabled={!key || busy} onClick={() => void go()} className="press h-10 rounded-[10px] bg-lime text-[13.5px] font-bold text-[#0a1a00] disabled:opacity-45">{busy ? 'Checking key…' : 'Use this judge account'}</button>
-            <p className="text-[10.5px] text-faint">The key stays in this browser only (localStorage). The app checks it matches the account on chain, then signs testnet transactions with it.</p>
+            <button disabled={making} onClick={() => void make()} className="press h-11 rounded-[10px] bg-lime text-[14px] font-bold text-[#0a1a00] disabled:opacity-45">{making ? 'Making your testnet account…' : 'Get a testnet judge account'}</button>
+            <p className="text-[10.5px] text-faint">The key is made in this browser and stays in localStorage. Only the public key goes to the faucet, which opens the account on NEAR testnet and sends it test tokens. Testnet tokens have no value.</p>
+            <details className="text-[12px]">
+              <summary className="cursor-pointer text-mute">Already have a testnet account? Use its key</summary>
+              <div className="mt-2 grid gap-2">
+                <input value={pick} onChange={(e) => setPick(e.target.value)} autoComplete="off" spellCheck={false} placeholder="account.testnet" className="h-10 rounded-[10px] bg-raised px-2.5 text-[12.5px] outline-none hairline placeholder:text-faint" />
+                <label className="flex h-10 items-center gap-2 rounded-[10px] bg-raised px-2.5 hairline">
+                  <KeyRound size={15} className="shrink-0 text-mute" />
+                  <input value={key} onChange={(e) => setKey(e.target.value)} type="password" autoComplete="off" spellCheck={false} placeholder="ed25519:…" className="min-w-0 flex-1 bg-transparent text-[12.5px] outline-none placeholder:text-faint" />
+                </label>
+                <button disabled={!key || !pick || busy} onClick={() => void go()} className="press h-10 rounded-[10px] text-[13px] font-semibold hairline disabled:opacity-45">{busy ? 'Checking key…' : 'Use this account'}</button>
+              </div>
+            </details>
           </div>
         )}
         <ol className="grid gap-0 border-t border-line text-[12.5px] md:text-[13px]">
-          <Step n={1} href="/raids/3" t="Back Frog Legion’s raid #3" b="Enter 10 tUSDC. Then open the raid’s receipt: your back appears in the chest’s records." />
-          <Step n={2} href="/war" t="Cast a crew vote" b={`Judges 1 and 2 are in ${CREWS[0]!.name}, Judge 3 in ${CREWS[1]!.name}. Each crew has a raid proposal at 1 of 2 votes: your Yes passes it and the DAO calls the raid.`} />
-          <Step n={3} href="/raids" t="Call your own raid" b="Pick a coin and a line. The 10-minute public countdown starts after the crew window." />
+          <Step n={1} href="/raids/1" t="See a finished raid: #1, called by a crew DAO" b="Open, bought, sold at 2.05x, fees split and every backer paid. Each step links to its testnet transaction." />
+          <Step n={2} href="/raids" t="Call your own raid" b="Pick a coin and a line. The crew window and the public countdown are 1 minute each on this testnet chest." />
+          <Step n={3} href="/raids" t="Back a raid with tUSDC" b="Enter 10 tUSDC on an open raid. Your stake shows in the chest’s backer list." />
         </ol>
       </section>
 

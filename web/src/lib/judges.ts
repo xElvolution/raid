@@ -1,5 +1,5 @@
-/** Prefunded NEAR testnet judge accounts (10 testnet NEAR + 500 tUSDC each, made with the public testnet faucet helper).
- *  Account ids are public. Their keys are NOT in this repo: they are in the submission notes for judges only. */
+/** Earlier prefunded testnet judge accounts (crew members on the first testnet chest). Judges now get a fresh account
+ *  from the judge faucet on /judges; no private key is in this repo or anywhere outside the judge's browser. */
 export const JUDGES = [
   { label: 'Judge 1', accountId: 'raid-judge1-mwce6ry3.testnet', crew: 'Frog Legion' },
   { label: 'Judge 2', accountId: 'raid-judge2-mwce6vli.testnet', crew: 'Frog Legion' },

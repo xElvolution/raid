@@ -1,4 +1,4 @@
-//! Test USDC for the Called testnet deploy. Anyone can call `faucet` for 1,000 tUSDC once per 24h.
+//! Test token for the RAID testnet deploy (tUSDC, and a stand-in target coin). Anyone can call `faucet` for 1,000 tUSDC once per 24h.
 //! Accounts are auto-registered on faucet/transfer so testers never need storage_deposit.
 use near_contract_standards::fungible_token::metadata::{FungibleTokenMetadata, FungibleTokenMetadataProvider, FT_METADATA_SPEC};
 use near_contract_standards::fungible_token::{FungibleToken, FungibleTokenCore, FungibleTokenResolver};
@@ -17,13 +17,21 @@ pub struct Contract {
     token: FungibleToken,
     last_claim: LookupMap<AccountId, u64>,
     owner: AccountId,
+    name: String,
+    symbol: String,
 }
 
 #[near]
 impl Contract {
     #[init]
-    pub fn new(owner: AccountId) -> Self {
-        Self { token: FungibleToken::new(b"t".to_vec()), last_claim: LookupMap::new(b"c".to_vec()), owner }
+    pub fn new(owner: AccountId, name: Option<String>, symbol: Option<String>) -> Self {
+        Self {
+            token: FungibleToken::new(b"t".to_vec()),
+            last_claim: LookupMap::new(b"c".to_vec()),
+            owner,
+            name: name.unwrap_or_else(|| "RAID Test USD".into()),
+            symbol: symbol.unwrap_or_else(|| "tUSDC".into()),
+        }
     }
 
     fn ensure(&mut self, a: &AccountId) {
@@ -107,6 +115,6 @@ impl StorageManagement for Contract {
 #[near]
 impl FungibleTokenMetadataProvider for Contract {
     fn ft_metadata(&self) -> FungibleTokenMetadata {
-        FungibleTokenMetadata { spec: FT_METADATA_SPEC.to_string(), name: "Called Test USD".into(), symbol: "tUSDC".into(), icon: None, reference: None, reference_hash: None, decimals: DECIMALS }
+        FungibleTokenMetadata { spec: FT_METADATA_SPEC.to_string(), name: self.name.clone(), symbol: self.symbol.clone(), icon: None, reference: None, reference_hash: None, decimals: DECIMALS }
     }
 }

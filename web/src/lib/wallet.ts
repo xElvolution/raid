@@ -8,8 +8,9 @@ let selP: Promise<Sel> | null = null;
 let account: string | null = null;
 let walletAccount: string | null = null;
 
-/** Judge mode (testnet only): a prefunded judge account signs in-browser with a key pasted from the submission notes.
- *  The key lives only in this browser's localStorage; it is never in the app bundle or sent to any server. */
+/** Judge mode (testnet only): a testnet account signs in-browser. `createJudgeAccount` makes a fresh key in this
+ *  browser and asks /api/judge-faucet to open a funded testnet account for its public key. The private key lives
+ *  only in this browser's localStorage; it is never in the app bundle or sent to any server. */
 const JUDGE_KEY = 'raid.judge';
 type Judge = { accountId: string; key: string };
 function judge(): Judge | null {
@@ -27,6 +28,18 @@ export async function enterJudgeMode(accountId: string, key: string): Promise<vo
   if (r.error || r.result?.error) throw new Error('This key does not belong to that judge account');
   localStorage.setItem(JUDGE_KEY, JSON.stringify({ accountId, key: k }));
   syncAccount();
+}
+/** One click: new key in this browser, new funded testnet account from the judge faucet, judge mode on. */
+export async function createJudgeAccount(): Promise<{ accountId: string; warning?: string }> {
+  if (NETWORK !== 'testnet') throw new Error('Judge mode is testnet only');
+  const { KeyPair } = await import('@near-js/crypto');
+  const kp = KeyPair.fromRandom('ed25519');
+  const r = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/api/judge-faucet`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ publicKey: kp.getPublicKey().toString() }) });
+  const j = (await r.json().catch(() => ({}))) as { accountId?: string; error?: string; warning?: string };
+  if (!r.ok || !j.accountId) throw new Error(j.error ?? `Faucet answered ${r.status}`);
+  localStorage.setItem(JUDGE_KEY, JSON.stringify({ accountId: j.accountId, key: kp.toString() }));
+  syncAccount();
+  return { accountId: j.accountId, warning: j.warning };
 }
 export function leaveJudgeMode() { localStorage.removeItem(JUDGE_KEY); syncAccount(); }
 export const isJudgeMode = () => !!judge();

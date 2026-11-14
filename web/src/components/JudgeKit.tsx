@@ -11,7 +11,7 @@ import { useChestConfig } from '@/lib/hooks';
 import receipts from '@/lib/receipts.json';
 
 type Rcpt = { tx: string; block: number | null };
-const R = receipts as unknown as { raids: Record<string, { call?: Rcpt & { caller: string; signer: string }; backs?: (Rcpt & { backer: string; amount: string })[] }> };
+const R = receipts as unknown as { raids: Record<string, { call?: Rcpt & { caller: string; signer: string }; backs?: (Rcpt & { backer: string; amount: string })[]; steps?: { label: string; tx: string }[] }> };
 export const raidReceipt = (id: number) => R.raids[String(id)];
 const blockUrl = (h: number) => `https://${NETWORK === 'testnet' ? 'testnet.' : ''}nearblocks.io/blocks/${h}`;
 
@@ -29,6 +29,26 @@ export function Receipt({ id, className = '' }: { id: number; className?: string
   );
 }
 
+/** Every recorded testnet transaction of a raid's lifecycle, in order, each linked to the explorer. */
+export function LifecycleReceipts({ id, className = '' }: { id: number; className?: string }) {
+  const steps = raidReceipt(id)?.steps ?? [];
+  if (!steps.length) return null;
+  return (
+    <section className={`panel p-3 md:p-4 ${className}`}>
+      <p className="eyebrow">Testnet transactions for this raid</p>
+      <ol className="mt-2 grid gap-1 text-[12px]">
+        {steps.map((s, i) => (
+          <li key={s.tx + i} className="flex min-w-0 items-center gap-2">
+            <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-raised mono text-[10px]">{i + 1}</span>
+            <span className="min-w-0 flex-1 truncate">{s.label}</span>
+            <a className="inline-flex shrink-0 items-center gap-1 mono text-[10.5px] text-mute hover:text-ink" href={explorerTx(s.tx, NETWORK)} target="_blank" rel="noreferrer">{s.tx.slice(0, 8)}… <ExternalLink size={10} /></a>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 /** "Judges: try a raid in 2 minutes" box. */
 export function JudgeBox({ className = '' }: { className?: string }) {
   return (
@@ -39,9 +59,9 @@ export function JudgeBox({ className = '' }: { className?: string }) {
         <span className="ml-auto chip chip-ghost">Testnet · free</span>
       </div>
       <ol className="mt-2 grid gap-1.5 px-3 pb-2.5 text-[12.5px] md:text-[13px] leading-snug md:px-4 md:pb-3.5">
-        <li><b>1.</b> Open <Link href="/judges" className="font-semibold text-lime underline">/judges</Link> and paste one of the 3 prefunded judge keys from the submission notes.</li>
-        <li><b>2.</b> Back Frog Legion’s live raid (#3) with tUSDC, or vote on a crew’s open DAO proposal.</li>
-        <li><b>3.</b> Check the receipt: every raid card links its contract, tx and block on the explorer.</li>
+        <li><b>1.</b> Open <Link href="/judges" className="font-semibold text-lime underline">/judges</Link> and press Get a testnet judge account. It comes with testnet NEAR and 500 tUSDC.</li>
+        <li><b>2.</b> Open raid #1: a crew DAO called it, the chest bought, sold at the line and paid every backer.</li>
+        <li><b>3.</b> Call or back your own raid. Every step links its testnet transaction.</li>
       </ol>
     </section>
   );

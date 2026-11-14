@@ -13,6 +13,6 @@ Called (the user's earlier NEAR project, a social prediction-market app) was fou
 | `contracts/` prediction market (CPMM AMM, NEP-245 outcome shares, AI resolver) | **Removed**; replaced by `contracts/raid-chest` |
 | `contracts/test-usdc` | **Kept** (testnet base coin with faucet) |
 | `api/` (Fastify + Postgres): posts, follows, notifications, messages, leaderboard, realtime | Keep the social parts; **to strip on Wed**: `external.ts`, `polymarket-router.ts`, Polymarket sync worker, yes/no market tables; add a raid indexer |
-| `resolver/` (AI judge for prediction markets) | Not used by RAID; delete or keep out of the submission |
-| `sdk/`, `mobile/`, `landing/`, `design-lab/`, `brand/` | Kept as-is for now; mobile/landing need rebranding before any use |
+| `resolver/` (AI judge for prediction markets) | **Removed** from the RAID repo (not used) |
+| `sdk/`, `landing/`, `design-lab/`, `brand/` | Kept; `mobile/` (the Called app) and `deploy/` (Called preview hosting) are **removed** from the RAID repo |
 | Called docs (SPEC, plan, changelog) | Moved to `docs/called-baseline/` |

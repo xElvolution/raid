@@ -2,7 +2,7 @@
 name = "test_usdc"
 version = "0.1.0"
 edition = "2021"
-description = "Called testnet collateral: a NEP-141 test USDC (6 decimals) with a public faucet. No value."
+description = "RAID testnet token: NEP-141 test USDC or a stand-in target coin (6 decimals) with a public faucet. No value."
 
 [lib]
 crate-type = ["cdylib", "rlib"]

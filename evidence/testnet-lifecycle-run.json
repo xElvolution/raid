@@ -1,0 +1,753 @@
+[
+  {
+    "step": "deploy tUSDC (test-usdc)",
+    "at": "2026-11-14T18:45:22.620Z",
+    "tx": "GTB8FTozK14csvMGeMps4qcuXPvYpheLjRyg2CbrMiXT"
+  },
+  {
+    "step": "init tUSDC",
+    "at": "2026-11-14T18:45:24.400Z",
+    "tx": "HsAY9Xu5ZQnZ6D3KQMXbhFvUC6wib2MLQ1f4gQBMQtK4",
+    "url": "https://testnet.nearblocks.io/txns/HsAY9Xu5ZQnZ6D3KQMXbhFvUC6wib2MLQ1f4gQBMQtK4",
+    "ok": true,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "deploy tPEPE stand-in target coin (test-usdc)",
+    "at": "2026-11-14T18:45:26.164Z",
+    "tx": "J6ueny4ZXBUtBxd7cBoHYqKpeDjUDwbYrTpDTkpcU7vN"
+  },
+  {
+    "step": "init tPEPE",
+    "at": "2026-11-14T18:45:28.204Z",
+    "tx": "7ikPVqasVEgMaJ34PA6sT1V7Fb51TCdKqiGCPR6ZWi5P",
+    "url": "https://testnet.nearblocks.io/txns/7ikPVqasVEgMaJ34PA6sT1V7Fb51TCdKqiGCPR6ZWi5P",
+    "ok": true,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "deploy intents-sim venue",
+    "at": "2026-11-14T18:45:29.866Z",
+    "tx": "phXXsd3JVGB1XK9unkq8wwKD3gbqgx86JHzvx8PnpT2"
+  },
+  {
+    "step": "init intents-sim",
+    "at": "2026-11-14T18:45:31.419Z",
+    "tx": "CUau74sN5USwJMqxsw6s7wm96Kk8ZbwFYD85mZycto8A",
+    "url": "https://testnet.nearblocks.io/txns/CUau74sN5USwJMqxsw6s7wm96Kk8ZbwFYD85mZycto8A",
+    "ok": true,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "deploy RAID chest",
+    "at": "2026-11-14T18:45:33.893Z",
+    "tx": "HTbyXBCgHtu8QaGPvXgPvqSi3nAZ23QLtm7PeqcgjMTE"
+  },
+  {
+    "step": "init chest (intents = intents-sim, 1Click key = testnet quote signer)",
+    "at": "2026-11-14T18:45:35.368Z",
+    "tx": "3d9B44CaqDmqK6tUwLghPQqW4vjrRypmtbHAzVYFTSNY",
+    "url": "https://testnet.nearblocks.io/txns/3d9B44CaqDmqK6tUwLghPQqW4vjrRypmtbHAzVYFTSNY",
+    "ok": true,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "solver deposits 100k tPEPE into the venue",
+    "at": "2026-11-14T18:45:42.086Z",
+    "tx": "6z7xaJQsQ3RkmBxymghDAL3Fwe4u56scBV7WLpZHwUVf",
+    "url": "https://testnet.nearblocks.io/txns/6z7xaJQsQ3RkmBxymghDAL3Fwe4u56scBV7WLpZHwUVf",
+    "ok": true,
+    "ret": "100000000000",
+    "events": [
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_deposit raidsolver-mwgr1iba.testnet nep141:raidpepe-mwgr1iba.testnet 100000000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "solver deposits 100k tUSDC into the venue",
+    "at": "2026-11-14T18:45:45.712Z",
+    "tx": "covTt3MgBm8YSMCmizZarU6SvvDdzKcnTe4GNSVfEc4",
+    "url": "https://testnet.nearblocks.io/txns/covTt3MgBm8YSMCmizZarU6SvvDdzKcnTe4GNSVfEc4",
+    "ok": true,
+    "ret": "100000000000",
+    "events": [
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_deposit raidsolver-mwgr1iba.testnet nep141:raidusdc-mwgr1iba.testnet 100000000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "create crew DAO on sputnikv2.testnet",
+    "at": "2026-11-14T18:46:16.616Z",
+    "dao": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "tx": "D8qMhpbt81HfNug8djbece2NcEmrAzE6PxunWf9QZYUg",
+    "url": "https://testnet.nearblocks.io/txns/D8qMhpbt81HfNug8djbece2NcEmrAzE6PxunWf9QZYUg",
+    "ok": true,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "crew DAO proposes call_raid",
+    "at": "2026-11-14T18:46:19.135Z",
+    "dao": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "proposal_id": 0,
+    "tx": "6XREjHi4tzkHzhs3oKByfubdYQ6GaHhsK7txeE9c3xsk",
+    "url": "https://testnet.nearblocks.io/txns/6XREjHi4tzkHzhs3oKByfubdYQ6GaHhsK7txeE9c3xsk",
+    "ok": true,
+    "ret": 0,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "vote 1/2 (crew captain)",
+    "at": "2026-11-14T18:46:21.433Z",
+    "tx": "FJsgnGwh84Laj4f3nS7FR6fSLdcFeKfLC1YVMoUhx65W",
+    "url": "https://testnet.nearblocks.io/txns/FJsgnGwh84Laj4f3nS7FR6fSLdcFeKfLC1YVMoUhx65W",
+    "ok": true,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "vote 2/2 passes: the DAO calls call_raid on the chest",
+    "at": "2026-11-14T18:46:26.127Z",
+    "tx": "CEHwwEAnBgoqsNyHR7RecW4ACZ33QLw19NqGeVvKmPtt",
+    "url": "https://testnet.nearblocks.io/txns/CEHwwEAnBgoqsNyHR7RecW4ACZ33QLw19NqGeVvKmPtt",
+    "ok": true,
+    "events": [
+      "raid_called"
+    ],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "raid called by the DAO",
+    "at": "2026-11-14T18:46:26.333Z",
+    "id": 0,
+    "caller": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "status": "Open",
+    "buy_after": "2026-11-14T18:49:23.670Z",
+    "retreat_at": "2026-11-15T18:49:23.670Z"
+  },
+  {
+    "step": "back from a NEAR wallet: backer1 40 tUSDC",
+    "at": "2026-11-14T18:46:33.020Z",
+    "tx": "BH5aVs1HpAxABcuSj5oZdLTHeyFRijTMacVkcmycixtG",
+    "url": "https://testnet.nearblocks.io/txns/BH5aVs1HpAxABcuSj5oZdLTHeyFRijTMacVkcmycixtG",
+    "ok": true,
+    "ret": "40000000",
+    "events": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_deposit raidchest-mwgr1bk0.testnet nep141:raidusdc-mwgr1iba.testnet 40000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "back from a NEAR wallet: backer2 60 tUSDC",
+    "at": "2026-11-14T18:46:39.578Z",
+    "tx": "EH8az67VcrosULzMx4yxAKJixNqgMnYhCZ8zg5hxtqwE",
+    "url": "https://testnet.nearblocks.io/txns/EH8az67VcrosULzMx4yxAKJixNqgMnYhCZ8zg5hxtqwE",
+    "ok": true,
+    "ret": "60000000",
+    "events": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_deposit raidchest-mwgr1bk0.testnet nep141:raidusdc-mwgr1iba.testnet 60000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "note: raid #0 is a first attempt. Its 2 min crew window closed before the any-chain backs ran, so the run restarts with raid #1 (5 min window). Raid #0 keeps its two NEAR backs.",
+    "at": "2026-11-14T18:46:59.990249Z"
+  },
+  {
+    "step": "crew DAO proposes call_raid",
+    "at": "2026-11-14T18:47:02.670Z",
+    "dao": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "proposal_id": 1,
+    "tx": "GGiw91WZCcLEGWTfbMELAuf7QvQJEYqKXyxfYUFVXof7",
+    "url": "https://testnet.nearblocks.io/txns/GGiw91WZCcLEGWTfbMELAuf7QvQJEYqKXyxfYUFVXof7",
+    "ok": true,
+    "ret": 1,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "vote 1/2 (crew captain)",
+    "at": "2026-11-14T18:47:05.016Z",
+    "tx": "3zvUVd7TDgwp6PuKRnsJ9GK7Lq8UJhUaFtJ6TQDzgxr6",
+    "url": "https://testnet.nearblocks.io/txns/3zvUVd7TDgwp6PuKRnsJ9GK7Lq8UJhUaFtJ6TQDzgxr6",
+    "ok": true,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "vote 2/2 passes: the DAO calls call_raid on the chest",
+    "at": "2026-11-14T18:47:09.338Z",
+    "tx": "3u2Pq3Xo2MxMHPJN1XovnG8Pz4ZfT4Ryhb6cppHdfwiH",
+    "url": "https://testnet.nearblocks.io/txns/3u2Pq3Xo2MxMHPJN1XovnG8Pz4ZfT4Ryhb6cppHdfwiH",
+    "ok": true,
+    "events": [
+      "raid_called"
+    ],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "raid called by the DAO",
+    "at": "2026-11-14T18:47:09.529Z",
+    "id": 1,
+    "caller": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "status": "Open",
+    "buy_after": "2026-11-14T18:53:07.186Z",
+    "retreat_at": "2026-11-15T18:53:07.186Z"
+  },
+  {
+    "step": "back from a NEAR wallet: backer1 40 tUSDC",
+    "at": "2026-11-14T18:47:16.088Z",
+    "tx": "926u4adPKprVd8usCwVB41RSXQTNBHfqDG6JubvvavTw",
+    "url": "https://testnet.nearblocks.io/txns/926u4adPKprVd8usCwVB41RSXQTNBHfqDG6JubvvavTw",
+    "ok": true,
+    "ret": "40000000",
+    "events": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_deposit raidchest-mwgr1bk0.testnet nep141:raidusdc-mwgr1iba.testnet 40000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "back from a NEAR wallet: backer2 60 tUSDC",
+    "at": "2026-11-14T18:47:22.874Z",
+    "tx": "A1KD7xXLaaNc98XcRr5DVDPkvqVHUQeT5dhuzLaS3Krf",
+    "url": "https://testnet.nearblocks.io/txns/A1KD7xXLaaNc98XcRr5DVDPkvqVHUQeT5dhuzLaS3Krf",
+    "ok": true,
+    "ret": "60000000",
+    "events": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_deposit raidchest-mwgr1bk0.testnet nep141:raidusdc-mwgr1iba.testnet 60000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "any-chain back for an EVM wallet account (0x..), 12 tUSDC via the bridge stand-in",
+    "at": "2026-11-14T18:47:30.329Z",
+    "for": "0x51bbf98c6d19352beeb9793d856806f94cc6704f",
+    "tx": "4v9ENX4evPEweLBfwZZvJS3vaoGXmGcujQGTEWDACNpQ",
+    "url": "https://testnet.nearblocks.io/txns/4v9ENX4evPEweLBfwZZvJS3vaoGXmGcujQGTEWDACNpQ",
+    "ok": true,
+    "ret": "12000000",
+    "events": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_deposit raidchest-mwgr1bk0.testnet nep141:raidusdc-mwgr1iba.testnet 12000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "any-chain back for a Solana-style ed25519 account (64 hex), 8 tUSDC via the bridge stand-in",
+    "at": "2026-11-14T18:47:34.679Z",
+    "for": "34ba76c31ebfe413118d303b343681802eb2ef9eb53883b5655b0fa48cd20c4b",
+    "tx": "EEVbKKCpbxKyL1cU598HtxNRKtEL5Bk5EQvM8Bhv2yc1",
+    "url": "https://testnet.nearblocks.io/txns/EEVbKKCpbxKyL1cU598HtxNRKtEL5Bk5EQvM8Bhv2yc1",
+    "ok": true,
+    "ret": "8000000",
+    "events": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_deposit raidchest-mwgr1bk0.testnet nep141:raidusdc-mwgr1iba.testnet 8000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "backers on chain",
+    "at": "2026-11-14T18:47:35.080Z",
+    "backers": [
+      [
+        "raidbacker1-mwgr1iba.testnet",
+        "40000000"
+      ],
+      [
+        "raidbacker2-mwgr1iba.testnet",
+        "60000000"
+      ],
+      [
+        "0x51bbf98c6d19352beeb9793d856806f94cc6704f",
+        "12000000"
+      ],
+      [
+        "34ba76c31ebfe413118d303b343681802eb2ef9eb53883b5655b0fa48cd20c4b",
+        "8000000"
+      ]
+    ],
+    "raid": {
+      "id": 1,
+      "caller": "raid-crew-mwgr1iba.sputnikv2.testnet",
+      "title": "Raid $tPEPE to 2x",
+      "target": "nep141:raidpepe-mwgr1iba.testnet",
+      "target_x_bps": 20000,
+      "opens_until_ms": 1794682327186,
+      "buy_after_ms": 1794682387186,
+      "retreat_at_ms": 1794768787186,
+      "pot": "120000000",
+      "entry_cost": "0",
+      "held": "0",
+      "proceeds": "0",
+      "pending_min_out": "0",
+      "pending_deadline_ms": 0,
+      "status": "Open",
+      "hit": false,
+      "buy_quote_hash": null,
+      "sell_quote_hash": null,
+      "caller_cut": "0",
+      "buyback": "0",
+      "for_backers": "0"
+    }
+  },
+  {
+    "step": "chest balance inside the venue after backing",
+    "at": "2026-11-14T18:47:35.266Z",
+    "usdc": "220000000"
+  },
+  {
+    "step": "execute_buy during the public countdown is refused",
+    "at": "2026-11-14T18:47:43.382Z",
+    "ok_means_refused": true,
+    "tx": "6uiyrF13ukVV5pwMjTiQ6Ey5tRQtiVXXZ9C2skT8h1MG",
+    "url": "https://testnet.nearblocks.io/txns/6uiyrF13ukVV5pwMjTiQ6Ey5tRQtiVXXZ9C2skT8h1MG",
+    "error": "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"FunctionCallError\":{\"ExecutionError\":\"Smart contract panicked: public countdown still running\"}}}}}"
+  },
+  {
+    "step": "Chain Signatures: chest derives its own key (mpc_bootstrap)",
+    "at": "2026-11-14T18:53:17.299Z",
+    "tx": "9LzUM7eL39xS4ERqnhkJBwC5Sn2Lb2vW7eQUD8Rw4UKr",
+    "url": "https://testnet.nearblocks.io/txns/9LzUM7eL39xS4ERqnhkJBwC5Sn2Lb2vW7eQUD8Rw4UKr",
+    "ok": true,
+    "ret": "ed25519:HNdrYy1gmrD8pqm3mBxhb8E26SdvhQbudEUYq7WgCtb7",
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "Chain Signatures: register the MPC key on the venue (mpc_register)",
+    "at": "2026-11-14T18:53:21.076Z",
+    "tx": "DnEmXRGqEqPyK5K4Yp46RpDAg4uNf9qyzrL3Y5FdkFqD",
+    "url": "https://testnet.nearblocks.io/txns/DnEmXRGqEqPyK5K4Yp46RpDAg4uNf9qyzrL3Y5FdkFqD",
+    "ok": true,
+    "ret": true,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "Chain Signatures: MPC signs the chest's own buy intent for the whole pot (mpc_sign_buy)",
+    "at": "2026-11-14T18:53:27.769Z",
+    "tx": "6NwhdgXto9XCY8UHzFek9PTB5i9GPUqBvMsFdmE85S25",
+    "url": "https://testnet.nearblocks.io/txns/6NwhdgXto9XCY8UHzFek9PTB5i9GPUqBvMsFdmE85S25",
+    "ok": true,
+    "ret": {
+      "standard": "raw_ed25519",
+      "payload": "{\"signer_id\":\"raidchest-mwgr1bk0.testnet\",\"verifying_contract\":\"raidvenue-mwgr1iba.testnet\",\"deadline\":\"2026-11-14T18:58:22.423Z\",\"nonce\":\"AAAAAFl+uBga1BYr3LG81t6NTXLXYiFsB1Uos30VlJw=\",\"intents\":[{\"intent\":\"token_diff\",\"diff\":{\"nep141:raidusdc-mwgr1iba.testnet\":\"-120000000\",\"nep141:raidpepe-mwgr1iba.testnet\":\"95000000\"}}]}",
+      "public_key": "ed25519:HNdrYy1gmrD8pqm3mBxhb8E26SdvhQbudEUYq7WgCtb7",
+      "signature": "ed25519:4tnuv9J2f4mt3fasEYMFqohEjSLGZR3fmUndiUR2p2KZonY5Y4SPVKwqC6Eapq6Vf7pCubnP6qSMoEiiddXJLXPG"
+    },
+    "events": [
+      "mpc_signed"
+    ],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "execute_buy with a quote whose signature does not match is refused",
+    "at": "2026-11-14T18:53:30.164Z",
+    "ok_means_refused": true,
+    "url": "https://testnet.nearblocks.io/txns/3e1PB5CnsjeRoa3po875qWcwVTbEGUMrtedS1HRXpYeA",
+    "error": "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"FunctionCallError\":{\"ExecutionError\":\"Smart contract panicked: bad 1Click signature\"}}}}}"
+  },
+  {
+    "step": "execute_buy: chest checks the signed quote and sends the pot to the solver deposit account",
+    "at": "2026-11-14T18:53:33.259Z",
+    "tx": "8vyn1cobJW5XnTWipsnVDguhNptLWmpv9QY2Bc4RnDeH",
+    "url": "https://testnet.nearblocks.io/txns/8vyn1cobJW5XnTWipsnVDguhNptLWmpv9QY2Bc4RnDeH",
+    "ok": true,
+    "events": [
+      "raid_buy"
+    ],
+    "sim": [
+      "sim_transfer raidchest-mwgr1bk0.testnet -> raidsolver-mwgr1iba.testnet nep141:raidusdc-mwgr1iba.testnet 120000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "solver fills: pays tPEPE to the chest inside the venue",
+    "at": "2026-11-14T18:53:35.746Z",
+    "tx": "FkriFSmyHZd1JxNj1vuYFQCa55wFp5CVxFsg19Hf3mHN",
+    "url": "https://testnet.nearblocks.io/txns/FkriFSmyHZd1JxNj1vuYFQCa55wFp5CVxFsg19Hf3mHN",
+    "ok": true,
+    "events": [],
+    "sim": [
+      "sim_transfer raidsolver-mwgr1iba.testnet -> raidchest-mwgr1bk0.testnet nep141:raidpepe-mwgr1iba.testnet 120000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "settle (anyone): Buying -> Held",
+    "at": "2026-11-14T18:53:39.134Z",
+    "tx": "6vbQR9VHE8WSLW2kSZneFsA8dp4iGKJSyKvjYHBbFh6d",
+    "url": "https://testnet.nearblocks.io/txns/6vbQR9VHE8WSLW2kSZneFsA8dp4iGKJSyKvjYHBbFh6d",
+    "ok": true,
+    "ret": "settled",
+    "events": [
+      "raid_trophy"
+    ],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "raid after buy",
+    "at": "2026-11-14T18:53:39.334Z",
+    "status": "Held",
+    "entry_cost": "120000000",
+    "held": "120000000"
+  },
+  {
+    "step": "execute_sell below the 2x line before retreat is refused",
+    "at": "2026-11-14T18:53:42.165Z",
+    "ok_means_refused": true,
+    "url": "https://testnet.nearblocks.io/txns/2fiYC5wgbzWrgkwRooQb5BwB72zqEtT4NMkdseTdrN1Z",
+    "error": "{\"Failure\":{\"ActionError\":{\"index\":0,\"kind\":{\"FunctionCallError\":{\"ExecutionError\":\"Smart contract panicked: minAmountOut 180000000 below the raid's floor 240000000\"}}}}}"
+  },
+  {
+    "step": "execute_sell at the line: quote minAmountOut >= entry x 2",
+    "at": "2026-11-14T18:53:45.119Z",
+    "tx": "H7DsY6BADvKxqgVDc2aWQKYnK2w7psTE5usB9sgGxQKe",
+    "url": "https://testnet.nearblocks.io/txns/H7DsY6BADvKxqgVDc2aWQKYnK2w7psTE5usB9sgGxQKe",
+    "ok": true,
+    "events": [
+      "raid_sell"
+    ],
+    "sim": [
+      "sim_transfer raidchest-mwgr1bk0.testnet -> raidsolver-mwgr1iba.testnet nep141:raidpepe-mwgr1iba.testnet 120000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "solver fills: pays tUSDC to the chest inside the venue",
+    "at": "2026-11-14T18:53:47.692Z",
+    "tx": "26bNN6MzfY7yFvWSX8kNpVG8nUUKAT12njhkuwJpabuY",
+    "url": "https://testnet.nearblocks.io/txns/26bNN6MzfY7yFvWSX8kNpVG8nUUKAT12njhkuwJpabuY",
+    "ok": true,
+    "events": [],
+    "sim": [
+      "sim_transfer raidsolver-mwgr1iba.testnet -> raidchest-mwgr1bk0.testnet nep141:raidusdc-mwgr1iba.testnet 246000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "settle (anyone): Selling -> Closed, fee split",
+    "at": "2026-11-14T18:53:51.344Z",
+    "tx": "9sBPwXS8mYkj1HM2mgojvrcUChuecNSFknEumtfrbpvn",
+    "url": "https://testnet.nearblocks.io/txns/9sBPwXS8mYkj1HM2mgojvrcUChuecNSFknEumtfrbpvn",
+    "ok": true,
+    "ret": "settled",
+    "events": [
+      "raid_pool",
+      "raid_closed"
+    ],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "raid closed",
+    "at": "2026-11-14T18:53:51.563Z",
+    "status": "Closed",
+    "hit": true,
+    "entry_cost": "120000000",
+    "proceeds": "246000000",
+    "caller": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "caller_cut": "3150000",
+    "buyback": "9450000",
+    "for_backers": "233400000"
+  },
+  {
+    "step": "claim_share: backer1",
+    "at": "2026-11-14T18:53:54.332Z",
+    "tx": "C6WvEwJSR1sCzMV5quj8ivPb5TyYHx9bogTgfgouwnkr",
+    "url": "https://testnet.nearblocks.io/txns/C6WvEwJSR1sCzMV5quj8ivPb5TyYHx9bogTgfgouwnkr",
+    "ok": true,
+    "ret": "77800000",
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "claim: backer1 withdraws tUSDC to the wallet",
+    "at": "2026-11-14T18:53:57.432Z",
+    "tx": "8kgEN3TVqc6uw2SEGYmW8knAFtxyvEUa47ySrXhYhXhw",
+    "url": "https://testnet.nearblocks.io/txns/8kgEN3TVqc6uw2SEGYmW8knAFtxyvEUa47ySrXhYhXhw",
+    "ok": true,
+    "events": [
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_withdraw raidchest-mwgr1bk0.testnet -> raidbacker1-mwgr1iba.testnet nep141:raidusdc-mwgr1iba.testnet 77800000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "backer1 wallet tUSDC",
+    "at": "2026-11-14T18:53:57.648Z",
+    "before": "1420000000",
+    "after": "1497800000",
+    "received": "77800000"
+  },
+  {
+    "step": "claim_share: backer2",
+    "at": "2026-11-14T18:53:59.734Z",
+    "tx": "BH2F5ZEzcie8hTiLUwGzQKRdJpfj9MbSSLGXeJ1EwLHw",
+    "url": "https://testnet.nearblocks.io/txns/BH2F5ZEzcie8hTiLUwGzQKRdJpfj9MbSSLGXeJ1EwLHw",
+    "ok": true,
+    "ret": "116700000",
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "claim: backer2 withdraws tUSDC to the wallet",
+    "at": "2026-11-14T18:54:03.409Z",
+    "tx": "ELDuyT3ygU83vHrWKcxi2fFpxiWo8YGm7nzVHPaduKAF",
+    "url": "https://testnet.nearblocks.io/txns/ELDuyT3ygU83vHrWKcxi2fFpxiWo8YGm7nzVHPaduKAF",
+    "ok": true,
+    "events": [
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_withdraw raidchest-mwgr1bk0.testnet -> raidbacker2-mwgr1iba.testnet nep141:raidusdc-mwgr1iba.testnet 116700000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "backer2 wallet tUSDC",
+    "at": "2026-11-14T18:54:03.618Z",
+    "before": "880000000",
+    "after": "996700000",
+    "received": "116700000"
+  },
+  {
+    "step": "claim_share_for an any-chain backer (anyone can push it, only to the owner)",
+    "at": "2026-11-14T18:54:06.087Z",
+    "tx": "EBP4qHVvpihYLJGvLFiFy8DecLtAwFiJign61JtjiR9K",
+    "url": "https://testnet.nearblocks.io/txns/EBP4qHVvpihYLJGvLFiFy8DecLtAwFiJign61JtjiR9K",
+    "ok": true,
+    "ret": "23340000",
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "claim_into_intents: the share lands in the venue under the wallet's own account",
+    "at": "2026-11-14T18:54:08.884Z",
+    "tx": "4SQyjpdMT5iY4A5kcB1nSrPgNnxnHNi5tm2myN81ryVa",
+    "url": "https://testnet.nearblocks.io/txns/4SQyjpdMT5iY4A5kcB1nSrPgNnxnHNi5tm2myN81ryVa",
+    "ok": true,
+    "events": [
+      "claim_into_intents"
+    ],
+    "sim": [
+      "sim_transfer raidchest-mwgr1bk0.testnet -> 0x51bbf98c6d19352beeb9793d856806f94cc6704f nep141:raidusdc-mwgr1iba.testnet 23340000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "any-chain backer balance in the venue",
+    "at": "2026-11-14T18:54:09.091Z",
+    "account": "0x51bbf98c6d19352beeb9793d856806f94cc6704f",
+    "usdc": "23340000"
+  },
+  {
+    "step": "claim_share_for an any-chain backer (anyone can push it, only to the owner)",
+    "at": "2026-11-14T18:54:11.289Z",
+    "tx": "AN6QXAtqSwnATKryY6RyMc3HAP5joKLYiM2iSBgpZGLV",
+    "url": "https://testnet.nearblocks.io/txns/AN6QXAtqSwnATKryY6RyMc3HAP5joKLYiM2iSBgpZGLV",
+    "ok": true,
+    "ret": "15560000",
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "claim_into_intents: the share lands in the venue under the wallet's own account",
+    "at": "2026-11-14T18:54:14.491Z",
+    "tx": "5dwWAmaUnqhV9pZr5zUE99ZCnnkCstiWdcXHK9mgKCLu",
+    "url": "https://testnet.nearblocks.io/txns/5dwWAmaUnqhV9pZr5zUE99ZCnnkCstiWdcXHK9mgKCLu",
+    "ok": true,
+    "events": [
+      "claim_into_intents"
+    ],
+    "sim": [
+      "sim_transfer raidchest-mwgr1bk0.testnet -> 34ba76c31ebfe413118d303b343681802eb2ef9eb53883b5655b0fa48cd20c4b nep141:raidusdc-mwgr1iba.testnet 15560000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "any-chain backer balance in the venue",
+    "at": "2026-11-14T18:54:14.717Z",
+    "account": "34ba76c31ebfe413118d303b343681802eb2ef9eb53883b5655b0fa48cd20c4b",
+    "usdc": "15560000"
+  },
+  {
+    "step": "crew DAO proposes to claim the caller fee",
+    "at": "2026-11-14T18:54:16.588Z",
+    "tx": "GhiRHqHZtbq4kx6TejBHhKG8AhwFitkgiAHTLCnMcEsK",
+    "url": "https://testnet.nearblocks.io/txns/GhiRHqHZtbq4kx6TejBHhKG8AhwFitkgiAHTLCnMcEsK",
+    "ok": true,
+    "ret": 2,
+    "events": [],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "vote passes: the DAO claims its caller fee into the crew treasury",
+    "at": "2026-11-14T18:54:24.837Z",
+    "tx": "E7UXmuFB22hhqnoTc3pWrFwoam2MuStw4TEWDCLkk2M",
+    "url": "https://testnet.nearblocks.io/txns/E7UXmuFB22hhqnoTc3pWrFwoam2MuStw4TEWDCLkk2M",
+    "ok": true,
+    "events": [
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_withdraw raidchest-mwgr1bk0.testnet -> raid-crew-mwgr1iba.sputnikv2.testnet nep141:raidusdc-mwgr1iba.testnet 3150000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "crew DAO treasury tUSDC",
+    "at": "2026-11-14T18:54:25.040Z",
+    "dao": "raid-crew-mwgr1iba.sputnikv2.testnet",
+    "usdc": "3150000"
+  },
+  {
+    "step": "buyback reserve",
+    "at": "2026-11-14T18:54:25.245Z",
+    "buyback": "9450000"
+  },
+  {
+    "step": "chest balance left in the venue",
+    "at": "2026-11-14T18:54:25.635Z",
+    "usdc": "109450000",
+    "pepe": "0"
+  },
+  {
+    "step": "raid B called directly by a NEAR account (3x line, 1 h retreat)",
+    "at": "2026-11-14T18:54:57.698Z",
+    "id": 2,
+    "tx": "2x1vabeLnEx5kzmuUoYgeQ9V1f1hd8VqwrAWNv1RNkQS",
+    "url": "https://testnet.nearblocks.io/txns/2x1vabeLnEx5kzmuUoYgeQ9V1f1hd8VqwrAWNv1RNkQS",
+    "ok": true,
+    "ret": 2,
+    "events": [
+      "raid_called"
+    ],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "raid B: backer2 backs 20 tUSDC",
+    "at": "2026-11-14T18:55:04.835Z",
+    "tx": "7mN9aKXCrLiVYdUfUo2afWcEG6zyK6AtmrZkA4cPHcYJ",
+    "url": "https://testnet.nearblocks.io/txns/7mN9aKXCrLiVYdUfUo2afWcEG6zyK6AtmrZkA4cPHcYJ",
+    "ok": true,
+    "ret": "20000000",
+    "events": [
+      "ft_transfer",
+      "raid_backed",
+      "ft_transfer"
+    ],
+    "sim": [
+      "sim_deposit raidchest-mwgr1bk0.testnet nep141:raidusdc-mwgr1iba.testnet 20000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "raid B: execute_buy",
+    "at": "2026-11-14T18:57:07.791Z",
+    "tx": "3Y47rc4LH6618UtcRDy9CGqTpNNn8F6zSTEsHYyWPoUZ",
+    "url": "https://testnet.nearblocks.io/txns/3Y47rc4LH6618UtcRDy9CGqTpNNn8F6zSTEsHYyWPoUZ",
+    "ok": true,
+    "events": [
+      "raid_buy"
+    ],
+    "sim": [
+      "sim_transfer raidchest-mwgr1bk0.testnet -> raidsolver-mwgr1iba.testnet nep141:raidusdc-mwgr1iba.testnet 20000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "raid B: solver fills",
+    "at": "2026-11-14T18:57:09.638Z",
+    "tx": "8pihWe91HPdAbaDVbq7oH71ptHuMKERTurec4bEwMvdk",
+    "url": "https://testnet.nearblocks.io/txns/8pihWe91HPdAbaDVbq7oH71ptHuMKERTurec4bEwMvdk",
+    "ok": true,
+    "events": [],
+    "sim": [
+      "sim_transfer raidsolver-mwgr1iba.testnet -> raidchest-mwgr1bk0.testnet nep141:raidpepe-mwgr1iba.testnet 20000000"
+    ],
+    "fails": []
+  },
+  {
+    "step": "raid B: settle -> Held",
+    "at": "2026-11-14T18:57:12.671Z",
+    "tx": "6Uj76G8SW2dyJ3DzmS68T6gPAJ4J6EfpNH2vjib7EpLx",
+    "url": "https://testnet.nearblocks.io/txns/6Uj76G8SW2dyJ3DzmS68T6gPAJ4J6EfpNH2vjib7EpLx",
+    "ok": true,
+    "ret": "settled",
+    "events": [
+      "raid_trophy"
+    ],
+    "sim": [],
+    "fails": []
+  },
+  {
+    "step": "raid B held; retreat deadline",
+    "at": "2026-11-14T18:57:12.875Z",
+    "status": "Buying",
+    "retreat_at": "2026-11-14T19:56:56.793Z"
+  }
+]

@@ -1,0 +1,11 @@
+[package]
+name = "intents_sim"
+version = "0.1.0"
+edition = "2021"
+description = "Testnet stand-in for the parts of intents.near the RAID chest calls. NEAR Intents has no testnet. No value."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+near-sdk = "=5.29.1"
