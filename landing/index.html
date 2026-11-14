@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAID · Back the call. Sell at the line.</title>
+<meta name="description" content="RAID turns a coin call into one shared chest on NEAR. Crews back it in USDC, it buys once through NEAR Intents, and it only sells at the line.">
+<meta name="theme-color" content="#06070a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%230d0f14%22/%3E%3Cpath d=%22M6 24l6-5 4 3 9-12.5%22 fill=%22none%22 stroke=%22%23e9ecf2%22 stroke-width=%222.6%22 stroke-linecap=%22round%22/%3E%3Ccircle cx=%2225%22 cy=%229.5%22 r=%223%22 fill=%22%23ff5b2e%22/%3E%3C/svg%3E">
+<meta property="og:title" content="RAID · Back the call. Sell at the line.">
+<link rel="preload" href="assets/fonts/Geist-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="assets/raid.css">
+<link rel="stylesheet" href="assets/sections.css">
+</head>
+<body>
+<div class="floor" aria-hidden="true"><canvas id="floor"></canvas></div>
+
+<header class="bar">
+  <a class="cell brand" href="#" aria-label="RAID home">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+      <rect x="1" y="1" width="30" height="30" rx="8" fill="#0d0f14" stroke="#2a2f3a"/>
+      <path d="M6 9.5h20" stroke="#ff5b2e" stroke-width="2" stroke-dasharray="2.6 2.2" stroke-linecap="round"/>
+      <path d="M6 24l6-5 4 3 9-12.5" fill="none" stroke="#e9ecf2" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="25" cy="9.5" r="2.6" fill="#ff5b2e"/>
+    </svg>
+    <span class="word">RAID</span>
+  </a>
+  <div class="cell net"><i class="dot"></i><span>NEAR testnet</span></div>
+  <div class="cell tape" aria-label="Testnet proof">
+    <div class="tape-track" id="tape">
+      <span><b>RAID #6</b> $TRUMP · 2.00x line · Frog Legion</span>
+      <span><b>Chest</b> raid-chest-mwab3vnk.testnet</span>
+      <span><b>DAO tx</b> 85jtMEp2…UjXW12</span>
+      <span><b>Chain Signatures sign</b> FZGSY98x…QpiQXHBZ</span>
+      <span><b>E2E</b> 21 pass · 4 waiting on Intents testnet · 0 fail</span>
+      <span><b>Mainnet</b> not live yet</span>
+    </div>
+  </div>
+  <nav class="cell links" id="links">
+    <a href="#problem">Why</a>
+    <a href="#how">How it works</a>
+    <a href="#chest">Chest</a>
+    <a href="#fees">Fees</a>
+    <a href="#proof">Proof</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <a class="cell open" href="#start">Try RAID <span aria-hidden="true">↗</span></a>
+  <i class="bar-prog" id="barprog" aria-hidden="true"></i>
+</header>
+
+<main class="hero">
+  <section class="copy">
+    <p class="kicker"><span class="k-dot"></span>Group calls for memecoins, on NEAR</p>
+    <h1>Back the call.<br><span class="hl">Sell at the line.</span></h1>
+    <p class="lede">RAID turns one coin call into one shared chest. Your crew backs it in USDC, the chest buys once through NEAR Intents, and it only sells when price hits the line. Chain Signatures signs every move. No person holds a key.</p>
+    <div class="ctas">
+      <a class="btn primary" href="#how">How a raid works</a>
+      <a class="btn ghost" href="#proof"><span class="play" aria-hidden="true"></span>See Raid #6 on testnet</a>
+    </div>
+    <ul class="rules">
+      <li><span class="r-k">Line</span><span class="r-v">1.5x · 2x · 3x, set at the call</span></li>
+      <li><span class="r-k">Wallets</span><span class="r-v">NEAR, MetaMask or Phantom</span></li>
+      <li><span class="r-k">Fees</span><span class="r-v">Only from profit. 90% backers, 7.5% buyback and burn, 2.5% caller</span></li>
+    </ul>
+  </section>
+
+  <section class="term" aria-label="How one raid plays out">
+    <div class="t-head">
+      <div class="t-id">
+        <span class="coin">$T</span>
+        <div>
+          <div class="t-title">Raid #6 · $TRUMP · <span class="accent">2.00x line</span></div>
+          <div class="t-sub">Frog Legion · raid-chest-mwab3vnk.testnet</div>
+        </div>
+      </div>
+      <span class="tag">Example<span class="tag-x"> flow</span></span>
+    </div>
+
+    <ol class="steps" id="steps">
+      <li>Called</li><li>Backing</li><li>Bought</li><li>Locked</li><li>Line hit</li><li>Paid</li>
+    </ol>
+
+    <div class="t-body">
+      <div class="chart">
+        <canvas id="chart"></canvas>
+        <div class="readout"><span id="mult">1.00x</span><small id="multsub">awaiting buy</small></div>
+        <div class="toast" id="toast">Sell refused · below the line</div>
+      </div>
+      <aside class="side">
+        <div class="chest">
+          <div class="c-row"><span class="lbl">Chest</span><span class="lbl" id="cd">10:00</span></div>
+          <div class="c-amt"><span id="amt">0</span><small>USDC</small></div>
+          <div class="c-row"><span class="lbl"><b id="backers">0</b> backers</span><span class="lbl">one buy</span></div>
+          <div class="c-bar"><i id="cbar"></i></div>
+        </div>
+        <div class="feed" id="feed"></div>
+      </aside>
+    </div>
+
+    <div class="caption">
+      <div class="cap-text"><b id="capk">Called</b><span id="capv">A caller picks the coin, the line and a deadline. It goes on chain.</span></div>
+      <div class="splitw"><div class="sp-k">Payout on $100 at 2x</div><div class="split" id="split">
+        <div><span>Backers</span><b>$190.00</b></div>
+        <div><span>Burn</span><b>$7.50</b></div>
+        <div><span>Caller</span><b>$2.50</b></div>
+      </div></div>
+    </div>
+    <div class="prog"><i id="prog"></i></div>
+  </section>
+</main>
+
+<p class="foot-note">Price path, chest size and wallets above are an example of the flow. Raid #6, the chest and the transactions are real, on NEAR testnet. Payout shown is $100 backed at a 2x line.</p>
+
+<div class="page">
+
+<!-- 01 PROBLEM -->
+<section class="sec" id="problem">
+  <div class="sh rv"><span class="sh-n">01</span><span class="sh-k">The problem</span><i class="sh-rule"></i><span class="sh-x">Why raids need rules</span></div>
+  <div class="split-a">
+    <div class="sa-copy rv">
+      <h2>A coin call today is a <span class="strike">tip</span> <span class="hl">trap</span>.</h2>
+      <p class="sub">Every day someone in a Telegram group or on X shouts "this coin to 2x". People pile in. The caller bought earlier, sells into the crowd, and the followers are left holding the bag.</p>
+      <ul class="ledger">
+        <li><span class="lg-k">Who bought first?</span><span class="lg-v">Nobody can see it.</span></li>
+        <li><span class="lg-k">Did the caller sell?</span><span class="lg-v">You find out after the dump.</span></li>
+        <li><span class="lg-k">Who wins a miss?</span><span class="lg-v">The caller. Always.</span></li>
+      </ul>
+      <p class="sub small">RAID keeps the part people love, calling a coin with your crew, and takes out the part that hurts them: one person getting out first.</p>
+    </div>
+    <div class="duel rv">
+      <figure class="duel-p">
+        <figcaption><span class="dp-t bad">Call in a group chat</span><span class="dp-s">caller sells first</span></figcaption>
+        <canvas id="pvBad"></canvas>
+      </figure>
+      <figure class="duel-p">
+        <figcaption><span class="dp-t good">Call on RAID</span><span class="dp-s">one chest, one exit</span></figcaption>
+        <canvas id="pvGood"></canvas>
+      </figure>
+      <p class="ex-note"><b>Example flow.</b> Shapes show the pattern, not a real coin.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 02 HOW -->
+<section class="sec" id="how">
+  <div class="sh rv"><span class="sh-n">02</span><span class="sh-k">How a raid works</span><i class="sh-rule"></i><span class="sh-x">7 steps · one contract</span></div>
+  <h2 class="rv wide">From one call to one payout. <span class="dim">Nobody gets out early.</span></h2>
+  <div class="how">
+    <ol class="how-steps rv" id="howSteps">
+      <li class="on"><button type="button"><span class="hs-n">01</span><span class="hs-k">Call</span><span class="hs-v">A caller, or a crew by vote, picks the coin, a line of 1.5x, 2x or 3x, and a retreat deadline. The call goes on chain.</span><i class="hs-bar"></i></button></li>
+      <li><button type="button"><span class="hs-n">02</span><span class="hs-k">Back</span><span class="hs-v">The crew puts USDC into the raid's chest. Back from a NEAR wallet, or from MetaMask or Phantom with no NEAR account, through NEAR Intents.</span><i class="hs-bar"></i></button></li>
+      <li><button type="button"><span class="hs-n">03</span><span class="hs-k">Countdown</span><span class="hs-v">When the crew window closes, a public 10 minute countdown starts. The buy time is on chain, so nobody front runs it.</span><i class="hs-bar"></i></button></li>
+      <li><button type="button"><span class="hs-n">04</span><span class="hs-k">Buy</span><span class="hs-v">The chest buys the whole pot in one swap through NEAR Intents. Chain Signatures signs it. No person holds a key.</span><i class="hs-bar"></i></button></li>
+      <li><button type="button"><span class="hs-n">05</span><span class="hs-k">Locked</span><span class="hs-v">Below the line, every sell is refused by the contract. Not the caller, not a backer, not us. Nobody dumps.</span><i class="hs-bar"></i></button></li>
+      <li><button type="button"><span class="hs-n">06</span><span class="hs-k">Line hit</span><span class="hs-v">Price reaches entry times the line. The chest sells once, for everyone, at the same price.</span><i class="hs-bar"></i></button></li>
+      <li><button type="button"><span class="hs-n">07</span><span class="hs-k">Paid</span><span class="hs-v">Fees come only out of profit. Backers get their stake back plus 90% of the profit, pro rata.</span><i class="hs-bar"></i></button></li>
+    </ol>
+    <div class="stage rv">
+      <div class="st-head"><span class="st-l"><i class="st-dot"></i><span id="stLabel">01 · Call</span></span><span class="tag">Example flow</span></div>
+      <canvas id="stage"></canvas>
+      <div class="st-foot"><span id="stFoot">raid #6 · $TRUMP · 2.00x</span><span class="st-ctl"><button type="button" id="stPrev" aria-label="Previous step">‹</button><button type="button" id="stPlay" aria-label="Pause">❚❚</button><button type="button" id="stNext" aria-label="Next step">›</button></span></div>
+    </div>
+  </div>
+  <p class="retreat rv"><b>If the line never hits.</b> At the retreat deadline the chest sells at market. Backers share what comes back, nobody takes a fee, and the caller earns nothing. You can lose part or all of your stake. RAID is a game with rules a contract enforces, not an investment product.</p>
+</section>
+
+<!-- 03 CHEST -->
+<section class="sec" id="chest">
+  <div class="sh rv"><span class="sh-n">03</span><span class="sh-k">The war chest</span><i class="sh-rule"></i><span class="sh-x">Keyless by design</span></div>
+  <div class="split-b">
+    <div class="mpc rv" aria-hidden="true">
+      <svg viewBox="0 0 460 460" id="mpcSvg">
+        <defs>
+          <radialGradient id="cg" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ff5b2e" stop-opacity=".28"/><stop offset="1" stop-color="#ff5b2e" stop-opacity="0"/></radialGradient>
+        </defs>
+        <circle cx="230" cy="230" r="200" fill="none" stroke="#1e222c" stroke-dasharray="2 6"/>
+        <circle cx="230" cy="230" r="150" fill="none" stroke="#1e222c"/>
+        <circle cx="230" cy="230" r="120" fill="url(#cg)"/>
+        <g id="mpcNodes"></g>
+        <g id="mpcLinks"></g>
+        <g class="chestg">
+          <rect x="170" y="186" width="120" height="92" rx="14" fill="#0c0e13" stroke="#ff5b2e" stroke-width="1.5"/>
+          <path d="M170 214h120" stroke="#2a2f3a"/>
+          <rect x="217" y="204" width="26" height="22" rx="5" fill="#11141b" stroke="#ff8a4c"/>
+          <circle cx="230" cy="213" r="3.2" fill="#ff8a4c"/><path d="M230 215v6" stroke="#ff8a4c" stroke-width="2" stroke-linecap="round"/>
+          <text x="230" y="250" text-anchor="middle" class="svt">raid-chest</text>
+          <text x="230" y="265" text-anchor="middle" class="svt dim">.testnet</text>
+        </g>
+        <g class="sig"><path id="sigPath" d="M158 306c18-22 30 8 44-8s18-26 30-4 20 18 34-2 22-16 32 4 18 12 26-2" fill="none" stroke="#35f0a1" stroke-width="2" stroke-linecap="round"/></g>
+        <text x="230" y="340" text-anchor="middle" class="svt up" id="sigTxt">signed · no key held</text>
+      </svg>
+    </div>
+    <div class="sb-copy rv">
+      <h2>A chest that <span class="hl">signs for itself</span>.</h2>
+      <p class="sub">Each raid's money sits in a NEAR smart contract, the war chest. It is not a wallet that a team member controls. The chest asks NEAR's Chain Signatures network to sign its buy, so the signature exists but no single person ever holds the key.</p>
+      <ol class="facts">
+        <li><b>Its own account.</b> The live testnet chest is <code>raid-chest-mwab3vnk.testnet</code>. Every raid is tracked inside it with its own pot, backers and line.</li>
+        <li><b>Its own key, derived.</b> <code>mpc_bootstrap</code> derives the chest's key from <code>v1.signer-prod.testnet</code>. Anyone can call it. Nobody can export it.</li>
+        <li><b>Its own buy.</b> <code>mpc_sign_buy</code> builds the swap intent inside the contract for the whole pot, then asks the network to sign it.</li>
+        <li><b>Its own rules.</b> The chest checks a signed 1Click quote on chain before any swap, allows one swap in flight per token, and refuses sells below the line.</li>
+      </ol>
+      <div class="codeline"><span class="cl-k">contract methods</span><span>call_raid</span><span>back</span><span>execute_buy</span><span>mpc_sign_buy</span><span>execute_sell</span><span>settle</span><span>claim_share</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 ANY CHAIN -->
+<section class="sec" id="anychain">
+  <div class="sh rv"><span class="sh-n">04</span><span class="sh-k">Any chain</span><i class="sh-rule"></i><span class="sh-x">NEAR Intents routing</span></div>
+  <h2 class="rv wide">Back from the wallet you already have. <span class="dim">Raid the coin wherever it lives.</span></h2>
+  <div class="route rv">
+    <svg viewBox="0 0 1200 420" id="routeSvg" preserveAspectRatio="xMidYMid meet" aria-label="Money flows from NEAR, MetaMask, Phantom and other chains through NEAR Intents into the chest, which buys the coin on its own chain"></svg>
+  </div>
+  <div class="route-notes rv">
+    <p><b>NEAR wallet.</b> Back straight into the chest with a normal USDC transfer.</p>
+    <p><b>MetaMask or Phantom.</b> Sign one intent with the wallet you have. No NEAR account needed. Your stake is recorded under your 0x or Solana address.</p>
+    <p><b>SOL, ETH or USDC elsewhere.</b> Send to a 1Click deposit address and it arrives as a back.</p>
+    <p><b>The target.</b> PEPE on Ethereum, TRUMP on Solana, DOGE, or a NEAR token. The chest swaps through Intents and holds the result.</p>
+  </div>
+</section>
+
+<!-- 05 FEES -->
+<section class="sec" id="fees">
+  <div class="sh rv"><span class="sh-n">05</span><span class="sh-k">Fees only from profit</span><i class="sh-rule"></i><span class="sh-x">Try the numbers</span></div>
+  <div class="split-a fees">
+    <div class="sa-copy rv">
+      <h2>If you don't win, <span class="hl">nobody gets paid</span>.</h2>
+      <p class="sub">RAID takes nothing from your stake. Fees exist only when the line hits, and only out of the profit.</p>
+      <div class="pct">
+        <div><b>90%</b><span>of profit to backers, on top of their full stake back</span></div>
+        <div><b>7.5%</b><span>to the buyback and burn reserve</span></div>
+        <div><b>2.5%</b><span>to the caller, or to the crew treasury when a crew calls</span></div>
+      </div>
+      <p class="worked"><span class="lbl">Worked example</span>Back $100. The line is 2x and it hits, so the chest sells at $200. Profit is $100. Backers get <b class="up">$190</b>, the reserve gets <b>$7.50</b>, the caller gets <b>$2.50</b>.</p>
+    </div>
+    <div class="calc rv" id="calc">
+      <div class="cc-row">
+        <label for="stake" class="lbl">Your stake</label><output id="stakeOut">$100</output>
+      </div>
+      <input type="range" id="stake" min="10" max="1000" step="10" value="100" aria-label="Stake in USDC">
+      <div class="cc-row tight"><span class="lbl">Line</span><span class="lbl">Outcome</span></div>
+      <div class="cc-opts">
+        <div class="seg" id="lineSeg" role="group" aria-label="Line"><button type="button" data-x="1.5">1.5x</button><button type="button" data-x="2" class="on">2x</button><button type="button" data-x="3">3x</button></div>
+        <div class="seg" id="hitSeg" role="group" aria-label="Outcome"><button type="button" data-h="1" class="on">Line hits</button><button type="button" data-h="0">Retreat</button></div>
+      </div>
+      <div class="flow" id="flow">
+        <div class="fl-bar"><i class="f-stake"></i><i class="f-back"></i><i class="f-burn"></i><i class="f-call"></i></div>
+        <div class="fl-legend">
+          <div><span class="sw s1"></span><span class="lbl">Stake back</span><b id="oStake">$100.00</b></div>
+          <div><span class="sw s2"></span><span class="lbl">Your profit</span><b id="oProfit" class="up">$90.00</b></div>
+          <div><span class="sw s3"></span><span class="lbl">Buyback</span><b id="oBurn">$7.50</b></div>
+          <div><span class="sw s4"></span><span class="lbl">Caller</span><b id="oCall">$2.50</b></div>
+        </div>
+      </div>
+      <div class="cc-total"><span class="lbl">You receive</span><b id="oTotal">$190.00</b><span class="cc-net" id="oNet">+90%</span></div>
+      <p class="cc-note" id="ccNote">Paid when the chest sells at the line. Pro rata if the crew backed more.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 06 RULES -->
+<section class="sec" id="rules">
+  <div class="sh rv"><span class="sh-n">06</span><span class="sh-k">Anti-dump rules</span><i class="sh-rule"></i><span class="sh-x">Written in the contract</span></div>
+  <h2 class="rv wide">Every move a bad caller makes, <span class="dim">the chest has an answer for.</span></h2>
+  <div class="rulebook rv" id="rulebook">
+    <div class="rb-row">
+      <div class="rb-try"><span class="rb-n">A</span><span class="rb-t">Buy before the crew, then sell into them.</span></div>
+      <div class="rb-ans"><code>"public countdown still running"</code><span>The buy can't happen until the crew window closes and a public countdown ends. The time is on chain for all to see.</span></div>
+    </div>
+    <div class="rb-row">
+      <div class="rb-try"><span class="rb-n">B</span><span class="rb-t">Sell the moment it pumps a little.</span></div>
+      <div class="rb-ans"><code>sell floor = entry × line</code><span>Before the retreat deadline the chest only accepts a sell quote at or above the line. Nobody holds the coin alone, so nobody can sell alone.</span></div>
+    </div>
+    <div class="rb-row">
+      <div class="rb-try"><span class="rb-n">C</span><span class="rb-t">Flood the raid with one whale wallet.</span></div>
+      <div class="rb-ans"><code>"raid is full or you are at the per-backer cap"</code><span>Each raid has a pot cap and a per-backer cap. Anything over it is refunded, not swallowed.</span></div>
+    </div>
+    <div class="rb-row">
+      <div class="rb-try"><span class="rb-n">D</span><span class="rb-t">Rush a call with a 30 second window.</span></div>
+      <div class="rb-ans"><code>"crew window too short or longer than 24 h"</code><span>The contract sets a minimum crew window so people actually have time to see the call.</span></div>
+    </div>
+    <div class="rb-row">
+      <div class="rb-try"><span class="rb-n">E</span><span class="rb-t">Get paid even when the call misses.</span></div>
+      <div class="rb-ans"><code>caller fee = 2.5% × profit</code><span>No profit, no fee. A caller only earns when backers earn first.</span></div>
+    </div>
+    <div class="rb-row">
+      <div class="rb-try"><span class="rb-n">F</span><span class="rb-t">Swap at a bad price on purpose.</span></div>
+      <div class="rb-ans"><code>check_quote</code><span>The chest refuses any swap without a 1Click signed quote it verifies on chain, and only one swap per token can be in flight.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 SOCIAL -->
+<section class="sec" id="social">
+  <div class="sh rv"><span class="sh-n">07</span><span class="sh-k">Crews and the feed</span><i class="sh-rule"></i><span class="sh-x">Social track</span></div>
+  <div class="split-b social">
+    <div class="phone rv" aria-hidden="true">
+      <div class="ph-top"><span class="lbl">Frog Legion · crew</span><span class="tag">Example flow</span></div>
+      <div class="prop">
+        <div class="pr-h"><span class="lbl">Proposal</span><span class="pr-st" id="prSt">voting</span></div>
+        <div class="pr-t">call_raid · $TRUMP · 2.00x</div>
+        <div class="votes"><i id="v1"></i><i id="v2"></i></div>
+        <div class="pr-f"><span id="prVotes">0 / 2 approvals</span><span class="lbl">Sputnik DAO</span></div>
+      </div>
+      <div class="chat" id="chat"></div>
+      <div class="war">
+        <div class="lbl">Raid War · 24h</div>
+        <div class="war-bar"><i id="warA"></i><i id="warB"></i></div>
+        <div class="war-f"><span>Frog Legion</span><span>Rival crew</span></div>
+      </div>
+    </div>
+    <div class="sb-copy rv">
+      <h2>Raids are a <span class="hl">team sport</span>.</h2>
+      <p class="sub">A crew is a Sputnik DAO on NEAR. Members propose a raid, vote on it, and when the vote passes the DAO itself calls the raid. The caller fee goes to the crew treasury, not one person.</p>
+      <ol class="facts">
+        <li><b>Crew calls.</b> A raid is a DAO proposal that calls <code>call_raid</code> on the chest. Raid #6 was called this way on testnet by Frog Legion.</li>
+        <li><b>Raid War.</b> Two crews go head to head for 24 hours. Firepower is the USDC backed into their raids, and hits are the multiples they actually realise.</li>
+        <li><b>Feed and crew chat.</b> Every raid has its own thread. Sign in with your NEAR wallet by signing a message, with no gas.</li>
+        <li><b>Reels.</b> A short video feed where each reel shows the coin, the live phase of its raid and a Back button.</li>
+        <li><b>Telegram.</b> <code>/raid PEPE 2x</code> posts a countdown card that updates as the crew fills. Built and tested, not running live yet.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 08 LAUNCHPAD -->
+<section class="sec" id="launch">
+  <div class="sh rv"><span class="sh-n">08</span><span class="sh-k">Launchpad</span><i class="sh-rule"></i><span class="sh-x">No RAID token</span></div>
+  <div class="split-a">
+    <div class="sa-copy rv">
+      <h2>Launch the coin. <span class="hl">Then raid it.</span></h2>
+      <p class="sub">Anyone can create a coin on RAID's launchpad. It trades on a bonding curve priced in USDC, so the price rises as people buy and falls as they sell.</p>
+      <ul class="ledger">
+        <li><span class="lg-k">Priced in</span><span class="lg-v">USDC, on a bonding curve</span></li>
+        <li><span class="lg-k">Creator earns</span><span class="lg-v">1% of trading, claimable on chain</span></li>
+        <li><span class="lg-k">RAID token</span><span class="lg-v">None. Nothing to farm or dump.</span></li>
+        <li><span class="lg-k">Also shown</span><span class="lg-v">Live NEAR fair launches from meme.cooking, read only</span></li>
+      </ul>
+      <p class="sub small">Tested on testnet: create, buy with 10 tUSDC, sell half back, and the creator claiming fees. The create and the fee claim are linked in the proof below.</p>
+    </div>
+    <div class="curve rv" aria-hidden="true">
+      <svg viewBox="0 0 560 380" id="curveSvg">
+        <g class="cv-grid"></g>
+        <path id="cvPath" d="M40 340 C 200 336, 330 300, 420 210 S 510 60, 530 30" fill="none" stroke="#2a2f3a" stroke-width="2"/>
+        <path id="cvFill" d="" fill="url(#cvg)"/>
+        <defs><linearGradient id="cvg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#ff5b2e" stop-opacity=".35"/><stop offset="1" stop-color="#ff5b2e" stop-opacity="0"/></linearGradient></defs>
+        <path id="cvLive" d="" fill="none" stroke="#ff5b2e" stroke-width="2.5" stroke-linecap="round"/>
+        <circle id="cvDot" r="6" fill="#fff"/>
+        <circle id="cvRing" r="12" fill="none" stroke="#ff5b2e"/>
+        <text x="40" y="364" class="svt dim">supply →</text>
+        <text x="48" y="40" class="svt dim">price in USDC</text>
+        <g id="cvTick"><rect x="0" y="0" width="118" height="26" rx="6" fill="#11141b" stroke="#2a2f3a"/><text x="10" y="17" class="svt" id="cvTxt">buy · price up</text></g>
+      </svg>
+      <p class="ex-note"><b>Example flow.</b> Curve shape only.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 09 PROOF -->
+<section class="sec" id="proof">
+  <div class="sh rv"><span class="sh-n">09</span><span class="sh-k">Proof on testnet</span><i class="sh-rule"></i><span class="sh-x">Click any hash</span></div>
+  <div class="proof">
+    <div class="pf-left rv">
+      <h2>Raid #6 is <span class="hl">real</span>. Check it yourself.</h2>
+      <p class="sub">$TRUMP, 2x line, called by the Frog Legion crew DAO on NEAR testnet. One script ran the whole raid end to end and logged every transaction.</p>
+      <div class="tests">
+        <div class="ts-n"><b>21</b><span>pass</span></div><div class="ts-n amber"><b>4</b><span>waiting</span></div><div class="ts-n"><b>0</b><span>fail</span></div>
+      </div>
+      <div class="cells" id="cells" aria-label="21 steps pass, 4 waiting, 0 fail"></div>
+      <p class="sub small">The 4 waiting steps are the swap, settle and claim. They need NEAR Intents and 1Click, which only run on mainnet. Contract unit tests cover those paths.</p>
+      <div class="mainnet"><i></i><span><b>Mainnet is not live yet.</b> No real money has been used. Contracts are not audited.</span></div>
+    </div>
+    <div class="receipt rv">
+      <div class="rc-h"><span>RAID · testnet receipt</span><span>raid #6</span></div>
+      <div class="rc-chest"><span class="lbl">Chest</span><a href="https://testnet.nearblocks.io/address/raid-chest-mwab3vnk.testnet" target="_blank" rel="noopener">raid-chest-mwab3vnk.testnet ↗</a></div>
+      <ol class="rc-list">
+        <li><span class="rc-s">Crew DAO proposes the raid</span><a href="https://testnet.nearblocks.io/txns/AzaGzU2DzYMEQz2y3mY24V1PwC94dqcdnJpQJPapdBYF" target="_blank" rel="noopener">AzaGzU2D…PapdBYF</a></li>
+        <li class="key"><span class="rc-s">Vote passes, the DAO calls raid #6</span><a href="https://testnet.nearblocks.io/txns/85jtMEp2Qxqa9KFpt21KnPBxsL9qMe5EBHofemUjXW12" target="_blank" rel="noopener">85jtMEp2…emUjXW12</a></li>
+        <li><span class="rc-s">Back 40 tUSDC from a NEAR wallet</span><a href="https://testnet.nearblocks.io/txns/6R482mgBBYoRQm2D27MzW7TnmxTn2qkHHEYPrG9rYLZi" target="_blank" rel="noopener">6R482mgB…PrG9rYLZi</a></li>
+        <li><span class="rc-s">MetaMask address backs 12</span><a href="https://testnet.nearblocks.io/txns/7CfiouYJWK9CThJXDjdFJmPQKitKUAu9cBNQLvZoVa91" target="_blank" rel="noopener">7CfiouYJ…NQLvZoVa91</a></li>
+        <li><span class="rc-s">Phantom address backs 9</span><a href="https://testnet.nearblocks.io/txns/AqTUMBDUtajabaYq3vxSdMm8X6ocWmbDZWRUfLSfyZGn" target="_blank" rel="noopener">AqTUMBDU…LSfyZGn</a></li>
+        <li><span class="rc-s">Chest derives its key</span><a href="https://testnet.nearblocks.io/txns/3JcLvFxqd5xxk6eUJqdGcig1SeabKgA7BjJWJLVb79Ym" target="_blank" rel="noopener">3JcLvFxq…JLVb79Ym</a></li>
+        <li class="key"><span class="rc-s">Chain Signatures signs the buy</span><a href="https://testnet.nearblocks.io/txns/FZGSY98xpwKyJoUuBRAJFW2o34HkNwiTYtNQqpiQXHBZ" target="_blank" rel="noopener">FZGSY98x…QpiQXHBZ</a></li>
+        <li><span class="rc-s">Launchpad: create a coin</span><a href="https://testnet.nearblocks.io/txns/8xjYTUaBT6fTL16Ae1ezFRLzMauBcvZeziQZHURp3LJH" target="_blank" rel="noopener">8xjYTUaB…URp3LJH</a></li>
+        <li><span class="rc-s">Launchpad: creator claims fees</span><a href="https://testnet.nearblocks.io/txns/7tGeYWLFuX472tKvhXApQwRM2guGi5TAaZAT9eHYx5rN" target="_blank" rel="noopener">7tGeYWLF…AT9eHYx5rN</a></li>
+      </ol>
+      <div class="rc-f"><span>Network</span><span>NEAR testnet · 11 Nov 2026</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 NEAR -->
+<section class="sec" id="near">
+  <div class="sh rv"><span class="sh-n">10</span><span class="sh-k">Built on NEAR</span><i class="sh-rule"></i><span class="sh-x">What each piece does</span></div>
+  <h2 class="rv wide">Four NEAR pieces. <span class="dim">Each one does a real job.</span></h2>
+  <div class="spec rv">
+    <div class="sp-row">
+      <div class="sp-name"><svg viewBox="0 0 40 40" class="gl"><path d="M6 12h20l-6-6M34 28H14l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>NEAR Intents</b><span class="lbl">intents.near · 1Click</span></div>
+      <p>Runs the chest's one buy and one sell, checked against a 1Click signed quote. Brings in backs from other chains, and lets MetaMask and Phantom users back with a signed message instead of a NEAR account. Pays out into an Intents account too.</p>
+    </div>
+    <div class="sp-row">
+      <div class="sp-name"><svg viewBox="0 0 40 40" class="gl"><circle cx="20" cy="20" r="5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="20" cy="6" r="2.5" fill="currentColor"/><circle cx="32" cy="27" r="2.5" fill="currentColor"/><circle cx="8" cy="27" r="2.5" fill="currentColor"/><path d="M20 9v6M29.5 25.5l-5-3M10.5 25.5l5-3" stroke="currentColor" stroke-width="1.6"/></svg><b>Chain Signatures</b><span class="lbl">v1.signer-prod.testnet</span></div>
+      <p>The chest derives its own key and signs its own buy intent. There is no keeper key and no team wallet to trust or to hack.</p>
+    </div>
+    <div class="sp-row">
+      <div class="sp-name"><svg viewBox="0 0 40 40" class="gl"><path d="M8 32V16l12-8 12 8v16z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M15 32v-9h10v9" fill="none" stroke="currentColor" stroke-width="2"/></svg><b>Sputnik DAO</b><span class="lbl">sputnikv2.testnet</span></div>
+      <p>Crew treasuries. A raid is a proposal, and when it passes the DAO calls the chest itself. Raid War scores crews by their DAO raids.</p>
+    </div>
+    <div class="sp-row">
+      <div class="sp-name"><svg viewBox="0 0 40 40" class="gl"><rect x="8" y="10" width="24" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M13 20l5 4 9-8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><b>NEP-413 sign in</b><span class="lbl">wallet message</span></div>
+      <p>Log in to the feed, crew chat and reels by signing a message with your NEAR wallet. No password, no gas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11 FAQ -->
+<section class="sec" id="faq">
+  <div class="sh rv"><span class="sh-n">11</span><span class="sh-k">Questions</span><i class="sh-rule"></i><span class="sh-x">Straight answers</span></div>
+  <div class="faq-w">
+    <h2 class="rv">Asked a lot.</h2>
+    <div class="faq rv">
+      <details open><summary>What happens if the line never hits?</summary><p>At the retreat deadline the caller set, the chest sells at market. Backers split what comes back pro rata. No fees are taken and the caller earns nothing. You can lose some or all of your stake.</p></details>
+      <details><summary>Can the caller sell before me?</summary><p>No. The caller doesn't hold the coin, the chest does. The chest sells once, for everyone, at the line or at the retreat deadline.</p></details>
+      <details><summary>Who holds the money?</summary><p>A NEAR smart contract. It signs its buy through Chain Signatures, so there is no private key sitting with a person or a server.</p></details>
+      <details><summary>Do I need a NEAR wallet?</summary><p>No. You can back with MetaMask or Phantom by signing an intent, or send SOL, ETH or USDC from another chain to a deposit address.</p></details>
+      <details><summary>Is there a RAID token?</summary><p>No. There is nothing to farm. 7.5% of profit on winning raids goes to a buyback and burn reserve.</p></details>
+      <details><summary>Is this live with real money?</summary><p>Not yet. Everything runs on NEAR testnet with test USDC. The swap steps wait for mainnet because NEAR Intents and 1Click only run there. The contracts have not been audited.</p></details>
+      <details><summary>Which coins can be raided?</summary><p>Any coin NEAR Intents can route to: tokens on NEAR, Solana and EVM chains like Ethereum, plus others Intents supports.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- 12 CTA -->
+<section class="sec cta" id="start">
+  <canvas id="ctaCv" aria-hidden="true"></canvas>
+  <div class="cta-in rv">
+    <p class="kicker"><span class="k-dot"></span>NEAR Hackathon · Memecoins and Social</p>
+    <h2 class="big">Call it.<br>Back it.<br><span class="hl">Hold the line.</span></h2>
+    <p class="sub">RAID runs on NEAR testnet today. Judges get a prefunded testnet account with test USDC in the submission notes, so you can back a live raid and vote in a crew without spending anything.</p>
+    <div class="ctas"><a class="btn primary" href="#proof">See the testnet proof</a><a class="btn ghost" href="#how">Replay how a raid works</a></div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="ft-l"><span class="word">RAID</span><span class="lbl">Group calls for memecoins, on NEAR</span></div>
+  <nav class="ft-n"><a href="#problem">Why</a><a href="#how">How it works</a><a href="#chest">Chest</a><a href="#anychain">Any chain</a><a href="#fees">Fees</a><a href="#rules">Rules</a><a href="#social">Crews</a><a href="#launch">Launchpad</a><a href="#proof">Proof</a><a href="#faq">FAQ</a></nav>
+  <p class="ft-d">Testnet only. Not audited. Not an investment product. Animated flows marked Example flow show how a raid works and are not market data.</p>
+</footer>
+</div>
+
+<script src="assets/raid.js"></script>
+<script src="assets/sections.js"></script>
+</body>
+</html>
