@@ -57,13 +57,13 @@ function Nav() {
       <nav className="mx-auto flex h-14 max-w-6xl min-w-0 items-center justify-between gap-3 rounded-full bg-panel/75 pl-4 pr-2 shadow-[0_0_0_1px_var(--color-line),0_14px_30px_-20px_rgb(21_22_26/.35)] backdrop-blur-xl backdrop-saturate-150 md:h-[3.75rem] md:pl-5" aria-label="Main">
         <Link href="/" className="shrink-0" aria-label="RAID home"><Wordmark size={24} /></Link>
         <div className="hidden items-center gap-1 text-[14px] text-mute md:flex">
-          {[['#how', 'How it works'], ['/raids', 'Raids'], ['/war', 'Crews'], ['/launch', 'Launchpad'], ['/judges', 'Judges']].map(([h, l]) => (
+          {[['#how', 'How it works'], ['/raids', 'Raids'], ['/feed', 'Feed'], ['/war', 'Crews'], ['/judges', 'Judges']].map(([h, l]) => (
             <Link key={h} href={h!} className="rounded-full px-3.5 py-2 transition-colors hover:bg-raised hover:text-ink">{l}</Link>
           ))}
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           <ThemeToggle />
-          <Link href="/raids" className="press inline-flex h-10 items-center gap-2 rounded-full btn-ink pl-4 pr-3.5 text-[13.5px] font-semibold md:h-11">
+          <Link href="/feed" className="press inline-flex h-10 items-center gap-2 rounded-full btn-ink pl-4 pr-3.5 text-[13.5px] font-semibold md:h-11">
             Open app<span className="h-1.5 w-1.5 rounded-full bg-signal" />
           </Link>
         </div>

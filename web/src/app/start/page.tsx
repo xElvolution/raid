@@ -32,7 +32,7 @@ export default function Start() {
         <div className="flex h-10 items-center gap-3">
           {i > 0 && i < N - 1 ? <button onClick={() => setI(i - 1)} aria-label="Back" className="press -ml-2 grid h-9 w-9 place-items-center rounded-full hover:bg-raised"><ArrowLeft size={19} /></button> : <Mark size={22} light={i === 0 || i === N - 1} />}
           {i > 0 && i < N - 1 && <div className="flex flex-1 gap-1">{Array.from({ length: N - 2 }, (_, k) => <motion.span key={k} className="h-[4px] flex-1 rounded-full" animate={{ backgroundColor: k < i ? '#ff5a1f' : 'var(--color-line)' }} />)}</div>}
-          {i < N - 1 && <Link href="/live" className={`ml-auto text-[13px] font-semibold ${i === 0 ? 'text-white/70' : 'text-mute'}`}>Skip</Link>}
+          {i < N - 1 && <Link href="/feed" className={`ml-auto text-[13px] font-semibold ${i === 0 ? 'text-white/70' : 'text-mute'}`}>Skip</Link>}
         </div>
 
         <AnimatePresence mode="wait">
@@ -110,7 +110,7 @@ export default function Start() {
                     ); })}
                   </ul>
                 </motion.div>
-                <button onClick={() => router.push('/live')} className="press mt-8 h-[2.875rem] md:h-[54px] rounded-full btn-signal text-[15px] md:text-[16px] font-semibold">Go to the live feed</button>
+                <button onClick={() => router.push('/feed')} className="press mt-8 h-[2.875rem] md:h-[54px] rounded-full btn-signal text-[15px] md:text-[16px] font-semibold">Go to the live feed</button>
               </div>
             )}
           </motion.div>

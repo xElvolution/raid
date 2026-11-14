@@ -6,7 +6,7 @@ const BRAND = ['#7c5cff', '#9d86ff', '#ffffff', '#22d3a6'];
 
 /** Short vibration on supporting devices; no-op elsewhere. */
 let lastTick = 0;
-export const HAPTICS_KEY = 'called-haptics';
+export const HAPTICS_KEY = 'raid.haptics';
 export function hapticsOn(): boolean { try { return localStorage.getItem(HAPTICS_KEY) !== 'off'; } catch { return true; } }
 export function setHaptics(on: boolean): void { try { localStorage.setItem(HAPTICS_KEY, on ? 'on' : 'off'); } catch { /* private mode */ } if (on) haptic('tap'); }
 export function haptic(pattern: 'tap' | 'tick' | 'success' | 'error' | 'heavy' | 'select' = 'tap'): void {
@@ -50,7 +50,7 @@ export interface Win { amount?: number; question?: string; label?: string }
 type WinListener = (w: Win) => void;
 const winListeners = new Set<WinListener>();
 export function onWin(fn: WinListener): () => void { winListeners.add(fn); return () => winListeners.delete(fn); }
-export function calledIt(w: Win): void {
+export function raidHit(w: Win): void {
   haptic('success');
   if (!reduced()) {
     const C = ['#ffffff', '#22d3a6', '#0c0c0f', '#d9ceff'];

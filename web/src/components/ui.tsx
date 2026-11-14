@@ -88,7 +88,8 @@ export function Identicon({ seed, size = 36, className = '' }: { seed: string; s
 /** Coin logo: the bundled logo for every coin RAID can trade (no hotlink, never blank), then the market API image,
  *  then the ticker letters. */
 export function CoinAvatar({ symbol, image, size = 36, className = '' }: { symbol: string; image?: string | null; size?: number; className?: string }) {
-  const local = coinBySymbol(symbol) ? `/coins/${symbol.toUpperCase()}.png` : null;
+  const base = /^t[A-Z]{3,}$/.test(symbol) && coinBySymbol(symbol.slice(1)) ? symbol.slice(1) : symbol;
+  const local = coinBySymbol(base) ? `/coins/${base.toUpperCase()}.png` : null;
   const sources = [local, image].filter((x): x is string => !!x);
   const [failed, setFailed] = useState(0);
   const src = sources[failed];
@@ -127,7 +128,7 @@ export function Flash({ value, children, className = '' }: { value: number | nul
 }
 
 export function Delta({ pct, className = '' }: { pct: number | null | undefined; className?: string }) {
-  if (pct == null) return <span className={`mono text-mute ${className}`}>—</span>;
+  if (pct == null) return <span className={`mono text-mute ${className}`}>–</span>;
   return <span className={`mono ${pct >= 0 ? 'text-up' : 'text-down'} ${className}`}>{pct >= 0 ? '▲' : '▼'} {Math.abs(pct).toFixed(2)}%</span>;
 }
 

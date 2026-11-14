@@ -3,14 +3,17 @@ import Link from 'next/link';
 import { useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useInfiniteQuery, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Heart, MessageCircle, Send, Swords, UserPlus, UserCheck, WifiOff } from 'lucide-react';
+import { Heart, MessageCircle, Repeat2, Send, WifiOff } from 'lucide-react';
 import { social, signInSocial, useSession, type Post } from '@/lib/social';
 import { useAccount, connect } from '@/lib/wallet';
 import { toast } from '@/lib/bus';
 import { ago } from '@/lib/market';
 import { coinBySymbol } from '@/lib/coins';
 import { useNow } from '@/lib/hooks';
-import { Button, Empty, Identicon, Skeleton } from './ui';
+import { Button, Empty, Skeleton } from './ui';
+import { Avatar, TestnetChip } from './app/Avatar';
+import { RaidEmbed } from './app/RaidEmbed';
+import { personByAccount, personByHandle } from '@/lib/people';
 
 const errMsg = (e: unknown) => {
   const m = (e as Error).message;
@@ -32,14 +35,17 @@ export function useSocialAuth() {
 }
 
 function Body({ text }: { text: string }) {
-  return <>{text.split(/(\$[A-Z0-9]{2,12})/).map((part, i) => {
-    if (!/^\$[A-Z0-9]{2,12}$/.test(part)) return <span key={i}>{part}</span>;
+  return <>{text.split(/(\$[A-Za-z0-9]{2,12}|#\d+)/).map((part, i) => {
+    if (/^#\d+$/.test(part)) return <Link key={i} href={`/raids/${part.slice(1)}`} className="font-medium text-lime hover:underline">{part}</Link>;
+    if (!/^\$[A-Za-z0-9]{2,12}$/.test(part)) return <span key={i}>{part}</span>;
     const sym = part.slice(1);
-    return coinBySymbol(sym) ? <Link key={i} href={`/coin/${sym}`} className="font-semibold text-brand hover:underline">{part}</Link> : <b key={i} className="font-semibold text-ink">{part}</b>;
+    return coinBySymbol(sym) ? <Link key={i} href={`/coin/${sym}`} className="font-semibold hover:underline">{part}</Link> : <b key={i} className="font-semibold">{part}</b>;
   })}</>;
 }
 
-export function Composer({ raidId, coin, replyTo, placeholder = 'Call it. What are you raiding and why?', onPosted, compact }: { raidId?: number; coin?: string; replyTo?: string; placeholder?: string; onPosted?: () => void; compact?: boolean }) {
+const profileOf = (p: Pick<Post, 'handle' | 'near_account'>) => `/u/${personByHandle(p.handle)?.handle ?? p.near_account ?? p.handle}`;
+
+export function Composer({ raidId, coin, replyTo, placeholder = 'What are you raiding?', onPosted, compact }: { raidId?: number; coin?: string; replyTo?: string; placeholder?: string; onPosted?: () => void; compact?: boolean }) {
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
   const { acct, sess, busy, ensure } = useSocialAuth();
@@ -48,71 +54,68 @@ export function Composer({ raidId, coin, replyTo, placeholder = 'Call it. What a
   async function post() {
     if (!(await ensure())) return;
     const body = text.trim(); if (!body) return;
-    const tag = coin ?? body.match(/\$([A-Z0-9]{2,12})/)?.[1];
+    const raw = coin ?? body.match(/\$([A-Za-z0-9]{2,12})/)?.[1];
+    const tag = raw && /^[A-Z0-9]{2,12}$/.test(raw) ? raw : undefined;
+    const ref = raidId ?? (body.match(/#(\d+)/) ? Number(body.match(/#(\d+)/)![1]) : undefined);
     setSending(true);
     try {
-      await social.post({ body, raidId, coin: tag, replyTo });
+      await social.post({ body, raidId: ref, coin: tag, replyTo });
       setText(''); onPosted?.();
       void qc.invalidateQueries({ queryKey: ['feed'] }); void qc.invalidateQueries({ queryKey: ['thread'] });
     } catch (e) { const m = errMsg(e); if (m) toast({ title: 'Didn’t post', body: m, tone: 'down' }); }
     finally { setSending(false); }
   }
   return (
-    <div className={`flex gap-2.5 md:gap-3 ${compact ? '' : 'panel p-3 md:p-4'}`}>
-      <Identicon seed={sess?.account ?? acct ?? 'guest'} size={compact ? 30 : 40} />
+    <div className={`flex gap-3 ${compact ? 'py-2' : 'py-4'}`}>
+      <Avatar id={sess?.account ?? acct ?? 'guest'} size={compact ? 32 : 44} />
       <div className="min-w-0 flex-1">
         <textarea value={text} onChange={(e) => setText(e.target.value.slice(0, 500))} placeholder={placeholder} rows={compact ? 1 : 2} aria-label={placeholder}
-          className="w-full resize-none bg-transparent text-[14px] md:text-[15px] leading-snug outline-none placeholder:text-faint" />
+          className="w-full resize-none bg-transparent pt-2 text-[17px] leading-snug outline-none placeholder:text-faint" />
         <div className="mt-2 flex items-center gap-2">
-          {raidId !== undefined && !replyTo && <span className="chip chip-ghost"><Swords size={12} />Raid #{raidId}</span>}
-          <span className={`ml-auto mono text-[11px] ${left < 40 ? 'text-down' : 'text-faint'}`}>{text ? left : ''}</span>
+          {raidId !== undefined && !replyTo && <span className="text-[13px] text-mute">Posting to raid #{raidId}</span>}
+          <span className={`ml-auto mono text-[12px] ${left < 40 ? 'text-down' : 'text-faint'}`}>{text ? left : ''}</span>
           {sess || !acct ? (
-            <Button size="sm" tone="lime" disabled={(!!sess && !text.trim()) || sending || busy} onClick={post}>{!acct ? 'Connect to post' : sending ? 'Posting…' : <><Send size={14} />{replyTo ? 'Reply' : 'Post'}</>}</Button>
+            <Button size="sm" tone="ink" disabled={(!!sess && !text.trim()) || sending || busy} onClick={post}>{!acct ? 'Connect to post' : sending ? 'Posting…' : <><Send size={14} />{replyTo ? 'Reply' : 'Post'}</>}</Button>
           ) : (
-            <Button size="sm" tone="lime" disabled={busy} onClick={() => void ensure()}>{busy ? 'Check wallet…' : 'Sign in to post'}</Button>
+            <Button size="sm" tone="ink" disabled={busy} onClick={() => void ensure()}>{busy ? 'Check wallet…' : 'Sign in to post'}</Button>
           )}
         </div>
-        {acct && !sess && <p className="mt-1.5 text-[11px] text-faint">Signing in is one message signature in your wallet. No transaction, no gas.</p>}
       </div>
     </div>
   );
 }
 
-export function PostCard({ p, i = 0, now, threaded = true }: { p: Post; i?: number; now: number; threaded?: boolean }) {
+/** One post, X/Farcaster shape: avatar, name, handle, time, text, the raid it points at, and actions. */
+export function PostCard({ p, i = 0, now, threaded = true, embed = true }: { p: Post; i?: number; now: number; threaded?: boolean; embed?: boolean }) {
   const [liked, setLiked] = useState(p.liked);
   const [likes, setLikes] = useState(p.likes);
-  const [following, setFollowing] = useState(p.following);
   const [open, setOpen] = useState(false);
-  const { sess, ensure } = useSocialAuth();
-  const mine = sess?.handle === p.handle;
+  const { ensure } = useSocialAuth();
+  const person = personByHandle(p.handle) ?? personByAccount(p.near_account);
   async function like() {
     if (!(await ensure())) return;
     const on = !liked; setLiked(on); setLikes((n) => n + (on ? 1 : -1));
     try { const r = await social.like(p.id, on); setLikes(r.likes); } catch (e) { setLiked(!on); setLikes((n) => n - (on ? 1 : -1)); const m = errMsg(e); if (m) toast({ title: 'Like failed', body: m, tone: 'down' }); }
   }
-  async function follow() {
-    if (!(await ensure())) return;
-    const on = !following; setFollowing(on);
-    try { await social.follow(p.handle, on); } catch (e) { setFollowing(!on); const m = errMsg(e); if (m) toast({ title: 'Follow failed', body: m, tone: 'down' }); }
-  }
+  const href = profileOf(p);
   return (
-    <motion.article initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.035 }} className="flex gap-2.5 md:gap-3 px-3 py-3 md:px-4 md:py-3.5">
-      <Identicon seed={p.near_account ?? p.handle} size={40} />
+    <motion.article initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }} className="flex gap-3 py-4">
+      <Link href={href} className="shrink-0"><Avatar id={p.near_account} handle={p.handle} size={44} /></Link>
       <div className="min-w-0 flex-1">
-        <div className="flex min-w-0 items-center gap-1.5 text-[13px] md:text-[13.5px]">
-          <span className="truncate font-semibold">{(p.display_name || p.handle).replace(/\s*\(demo\)$/i, '')}</span>
-          {p.demo && <span className="chip chip-ghost !h-[18px] !px-1.5 !text-[9.5px]" title="Seeded demo account, not a real person">DEMO</span>}
-          <span className="hidden truncate text-mute sm:inline">@{p.handle}</span>
+        <div className="flex min-w-0 items-center gap-1.5 text-[15px] leading-tight">
+          <Link href={href} className="truncate font-semibold hover:underline">{person?.name ?? (p.display_name || p.handle)}</Link>
+          <span className="truncate text-mute">@{p.handle}</span>
           <span className="shrink-0 text-faint">· {now ? ago(new Date(p.created_at).getTime(), now) : ''}</span>
-          {!mine && <button onClick={follow} aria-pressed={following} aria-label={following ? `Unfollow @${p.handle}` : `Follow @${p.handle}`} className={`press ml-auto flex h-7 shrink-0 items-center gap-1 rounded-full px-2.5 text-[11.5px] font-bold ${following ? 'hairline text-mute' : 'bg-ink text-bg'}`}>{following ? <><UserCheck size={13} /><span className="hidden sm:inline">Following</span></> : <><UserPlus size={13} /><span className="hidden sm:inline">Follow</span></>}</button>}
+          {person && <TestnetChip className="ml-auto" />}
         </div>
-        <p className="mt-0.5 md:mt-1 whitespace-pre-wrap break-words text-[14px] md:text-[15px] leading-snug"><Body text={p.body} /></p>
-        {p.raid_id !== null && !p.reply_to && <Link href={`/raids/${p.raid_id}`} className="lift mt-2 inline-flex items-center gap-1.5 rounded-[13px] hairline px-2.5 py-1.5 text-[12px] font-semibold"><Swords size={13} className="text-lime" />Raid #{p.raid_id}{p.coin ? ` · $${p.coin}` : ''}</Link>}
-        <div className="mt-2 flex items-center gap-5 text-[12.5px] text-mute">
-          {threaded && <button onClick={() => setOpen((o) => !o)} aria-expanded={open} className="press flex items-center gap-1.5 hover:text-ink"><MessageCircle size={16} />{p.replies || ''}<span className="sr-only">replies</span></button>}
-          <button onClick={like} aria-pressed={liked} aria-label={liked ? 'Unlike' : 'Like'} className={`press flex items-center gap-1.5 ${liked ? 'text-down' : 'hover:text-ink'}`}>
-            <motion.span key={String(liked)} initial={{ scale: liked ? 0.5 : 1 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 600, damping: 15 }}><Heart size={16} fill={liked ? 'currentColor' : 'none'} /></motion.span>{likes || ''}
+        <p className="mt-1 whitespace-pre-wrap break-words text-[15.5px] leading-[1.45]"><Body text={p.body} /></p>
+        {embed && p.raid_id !== null && !p.reply_to && <RaidEmbed id={p.raid_id} className="mt-3" />}
+        <div className="mt-3 flex items-center gap-7 text-[13.5px] text-mute">
+          {threaded && <button onClick={() => setOpen((o) => !o)} aria-expanded={open} className="press -ml-2 flex items-center gap-1.5 rounded-full px-2 py-1 hover:bg-raised hover:text-ink"><MessageCircle size={18} />{p.replies || ''}<span className="sr-only">replies</span></button>}
+          <button onClick={like} aria-pressed={liked} aria-label={liked ? 'Unlike' : 'Like'} className={`press flex items-center gap-1.5 rounded-full px-2 py-1 hover:bg-raised ${liked ? 'text-down' : 'hover:text-ink'}`}>
+            <motion.span key={String(liked)} initial={{ scale: liked ? 0.5 : 1 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 600, damping: 15 }}><Heart size={18} fill={liked ? 'currentColor' : 'none'} /></motion.span>{likes || ''}
           </button>
+          {p.raid_id !== null && <Link href={`/raids/${p.raid_id}#back`} className="press ml-auto flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold text-ink hairline hover:bg-raised"><Repeat2 size={16} />Back</Link>}
         </div>
         <AnimatePresence>{open && threaded && <Thread id={p.id} now={now} />}</AnimatePresence>
       </div>
@@ -123,62 +126,40 @@ export function PostCard({ p, i = 0, now, threaded = true }: { p: Post; i?: numb
 function Thread({ id, now }: { id: string; now: number }) {
   const t = useQuery({ queryKey: ['thread', id], queryFn: () => social.thread(id) });
   return (
-    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-2 overflow-hidden border-l-2 border-line pl-1">
-      {t.isLoading && <Skeleton className="ml-3 h-12" />}
+    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-2 overflow-hidden border-l-2 border-line pl-3">
+      {t.isLoading && <Skeleton className="h-12" />}
       {t.data?.replies.map((r) => <PostCard key={r.id} p={r} now={now} threaded={false} />)}
-      {t.data && !t.data.replies.length && <p className="px-4 py-2 text-[12.5px] text-faint">No replies yet.</p>}
-      <div className="px-3 pb-2 pt-1"><Composer replyTo={id} compact placeholder="Reply…" /></div>
+      {t.data && !t.data.replies.length && <p className="py-2 text-[14px] text-faint">No replies yet.</p>}
+      <Composer replyTo={id} compact placeholder="Reply…" />
     </motion.div>
   );
 }
 
-export function Feed({ raidId, coin, header, emptyTitle = 'Nothing posted yet', emptyBody = 'Be the first to call it.' }: { raidId?: number; coin?: string; header?: ReactNode; emptyTitle?: string; emptyBody?: string }) {
-  const now = useNow(30_000);
+/** Posts from the social API. Seeded placeholder accounts are left out: the feed shows real testnet activity only. */
+export function usePosts(q: { tab?: 'all' | 'following'; raid?: number; author?: string }) {
   const { sess } = useSocialAuth();
-  const [tab, setTab] = useState<'all' | 'following'>('all');
-  const q = useInfiniteQuery({
-    queryKey: ['feed', tab, raidId, coin, sess?.handle], initialPageParam: undefined as string | undefined, refetchInterval: 15_000,
-    queryFn: ({ pageParam }) => social.feed({ tab, raid: raidId, coin, cursor: pageParam }), getNextPageParam: (l) => l.next ?? undefined,
+  const r = useInfiniteQuery({
+    queryKey: ['feed', q.tab ?? 'all', q.raid, q.author, sess?.handle], initialPageParam: undefined as string | undefined, refetchInterval: 15_000,
+    queryFn: ({ pageParam }) => social.feed({ tab: q.tab ?? 'all', raid: q.raid, author: q.author, cursor: pageParam }), getNextPageParam: (l) => l.next ?? undefined,
   });
-  const items = q.data?.pages.flatMap((p) => p.items) ?? [];
+  const items = (r.data?.pages.flatMap((p) => p.items) ?? []).filter((p) => !p.demo);
+  return { ...r, items };
+}
+
+export function Feed({ raidId, author, tab = 'all', emptyTitle = 'Nothing posted yet', emptyBody = 'Be the first to call it.', embed = true }: { raidId?: number; author?: string; tab?: 'all' | 'following'; header?: ReactNode; emptyTitle?: string; emptyBody?: string; embed?: boolean }) {
+  const now = useNow(30_000);
+  const q = usePosts({ tab, raid: raidId, author });
   return (
     <section>
-      {header}
-      {raidId === undefined && sess && (
-        <div className="mb-2 flex gap-1.5">{(['all', 'following'] as const).map((t) => <button key={t} onClick={() => setTab(t)} aria-pressed={tab === t} className={`press h-8 rounded-full px-3.5 text-[12.5px] font-semibold ${tab === t ? 'bg-ink text-bg' : 'hairline text-mute'}`}>{t === 'all' ? 'Everyone' : 'Following'}</button>)}</div>
-      )}
-      <div className="panel overflow-hidden divide-y divide-line">
-        {q.isLoading && [0, 1, 2].map((i) => <div key={i} className="flex gap-3 p-4"><Skeleton className="h-10 w-10 !rounded-[12px]" /><div className="flex-1 space-y-2"><Skeleton className="h-3.5 w-40" /><Skeleton className="h-3.5 w-full" /></div></div>)}
-        {q.error && <div className="p-6"><Empty art={<WifiOff size={36} className="text-faint" />} title="Social feed is offline" body={`Can’t reach the RAID social API. Raids, prices and the chest still work.`} action={<button onClick={() => q.refetch()} className="text-brand font-semibold">Retry</button>} /></div>}
-        {!q.isLoading && !q.error && !items.length && <Empty title={tab === 'following' ? 'No posts from people you follow' : emptyTitle} body={tab === 'following' ? 'Follow callers from Everyone to fill this.' : emptyBody} />}
-        {items.map((p, i) => <PostCard key={p.id} p={p} i={i} now={now} />)}
+      <div className="divide-y divide-line">
+        {q.isLoading && [0, 1, 2].map((i) => <div key={i} className="flex gap-3 py-4"><Skeleton className="h-11 w-11 !rounded-full" /><div className="flex-1 space-y-2"><Skeleton className="h-4 w-40" /><Skeleton className="h-4 w-full" /></div></div>)}
+        {q.error && <Empty art={<WifiOff size={36} className="text-faint" />} title="Social feed is offline" body="Can’t reach the RAID social API. Raids and the chest still work." action={<button onClick={() => q.refetch()} className="font-semibold">Retry</button>} />}
+        {!q.isLoading && !q.error && !q.items.length && <Empty title={emptyTitle} body={emptyBody} />}
+        {q.items.map((p, i) => <PostCard key={p.id} p={p} i={i} now={now} embed={embed} />)}
       </div>
       {q.hasNextPage && <Button tone="ghost" className="mt-3 w-full" onClick={() => q.fetchNextPage()} disabled={q.isFetchingNextPage}>{q.isFetchingNextPage ? 'Loading…' : 'Load more'}</Button>}
     </section>
   );
 }
 
-export function WhoToFollow() {
-  const c = useQuery({ queryKey: ['callers'], queryFn: social.callers, staleTime: 60_000 });
-  const { ensure } = useSocialAuth();
-  const qc = useQueryClient();
-  if (c.error || (c.data && !c.data.items.length)) return null;
-  return (
-    <section className="panel p-3 md:p-4">
-      <p className="eyebrow">Callers to follow</p>
-      <ul className="-mx-3 mt-2.5 flex gap-2 overflow-x-auto px-3 no-scrollbar md:mx-0 md:mt-3 md:block md:space-y-3 md:overflow-visible md:px-0">
-        {c.isLoading && [0, 1, 2].map((i) => <Skeleton key={i} className="h-9 max-md:w-[14.25rem] shrink-0" />)}
-        {c.data?.items.map((u) => (
-          <li key={u.handle} className="flex shrink-0 items-center gap-2 rounded-[13px] py-1.5 pl-1.5 pr-1.5 hairline max-md:w-[14.25rem] md:gap-2.5 md:rounded-none md:p-0 md:shadow-none">
-            <Identicon seed={u.near_account ?? u.handle} size={34} className="max-md:!h-7 max-md:!w-7 max-md:!rounded-[7px]" />
-            <div className="min-w-0 flex-1"><p className="truncate text-[12.5px] md:text-[13px] font-semibold">{(u.display_name || u.handle).replace(/\s*\(demo\)$/i, "")}{u.demo && <span className="ml-1.5 mono text-[9.5px] text-faint">DEMO</span>}</p><p className="truncate mono text-[10.5px] md:text-[11px] text-mute">{u.followers} followers · {u.posts} posts</p></div>
-            <button onClick={async () => { if (!(await ensure())) return; await social.follow(u.handle, !u.following).catch(() => {}); void qc.invalidateQueries({ queryKey: ['callers'] }); void qc.invalidateQueries({ queryKey: ['feed'] }); }}
-              className={`press h-6 shrink-0 rounded-full px-2 text-[10.5px] md:h-7 md:px-2.5 md:text-[11.5px] font-bold ${u.following ? 'hairline text-mute' : 'bg-ink text-bg'}`}>{u.following ? 'Following' : 'Follow'}</button>
-          </li>
-        ))}
-      </ul>
-      <p className="mt-2 md:mt-3 text-[10.5px] md:text-[11px] text-faint">Accounts marked DEMO are seeded examples, not real people.</p>
-    </section>
-  );
-}
-
+export function WhoToFollow() { return null; }

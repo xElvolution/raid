@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
   output: "standalone",
   reactStrictMode: true,
   poweredByHeader: false,
+  // RAID's app is feed, raids, crews and profiles. Older routes land on the feed.
+  async redirects() {
+    return ["/reels", "/launch", "/live", "/leaderboard"].map((source) => ({ source, destination: "/feed", permanent: false }));
+  },
   images: { remotePatterns: [{ protocol: "https", hostname: "polymarket-upload.s3.us-east-2.amazonaws.com" }] },
   transpilePackages: ["@called/sdk"],
   outputFileTracingRoot: root,

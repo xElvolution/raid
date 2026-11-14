@@ -8,7 +8,7 @@ export default function NotFound() {
         <div className="mx-auto w-fit"><Mark size={44} /></div>
         <h1 className="wide-black mt-6 text-[1.5rem] leading-[.84] md:text-[64px]">Lost at sea.</h1>
         <p className="mt-4 text-white/75">That page doesn’t exist. The raids are this way.</p>
-        <Link href="/live" className="press mt-8 inline-flex h-12 items-center rounded-[16px] bg-lime px-6 font-bold text-[#1c0900]">Back to Live</Link>
+        <Link href="/feed" className="press mt-8 inline-flex h-12 items-center rounded-[16px] bg-lime px-6 font-bold text-[#1c0900]">Back to the feed</Link>
       </div>
     </div>
   );

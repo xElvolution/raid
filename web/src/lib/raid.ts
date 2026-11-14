@@ -57,6 +57,9 @@ export const xLabel = (bps: number) => `${(bps / 10000).toFixed(bps % 10000 === 
 
 export function target(r: Pick<Raid, 'target'>) {
   const c = coinByAsset(r.target);
+  // Testnet stand-ins minted for the chest (tPEPE, tUSDC): show their ticker, not the contract name.
+  const m = r.target.match(/^(?:nep141:)?raid([a-z]+)-[a-z0-9]+\.testnet$/);
+  if (!c && m) return { symbol: `t${m[1]!.toUpperCase()}`, chain: 'near' as const, name: `Testnet ${m[1]!.toUpperCase()}`, known: false };
   return c ? { symbol: c.symbol, chain: c.chain, name: c.name, known: true } : { symbol: r.target.replace(/^nep\d+:/, '').split(/[.-]/)[0]!.slice(0, 8).toUpperCase(), chain: 'near' as const, name: r.target, known: false };
 }
 

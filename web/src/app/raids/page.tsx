@@ -1,75 +1,87 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { ArrowUpRight, ChevronRight } from 'lucide-react';
 import { Shell } from '@/components/Shell';
-import { RaidCard, RaidCardSkeleton } from '@/components/RaidCard';
-import { CoinAvatar, Delta, Empty, ErrorState, Segmented } from '@/components/ui';
+import { CoinAvatar, Delta, Empty, ErrorState } from '@/components/ui';
+import { Ring, raidClock } from '@/components/app/Radar';
+import { Tabs } from '@/components/app/Tabs';
+import { Avatar } from '@/components/app/Avatar';
+import { outcome } from '@/components/app/RaidEmbed';
 import { useNow, useRaids } from '@/lib/hooks';
 import { useQuotes, fmtPrice } from '@/lib/market';
 import { openCall } from '@/lib/bus';
-import { CHEST_ID, phase, usdcOf } from '@/lib/raid';
-import { shortAddr } from '@/lib/market';
-import { JudgeBox } from '@/components/JudgeKit';
-import { ChromeChest } from '@/components/Chrome';
+import { phase, target, usdcOf, xLabel, type Raid } from '@/lib/raid';
+import { displayName } from '@/lib/people';
+
+type F = 'live' | 'riding' | 'settled';
+const group = (r: Raid): F => (r.status === 'Open' ? 'live' : r.status === 'Closed' ? 'settled' : 'riding');
 
 export default function RaidsPage() {
-  const [f, setF] = useState<'all' | 'live' | 'done'>('all');
   const raids = useRaids();
-  const q = useQuotes();
   const now = useNow();
-  const list = [...(raids.data ?? [])].reverse().filter((r) => f === 'all' || (f === 'live' ? r.status !== 'Closed' : r.status === 'Closed'));
-  const live = (raids.data ?? []).filter((r) => now && phase(r, now).live).length;
-  const pot = (raids.data ?? []).reduce((s, r) => s + usdcOf(r.pot), 0);
+  const q = useQuotes();
+  const all = [...(raids.data ?? [])].reverse();
+  const counts = { live: 0, riding: 0, settled: 0 } as Record<F, number>;
+  all.forEach((r) => counts[group(r)]++);
+  const [pick, setPick] = useState<F | null>(null);
+  const f: F = pick ?? (counts.live ? 'live' : counts.riding ? 'riding' : 'settled');
+  const list = all.filter((r) => group(r) === f);
+  const pot = all.reduce((s, r) => s + usdcOf(r.pot), 0);
+  const hit = all.filter((r) => r.hit).length;
   return (
     <Shell title="Raids">
-      <section className="cobalt-field grain relative overflow-hidden rounded-[24px] md:rounded-[32px] p-4 md:p-8">
-        <div className="pointer-events-none absolute right-6 top-4 hidden opacity-95 md:block"><ChromeChest size={190} fill={Math.min(1, pot / 1000)} /></div>
-        <div className="relative grid gap-3 md:gap-5 md:grid-cols-[1fr_auto] md:items-end">
-          <div>
-            <p className="eyebrow truncate">War chest · {CHEST_ID}</p>
-            <h2 className="display mt-3 md:mt-4 text-[2.25rem] md:text-[60px]"><span className="block whitespace-nowrap">Pick a coin.</span><span className="block whitespace-nowrap text-white/40">Set the line.</span></h2>
-            <p className="mt-1.5 md:mt-3 max-w-[46ch] text-[12.5px] md:text-[14px] leading-snug text-white/60">The crew pools USDC, the chest buys through NEAR Intents, and it only sells once the line is hit.</p>
-          </div>
-          <div className="relative grid grid-cols-3 gap-2 md:gap-3">
-            <Stat k="Raids" v={String(raids.data?.length ?? '–')} /><Stat k="Live" v={String(live)} /><Stat k="Pot USDC" v={pot.toFixed(2)} />
-          </div>
+      <header className="pb-5 pt-4 md:pt-2">
+        <h1 className="text-[34px] font-semibold leading-[1.02] tracking-[-0.045em] md:text-[44px]">Pick a coin. <span className="text-faint">Set the line.</span></h1>
+        <p className="mt-3 max-w-[44ch] text-[16px] leading-relaxed text-mute">A caller sets a target. The crew pools tUSDC. The chest buys through NEAR Intents and only sells at the line.</p>
+        <div className="mt-5 flex gap-7 text-[14px] text-mute">
+          <span><b className="mono text-[20px] font-semibold text-ink">{all.length || '–'}</b> raids</span>
+          <span><b className="mono text-[20px] font-semibold text-ink">{hit}</b> lines hit</span>
+          <span><b className="mono text-[20px] font-semibold text-ink">{pot.toFixed(0)}</b> tUSDC pooled</span>
         </div>
-      </section>
+        <Link href="/judges" className="mt-5 inline-flex items-center gap-1 text-[14px] font-medium text-mute hover:text-ink">Judging RAID? Try it with a funded testnet wallet<ChevronRight size={16} /></Link>
+      </header>
 
-      <nav aria-label="More" className="mt-2.5 flex gap-1.5 md:hidden">
-        {[['/launch', 'Launchpad'], ['/live', 'Live tape'], ['/leaderboard', 'Ranks'], ['/judges', 'Judges']].map(([h, l]) => <Link key={h} href={h!} className="press flex h-9 flex-1 items-center justify-center rounded-full text-[12px] font-medium btn-pearl">{l}</Link>)}
-      </nav>
-      <JudgeBox className="mt-3 md:mt-4" />
-
-      <div className="mt-4 md:mt-5">
-        <p className="eyebrow mb-2 md:mb-2.5">Raidable right now</p>
-        <div className="-mx-4 flex gap-2.5 overflow-x-auto px-4 pb-1 no-scrollbar md:mx-0 md:px-0">
-          {(q.data ?? []).slice(0, 10).map((c) => (
-            <button key={c.symbol} onClick={() => openCall(c.symbol)} className="lift panel flex w-[9.75rem] shrink-0 flex-col p-3.5 text-left">
-              <div className="flex items-center gap-2"><CoinAvatar symbol={c.symbol} image={c.image} size={26} /><span className="font-semibold text-[13.5px] truncate">${c.symbol}</span></div>
-              <span className="mono mt-2.5 text-[13px]">{fmtPrice(c.priceUsd)}</span>
-              <Delta pct={c.change24h} className="text-[11px] mt-0.5" />
-              <span className="mt-2.5 inline-flex items-center gap-1 text-[12px] font-semibold text-lime">Call raid<span aria-hidden>↗</span></span>
-            </button>
-          ))}
-          {q.isLoading && [0, 1, 2, 3].map((i) => <div key={i} className="shimmer h-[7.75rem] w-[9.375rem] shrink-0" />)}
-        </div>
+      <div className="sticky top-14 z-30 -mx-4 bg-bg/85 px-4 backdrop-blur-xl md:top-16 md:mx-0 md:px-0">
+        <Tabs id="raids" value={f} onChange={setPick} items={[{ key: 'live', label: 'Crew open', count: counts.live }, { key: 'riding', label: 'Riding', count: counts.riding }, { key: 'settled', label: 'Settled', count: counts.settled }]} />
       </div>
 
-      <div className="mt-6 flex items-center justify-between">
-        <Segmented id="raids" value={f} onChange={setF} options={[{ value: 'all', label: 'All' }, { value: 'live', label: 'Active' }, { value: 'done', label: 'Settled' }]} />
-        <span className="mono text-[10.5px] text-faint">on-chain · 10s</span>
-      </div>
-      <div className="mt-3 grid gap-3 md:grid-cols-2">
-        {raids.isLoading && [0, 1].map((i) => <RaidCardSkeleton key={i} />)}
-        {list.map((r, i) => <RaidCard key={r.id} r={r} i={i} />)}
-      </div>
+      <ul className="divide-y divide-line">
+        {raids.isLoading && [0, 1, 2].map((i) => <li key={i} className="flex items-center gap-4 py-4"><span className="shimmer h-16 w-16 !rounded-full" /><span className="flex-1 space-y-2"><span className="shimmer block h-4 w-40" /><span className="shimmer block h-4 w-24" /></span></li>)}
+        {list.map((r) => {
+          const x = outcome(r);
+          return (
+            <li key={r.id}><Link href={`/raids/${r.id}`} className="flex items-center gap-4 py-4">
+              <Ring r={r} now={now} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[17px] font-semibold tracking-[-0.02em]">${target(r).symbol} to {xLabel(r.target_x_bps)} <span className="font-normal text-faint">#{r.id}</span></span>
+                <span className="mt-1 flex min-w-0 items-center gap-1.5 text-[14px] text-mute"><Avatar id={r.caller} size={18} /><span className="truncate">{displayName(r.caller)}</span><span className="shrink-0">· {usdcOf(r.pot).toFixed(0)} pot</span></span>
+              </span>
+              <span className="text-right">
+                <span className={`block mono text-[15px] font-semibold ${r.status === 'Closed' ? (r.hit ? 'text-lime' : 'text-mute') : 'text-ink'}`}>{x ? `${x.toFixed(2)}x` : raidClock(r, now)}</span>
+                <span className="block text-[12px] text-faint">{now ? phase(r, now).label : ''}</span>
+              </span>
+            </Link></li>
+          );
+        })}
+      </ul>
       {raids.error && <ErrorState title="Can’t reach the war chest" body="The NEAR RPC didn’t answer. Retrying every 10 seconds." retry={() => raids.refetch()} />}
-      {!raids.isLoading && !raids.error && !list.length && <Empty title={f === 'done' ? 'No settled raids yet' : 'No raids here yet'} body="Every raid starts with one caller. It could be you." action={<button onClick={() => openCall()} className="press h-11 rounded-full btn-signal px-6 font-semibold">Call the first raid</button>} />}
+      {!raids.isLoading && !raids.error && !list.length && <Empty title="Nothing here yet" body="Every raid starts with one caller. It could be you." action={<button onClick={() => openCall()} className="press h-12 rounded-full btn-signal px-6 font-semibold">Call a raid</button>} />}
+
+      <section className="mt-10">
+        <h2 className="text-[20px] font-semibold tracking-[-0.03em]">Raidable right now</h2>
+        <ul className="mt-2 divide-y divide-line">
+          {(q.data ?? []).slice(0, 8).map((c) => (
+            <li key={c.symbol}><button onClick={() => openCall(c.symbol)} className="flex w-full items-center gap-3.5 py-3.5 text-left">
+              <CoinAvatar symbol={c.symbol} image={c.image} size={40} />
+              <span className="min-w-0 flex-1"><span className="block text-[16px] font-semibold">${c.symbol}</span><span className="block mono text-[13px] text-mute">{fmtPrice(c.priceUsd)}</span></span>
+              <Delta pct={c.change24h} className="text-[13px]" />
+              <span className="ml-2 grid h-9 w-9 place-items-center rounded-full bg-raised"><ArrowUpRight size={17} /></span>
+            </button></li>
+          ))}
+          {q.isLoading && [0, 1, 2].map((i) => <li key={i} className="shimmer my-2 h-12" />)}
+        </ul>
+      </section>
     </Shell>
   );
-}
-
-function Stat({ k, v }: { k: string; v: string }) {
-  return <div className="rounded-[16px] bg-white/[.06] px-3 py-2.5 shadow-[inset_0_0_0_1px_rgb(255_255_255/.08)] md:px-4 md:py-3"><p className="mono text-[1.25rem] md:text-[30px] font-semibold leading-none tracking-[-0.04em]">{v}</p><p className="eyebrow mt-1.5">{k}</p></div>;
 }

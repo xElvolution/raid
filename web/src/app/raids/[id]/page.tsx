@@ -1,24 +1,26 @@
 'use client';
 import Link from 'next/link';
-import { Fragment, use, useEffect, useMemo, useState } from 'react';
-import { motion } from 'motion/react';
+import { Fragment, use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowUpRight, Flame, Gauge, Lock, ShieldCheck, Timer, TimerReset } from 'lucide-react';
 import { Shell } from '@/components/Shell';
 import { ChromeChest, FlipClock } from '@/components/Chrome';
 import { ChartPanel } from '@/components/ChartPanel';
-import { PhaseChip } from '@/components/RaidCard';
-import { Button, CoinAvatar, Delta, Empty, ErrorState, Flash, Identicon, Segmented, Skeleton } from '@/components/ui';
+import { Avatar, TestnetChip } from '@/components/app/Avatar';
+import { Loop } from '@/components/app/RaidEmbed';
+import { Tabs } from '@/components/app/Tabs';
+import { displayName, personByAccount, profileHref } from '@/lib/people';
+import { Button, CoinAvatar, Empty, ErrorState, Segmented, Skeleton } from '@/components/ui';
 import { PayoutBox, RiskNote } from '@/components/Payout';
 import { AnyChainBack } from '@/components/AnyChainBack';
 import { Composer, Feed } from '@/components/Social';
 import { useBackers, useChestConfig, useNow, useRaid, useRaids } from '@/lib/hooks';
-import { useQuote, fmtPrice, fmtUsd, countdown, shortAddr } from '@/lib/market';
-import { CHAINS, coinByAsset, explorerAccount, explorerTx } from '@/lib/coins';
+import { useQuote, fmtPrice, countdown, shortAddr } from '@/lib/market';
+import { coinByAsset, explorerAccount, explorerTx } from '@/lib/coins';
 import { LifecycleReceipts, raidReceipt } from '@/components/JudgeKit';
 import { crewByDao } from '@/lib/crews';
 import { attributeReel, rememberReel } from '@/lib/reels';
-import { CHEST_ID, NETWORK, STEPS, raidApi, stepIndex, target, tx, usdcOf, xLabel, liveMultiple } from '@/lib/raid';
+import { CHEST_ID, NETWORK, raidApi, target, tx, usdcOf, xLabel, liveMultiple } from '@/lib/raid';
 import { send, useAccount, connect } from '@/lib/wallet';
 import { toast } from '@/lib/bus';
 import type { ChartLine } from '@/components/chart/CoinChart';
@@ -28,6 +30,15 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   const raid = useRaid(Number(id));
   useEffect(() => { const ref = new URLSearchParams(location.search).get('reel'); if (ref && /^\d+$/.test(ref)) rememberReel(Number(id), ref); }, [id]);
   const all = useRaids();
+  const [tab, setTab] = useState<'room' | 'crew' | 'chart' | 'rules'>('room');
+  const [backSeen, setBackSeen] = useState(false);
+  const io = useRef<IntersectionObserver | null>(null);
+  const backRef = useCallback((el: HTMLDivElement | null) => {
+    io.current?.disconnect();
+    if (!el) return;
+    io.current = new IntersectionObserver(([e]) => setBackSeen(!!e?.isIntersecting), { rootMargin: '0px 0px -120px 0px' });
+    io.current.observe(el);
+  }, []);
   const cfg = useChestConfig();
   const now = useNow();
   const r = raid.data;
@@ -47,7 +58,6 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   if (raid.error) return <Shell title="Raid" back="/raids"><ErrorState title="Can’t reach the war chest" body="The NEAR RPC didn’t answer." retry={() => raid.refetch()} /></Shell>;
   if (!r || !t) return <Shell title="Raid" back="/raids"><Empty title={`No raid #${id}`} body="This raid doesn’t exist on the chest contract." action={<Link href="/raids" className="text-brand font-semibold">See all raids</Link>} /></Shell>;
 
-  const step = stepIndex(r);
   const open = r.status === 'Open' && now > 0 && now < r.opens_until_ms;
   const mult = liveMultiple(r, q.data?.priceUsd, coin?.decimals);
   const inCountdown = r.status === 'Open' && !open && !!r.buy_after_ms && now > 0 && now < r.buy_after_ms;
@@ -55,110 +65,101 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   const rc = raidReceipt(r.id);
   const crew = crewByDao(r.caller);
 
+  const tabs = [{ key: 'room', label: 'Room' }, { key: 'crew', label: 'Crew' }, { key: 'chart', label: 'Chart' }, { key: 'rules', label: 'Receipts' }] as const;
   return (
     <Shell title={`Raid #${r.id}`} back="/raids">
-      <section className="obsidian grain relative overflow-hidden rounded-[26px] md:rounded-[32px]">
-        <div className="relative grid gap-4 p-4 md:grid-cols-[1.3fr_1fr] md:gap-6 md:p-7">
-          <div className="min-w-0">
-            <div className="flex items-center gap-3">
-              <CoinAvatar symbol={t.symbol} image={q.data?.image} size={52} className="ring-2 ring-white/15" />
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2"><h2 className="text-[1.75rem] font-semibold leading-none tracking-[-0.05em] md:text-[44px]">${t.symbol}</h2><PhaseChip r={r} now={now} /></div>
-                <p className="mt-1.5 truncate text-[12.5px] text-white/55 md:text-[13.5px]">{r.title}</p>
-              </div>
-            </div>
-            <div className="mt-5 flex items-end gap-6 md:mt-7">
-              <div>
-                <p className="eyebrow">Sell line</p>
-                <p className="mt-1.5 text-[3.25rem] font-semibold leading-[.85] tracking-[-0.07em] text-[#ff7a40] md:text-[88px]">{xLabel(r.target_x_bps)}</p>
-              </div>
-              <div className="pb-1">
-                <p className="eyebrow">Price now</p>
-                <Flash value={q.data?.priceUsd}><p className="mono mt-1.5 text-[1.125rem] font-semibold md:text-[22px]">{fmtPrice(q.data?.priceUsd)}</p></Flash>
-                <Delta pct={q.data?.change24h} className="text-[12px]" />
-              </div>
-            </div>
-            <div className="mt-5 rounded-[18px] bg-white/[.06] p-3 shadow-[inset_0_0_0_1px_rgb(255_255_255/.08)] md:mt-7 md:p-4">
-              <p className="eyebrow">{mult ? 'Now at' : open ? 'Crew closes in' : inCountdown ? 'Chest may buy in' : r.status === 'Closed' ? 'Settled' : 'Retreat in'}</p>
-              <div className="mt-2 text-[1.75rem] text-white md:text-[40px]">
-                {mult ? <span className="mono font-semibold">{mult.toFixed(2)}x</span>
-                  : r.status === 'Closed' ? <span className="font-semibold tracking-[-0.04em]">{r.hit ? 'Line hit' : 'Retreated'}</span>
-                  : now ? <FlipClock dark ms={open ? r.opens_until_ms - now : inCountdown ? r.buy_after_ms! - now : r.retreat_at_ms - now} />
-                  : <span className="mono">--:--</span>}
-              </div>
-            </div>
-          </div>
-          <div className="relative flex flex-col items-center justify-end gap-3">
-            <ChromeChest size={230} open={r.hit} fill={cfg.data?.max_pot ? usdcOf(r.pot) / usdcOf(cfg.data.max_pot) : 0.4} className="max-md:w-[150px] md:-mb-2" />
-            <div className="grid w-full grid-cols-2 gap-2">
-              <div className="rounded-[20px] bg-white/[.06] p-3 shadow-[inset_0_0_0_1px_rgb(255_255_255/.08)]"><p className="eyebrow">Crew pot</p><p className="mono mt-1.5 text-[1.125rem] font-semibold md:text-[20px]">{usdcOf(r.pot).toFixed(2)}<span className="ml-1 text-[10.5px] text-white/50">USDC</span></p></div>
-              <div className="rounded-[20px] bg-white/[.06] p-3 shadow-[inset_0_0_0_1px_rgb(255_255_255/.08)]"><p className="eyebrow">Entry</p><p className="mono mt-1.5 text-[1.125rem] font-semibold md:text-[20px]">{Number(r.entry_cost) ? <>{usdcOf(r.entry_cost).toFixed(2)}<span className="ml-1 text-[10.5px] text-white/50">USDC</span></> : 'Not yet'}</p></div>
-            </div>
-          </div>
+      <header className="pt-3">
+        <Link href={profileHref(r.caller)} className="flex items-center gap-2.5">
+          <Avatar id={r.caller} size={36} />
+          <span className="min-w-0"><span className="block truncate text-[15px] font-semibold leading-tight">{crew ? crew.name : displayName(r.caller)}</span><span className="block text-[13px] text-mute">{crew ? 'Crew DAO · passed by vote' : `${callerRaids.length} called · ${callerRaids.filter((x) => x.hit).length} hit`}</span></span>
+          {personByAccount(r.caller) && <TestnetChip className="ml-auto" />}
+        </Link>
+        <div className="mt-5 flex items-center gap-3">
+          <CoinAvatar symbol={t.symbol} image={q.data?.image} size={48} />
+          <h2 className="text-[36px] font-semibold leading-none tracking-[-0.05em] md:text-[48px]">${t.symbol} <span className="text-signal">{xLabel(r.target_x_bps)}</span></h2>
+          <ChromeChest size={84} open={r.hit} fill={cfg.data?.max_pot ? usdcOf(r.pot) / usdcOf(cfg.data.max_pot) : 0.4} className="pointer-events-none -my-4 ml-auto" />
         </div>
+        <p className="mt-3 text-[17px] leading-snug">{r.title}</p>
+      </header>
+
+      <section className="panel relative mt-5 overflow-hidden rounded-[28px] p-5">
+        <p className="eyebrow">{mult ? 'Now at' : open ? 'Crew closes in' : inCountdown ? 'Chest may buy in' : r.status === 'Closed' ? 'Settled' : r.status === 'Open' ? 'Waiting for the buy' : 'Retreat in'}</p>
+        <div className="mt-3 text-[40px] leading-none">
+          {mult ? <span className="mono font-semibold">{mult.toFixed(2)}x</span>
+            : r.status === 'Closed' ? <span className={`font-semibold tracking-[-0.04em] ${r.hit ? 'text-lime' : ''}`}>{r.hit ? 'Line hit' : 'Retreated'}</span>
+            : r.status === 'Open' && !open && !inCountdown ? <span className="font-semibold tracking-[-0.04em]">Ready</span>
+            : now ? <FlipClock ms={open ? r.opens_until_ms - now : inCountdown ? r.buy_after_ms! - now : r.retreat_at_ms - now} />
+            : <span className="mono">--:--</span>}
+        </div>
+        <div className="mt-6 grid grid-cols-3 gap-3">
+          <Stat k="Pot" v={usdcOf(r.pot).toFixed(0)} u="tUSDC" />
+          <Stat k="Entry" v={Number(r.entry_cost) ? usdcOf(r.entry_cost).toFixed(0) : '–'} u={Number(r.entry_cost) ? 'tUSDC' : 'not bought'} />
+          <Stat k={r.status === 'Closed' ? 'To crew' : 'Price'} v={r.status === 'Closed' ? usdcOf(r.for_backers ?? '0').toFixed(0) : fmtPrice(q.data?.priceUsd)} u={r.status === 'Closed' ? 'tUSDC' : ''} />
+        </div>
+        <Loop r={r} className="mt-6" />
+        {open && r.buy_after_ms && <p className="mt-4 text-[14px] leading-relaxed text-mute">Then a public countdown runs until <b className="mono text-ink">{new Date(r.buy_after_ms).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</b> before the chest may buy.</p>}
+        {inCountdown && <p className="mt-4 text-[14px] leading-relaxed text-mute">Everyone sees the target and the buy time. No surprise buys.</p>}
+        {r.status === 'Open' && !open && !inCountdown && <p className="mt-4 text-[14px] leading-relaxed text-mute">Countdown over. A keeper hands the chest a signed 1Click quote, and the chest checks it before buying.</p>}
       </section>
 
-      <div className="mt-3 md:mt-4"><ChartPanel symbol={t.symbol} lines={lines} /></div>
-      {!entryPrice && <p className="mt-2 px-1 text-[11.5px] text-faint">Not bought yet, so the lime line shows where {xLabel(r.target_x_bps)} would sit at today’s price. Once the chest buys, it moves to the real entry × {xLabel(r.target_x_bps)}.</p>}
+      {open && <div id="back" ref={backRef} className="mt-5 scroll-mt-20"><BackPanel id={r.id} open={open} bps={r.target_x_bps} pot={usdcOf(r.pot)} /></div>}
 
-      <section className="panel mt-3 md:mt-4 p-4 md:p-5">
-        <p className="eyebrow">Raid progress</p>
-        <ol className="mt-2.5 md:mt-3 grid grid-cols-5 gap-1.5">
-          {STEPS.map((s, i) => (
-            <li key={s} className="min-w-0">
-              <motion.div className={`h-2 rounded-full ${i <= step ? (i === step ? 'bg-signal' : 'bg-ink') : 'bg-raised'}`} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }} transition={{ delay: 0.1 + i * 0.08 }} />
-              <p className={`mt-2 truncate text-[11px] font-semibold ${i === step ? 'text-ink' : 'text-faint'}`}>{s}</p>
-            </li>
-          ))}
-        </ol>
-        {open && r.buy_after_ms && <p className="mt-3 text-[12.5px] text-mute">Crew window closes in <b className="mono text-ink">{countdown(r.opens_until_ms - now)}</b>. Then a public countdown runs until <b className="mono text-ink">{new Date(r.buy_after_ms).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</b> before the chest may buy.</p>}
-        {inCountdown && <p className="mt-3 text-[12.5px] text-mute">Public countdown: the chest can’t buy for another <b className="mono text-ink">{countdown(r.buy_after_ms! - now)}</b>. Everyone sees the target and the time. No surprise buys.</p>}
-        {r.status === 'Open' && !open && !inCountdown && <p className="mt-3 text-[12.5px] text-mute">Countdown over. Next, a keeper hands the chest a signed 1Click quote, and the chest checks it before buying.</p>}
-      </section>
-
-      <div className="mt-3 md:mt-4 grid gap-3 md:gap-4 md:grid-cols-[1.25fr_1fr]">
-        <BackPanel id={r.id} open={open} bps={r.target_x_bps} pot={usdcOf(r.pot)} />
-        <section className="panel p-3 md:p-4">
-          <p className="eyebrow">Caller</p>
-          <Link href={crew ? "/war" : `/u/${r.caller}`} className="mt-3 flex items-center gap-3 group">
-            <Identicon seed={r.caller} size={46} />
-            <div className="min-w-0"><p className="font-semibold truncate group-hover:underline">{crew ? crew.name : shortAddr(r.caller)}</p>{crew && <p className="mono text-[10.5px] text-lime">Crew DAO · passed by vote</p>}<p className="text-[12px] text-mute">{callerRaids.length} raid{callerRaids.length === 1 ? '' : 's'} called · {callerRaids.filter((x) => x.hit).length} hit</p></div>
-          </Link>
-          <div className="mt-4 rounded-[20px] bg-raised/70 p-3.5 text-[12.5px] text-mute"><Lock size={14} className="mb-1 text-lime" />The caller’s fee is locked until this raid hits {xLabel(r.target_x_bps)}. If it retreats, the fee is gone.</div>
-          <CrewList id={r.id} />
-        </section>
+      <div className="sticky top-14 z-30 -mx-4 mt-6 bg-bg/85 px-4 backdrop-blur-xl md:top-16 md:mx-0 md:px-0">
+        <Tabs id="room" value={tab} onChange={setTab} items={tabs.map((x) => ({ ...x }))} />
       </div>
 
-      <section className="mt-6">
-        <div className="mb-2 flex items-end justify-between"><h3 className="wide text-[1.25rem]">Crew chat</h3><span className="mono text-[11px] text-faint">posts tagged raid #{r.id}</span></div>
-        <div className="space-y-3">
-          <Composer raidId={r.id} coin={t.symbol} placeholder={`Talk to the $${t.symbol} crew…`} />
-          <Feed raidId={r.id} emptyTitle="No crew chatter yet" emptyBody="Say why you’re in, or why you’re not." />
-        </div>
-      </section>
-
-      <section className="panel mt-4 p-3 md:p-4">
-        <p className="eyebrow">Rules the chest enforces</p>
-        <ul className="mt-3 grid gap-3 md:grid-cols-2 text-[13px]">
+      {tab === 'room' && (
+        <section>
+          <div className="border-b border-line"><Composer raidId={r.id} coin={t.symbol} placeholder={`Talk to the $${t.symbol} crew…`} /></div>
+          <Feed raidId={r.id} embed={false} emptyTitle="No crew chatter yet" emptyBody="Say why you’re in, or why you’re not." />
+        </section>
+      )}
+      {tab === 'crew' && (
+        <section id="crew" className="pt-2">
+          <CrewList id={r.id} />
+          <div className="mt-4 flex gap-3 rounded-[20px] bg-raised/70 p-4 text-[14px] leading-relaxed text-mute"><Lock size={16} className="mt-0.5 shrink-0 text-lime" />The caller’s fee is locked until this raid hits {xLabel(r.target_x_bps)}. If it retreats, the fee is gone.</div>
+          {!open && <div className="mt-5"><BackPanel id={r.id} open={open} bps={r.target_x_bps} pot={usdcOf(r.pot)} /></div>}
+        </section>
+      )}
+      {tab === 'chart' && (
+        <section className="pt-4">
+          <ChartPanel symbol={t.symbol} lines={lines} />
+          {!entryPrice && <p className="mt-3 text-[13px] leading-relaxed text-faint">Not bought yet, so the line shows where {xLabel(r.target_x_bps)} would sit at today’s price. Once the chest buys, it moves to the real entry × {xLabel(r.target_x_bps)}.</p>}
+        </section>
+      )}
+      {tab === 'rules' && (
+        <section className="pt-4">
+          <ul className="grid gap-4 text-[14.5px]">
           <Rule icon={<ShieldCheck size={15} />} t="Keyless buys and sells">The chest only moves funds against a 1Click quote whose signature and min-out it checks on-chain.</Rule>
           <Rule icon={<Lock size={15} />} t="Anti-dump caller fee">{cfg.data ? `${cfg.data.caller_fee_bps / 100}%` : 'A small share'} of profit, paid only on a hit.</Rule>
           <Rule icon={<Timer size={15} />} t="Public countdown">After the crew window, the chest waits {cfg.data?.buy_delay_minutes ?? 10} minutes before it may buy, so the buy time is known to everyone.</Rule>
           <Rule icon={<Gauge size={15} />} t="Size caps">{cfg.data?.max_pot ? `${usdcOf(cfg.data.max_pot).toLocaleString()} per raid, ${usdcOf(cfg.data.max_back ?? '0').toLocaleString()} per backer.` : 'Per raid and per backer.'} Over the cap is refunded.</Rule>
           <Rule icon={<TimerReset size={15} />} t="Retreat">If the line isn’t reached by {now ? new Date(r.retreat_at_ms).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '…'}, the chest sells at market and returns the pot.</Rule>
           <Rule icon={<Flame size={15} />} t="Buyback reserve">{cfg.data ? `${cfg.data.buyback_bps / 100}%` : 'A share'} of a winning raid’s profit. The chest has no withdraw method for it.</Rule>
-        </ul>
-        <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 border-t border-line pt-3 mono text-[11px]">
+          </ul>
+          <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 border-t border-line pt-4 mono text-[12px]">
           <dt className="text-faint">Chest</dt><dd className="truncate text-right"><a className="hover:text-ink text-mute inline-flex items-center gap-0.5" href={explorerAccount(CHEST_ID, NETWORK)} target="_blank" rel="noreferrer">{shortAddr(CHEST_ID)}<ArrowUpRight size={11} /></a></dd>
           {rc?.call?.tx && <><dt className="text-faint">Called in</dt><dd className="truncate text-right"><a className="hover:text-ink text-mute" href={explorerTx(rc.call.tx, NETWORK)} target="_blank" rel="noreferrer">{rc.call.tx.slice(0, 10)}…{rc.call.block ? ` · block ${rc.call.block.toLocaleString('en-US')}` : ''}</a></dd></>}
           {rc?.backs?.map((b) => <Fragment key={b.tx}><dt className="text-faint">Back {usdcOf(b.amount).toFixed(0)}</dt><dd className="truncate text-right"><a className="hover:text-ink text-mute" href={explorerTx(b.tx, NETWORK)} target="_blank" rel="noreferrer">{shortAddr(b.backer)} · {b.tx.slice(0, 8)}…</a></dd></Fragment>)}
           <dt className="text-faint">Target asset</dt><dd className="truncate text-right text-mute">{r.target}</dd>
           <dt className="text-faint">Buy quote</dt><dd className="truncate text-right text-mute">{r.buy_quote_hash ?? 'not yet'}</dd>
           <dt className="text-faint">Sell quote</dt><dd className="truncate text-right text-mute">{r.sell_quote_hash ?? 'not yet'}</dd>
-        </dl>
-      </section>
-      <LifecycleReceipts id={r.id} className="mt-4" />
+          </dl>
+        </section>
+      )}
+      <LifecycleReceipts id={r.id} className="mt-8" />
+
+      {open && !backSeen && (
+        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 px-4 pb-3 md:hidden">
+          <a href="#back" className="press flex h-14 items-center justify-center gap-2 rounded-full btn-signal text-[16px] font-semibold shadow-[0_18px_40px_-12px_rgb(255_90_31/.6)]">Back this raid <span className="mono text-[13px] opacity-70">{countdown(r.opens_until_ms - now)}</span></a>
+        </div>
+      )}
     </Shell>
   );
+}
+
+function Stat({ k, v, u }: { k: string; v: string; u: string }) {
+  return <div className="min-w-0"><p className="text-[12.5px] text-mute">{k}</p><p className="mono mt-1 truncate text-[20px] font-semibold tracking-[-0.03em]">{v}</p><p className="truncate text-[11.5px] text-faint">{u}</p></div>;
 }
 
 function Rule({ icon, t, children }: { icon: React.ReactNode; t: string; children: React.ReactNode }) {
@@ -190,8 +191,8 @@ function BackPanel({ id, open, bps, pot }: { id: number; open: boolean; bps: num
     finally { setBusy(false); }
   }
   return (
-    <section className="panel min-w-0 p-3 md:p-4">
-      <div className="flex items-center justify-between gap-2"><p className="eyebrow">Back this raid</p>{acct && <span className="mono text-[11px] text-mute">your stake {mine.toFixed(2)}</span>}</div>
+    <section className="panel min-w-0 rounded-[28px] p-5">
+      <div className="flex items-center justify-between gap-2"><h3 className="text-[20px] font-semibold tracking-[-0.03em]">Back this raid</h3>{acct && <span className="mono text-[11px] text-mute">your stake {mine.toFixed(2)}</span>}</div>
       <Segmented id={`via-${id}`} className="mt-3 w-full [&>button]:flex-1" value={via} onChange={setVia} options={[{ value: 'near', label: 'NEAR wallet' }, { value: 'any', label: 'Phantom · MetaMask' }]} />
       {via === 'any' ? <AnyChainBack raidId={id} bps={bps} open={open} /> : (
         <>
@@ -215,18 +216,18 @@ function BackPanel({ id, open, bps, pot }: { id: number; open: boolean; bps: num
 function CrewList({ id }: { id: number }) {
   const b = useBackers(id);
   const rows = b.data ?? [];
-  if (!rows.length) return null;
+  if (!rows.length) return <p className="py-6 text-[15px] text-mute">No one has backed this raid yet.</p>;
   const kind = (a: string) => (/^0x[0-9a-f]{40}$/.test(a) ? 'MetaMask · no NEAR account' : /^[0-9a-f]{64}$/.test(a) ? 'Phantom · no NEAR account' : 'NEAR wallet');
   return (
-    <div className="mt-4">
+    <div>
       <p className="eyebrow">Crew · {rows.length} backer{rows.length === 1 ? '' : 's'}</p>
       <ul className="mt-2 divide-y divide-line">
         {rows.map(([a, s]) => (
-          <li key={a} className="flex items-center gap-2 py-2">
-            <Identicon seed={a} size={24} className="!rounded-[7px]" />
-            <span className="min-w-0 flex-1"><span className="block truncate mono text-[12px]">{/^(0x[0-9a-f]{40}|[0-9a-f]{64})$/.test(a) ? `${a.slice(0, 10)}…${a.slice(-6)}` : a.replace(/\.(testnet|near)$/, '')}</span><span className="block text-[10.5px] text-mute">{kind(a)}</span></span>
-            <span className="mono text-[12.5px]">{usdcOf(s).toFixed(2)}</span>
-          </li>
+          <li key={a}><Link href={profileHref(a)} className="flex items-center gap-3 py-3">
+            <Avatar id={a} size={40} />
+            <span className="min-w-0 flex-1"><span className="block truncate text-[15px] font-semibold">{/^(0x[0-9a-f]{40}|[0-9a-f]{64})$/.test(a) ? `${a.slice(0, 10)}…${a.slice(-6)}` : displayName(a)}</span><span className="block text-[13px] text-mute">{personByAccount(a) ? 'testnet account' : kind(a)}</span></span>
+            <span className="mono text-[15px] font-semibold">{usdcOf(s).toFixed(2)}</span>
+          </Link></li>
         ))}
       </ul>
     </div>

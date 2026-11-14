@@ -182,15 +182,9 @@ html.theme-vt::view-transition-new(root) { z-index: 2; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
-/* ---- Compact phone scale (tokens, not per-element hacks) ----
-   Everything sized in rem (Tailwind spacing, h-11, text-[0.9375rem]...) shrinks with the root; text under 15px is
-   authored in px so small labels stay legible. --av scales coin logos and identicons. Desktop (md+) is untouched. */
+/* ---- Phones: full 16px root, roomy. Only clip sideways overflow. ---- */
 @media (max-width: 767.98px) {
-  html { font-size: 14px; --av: .78; overflow-x: clip; }
-  body { overflow-x: clip; }
-    .eyebrow { font-size: 9.5px; letter-spacing: .12em; }
-  .chip { height: 20px; padding: 0 8px; font-size: 9.5px; gap: 4px; letter-spacing: .06em; }
-  :root { --radius-card: 18px; }
+  html, body { overflow-x: clip; }
 }
 
 /* ---- Signature motion: the line, the chest, chrome objects ---- */

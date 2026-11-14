@@ -1,0 +1,82 @@
+[
+ {
+  "handle": "frogmaxi",
+  "account": "raid-frogmaxi-shlll.testnet",
+  "name": "Frog Maxi",
+  "bio": "Calls frogs. Only sells at the line.",
+  "crew": "Line Lords",
+  "hue": 145
+ },
+ {
+  "handle": "linehunter",
+  "account": "raid-linehunter-shlll.testnet",
+  "name": "Line Hunter",
+  "bio": "1.5x lines, fast exits. Patience is a position.",
+  "crew": "Line Lords",
+  "hue": 20
+ },
+ {
+  "handle": "chestwatch",
+  "account": "raid-chestwatch-shlll.testnet",
+  "name": "Chest Watch",
+  "bio": "I read every receipt so you don't have to.",
+  "crew": "Chest Club",
+  "hue": 210
+ },
+ {
+  "handle": "dipbuyer",
+  "account": "raid-dipbuyer-shlll.testnet",
+  "name": "Dip Buyer",
+  "bio": "Buys the bottom, sets the line at 3x.",
+  "crew": "Dip Squad",
+  "hue": 0
+ },
+ {
+  "handle": "memecartel",
+  "account": "raid-memecartel-shlll.testnet",
+  "name": "Meme Cartel",
+  "bio": "Crew captain. Raids by vote.",
+  "crew": "Dip Squad",
+  "hue": 280
+ },
+ {
+  "handle": "pepepriest",
+  "account": "raid-pepepriest-shlll.testnet",
+  "name": "Pepe Priest",
+  "bio": "Faith in the frog, discipline at the line.",
+  "crew": "Line Lords",
+  "hue": 95
+ },
+ {
+  "handle": "basegoblin",
+  "account": "raid-basegoblin-shlll.testnet",
+  "name": "Base Goblin",
+  "bio": "Small raids. Many raids.",
+  "crew": "Chest Club",
+  "hue": 60
+ },
+ {
+  "handle": "solsailor",
+  "account": "raid-solsailor-shlll.testnet",
+  "name": "Sol Sailor",
+  "bio": "Sailing memes across chains.",
+  "crew": "Dip Squad",
+  "hue": 190
+ },
+ {
+  "handle": "nearnomad",
+  "account": "raid-nearnomad-shlll.testnet",
+  "name": "Near Nomad",
+  "bio": "Learning raids one testnet tx at a time.",
+  "crew": "Chest Club",
+  "hue": 250
+ },
+ {
+  "handle": "twoxorbust",
+  "account": "raid-twoxorbust-shlll.testnet",
+  "name": "Two X or Bust",
+  "bio": "2x line or nothing.",
+  "crew": "Line Lords",
+  "hue": 330
+ }
+]

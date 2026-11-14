@@ -40,7 +40,7 @@ export async function signInSocial(): Promise<void> {
 }
 
 export const social = {
-  feed: (q: { tab?: 'all' | 'following'; raid?: number; coin?: string; cursor?: string }) => {
+  feed: (q: { tab?: 'all' | 'following'; raid?: number; coin?: string; author?: string; cursor?: string }) => {
     const p = new URLSearchParams(Object.entries(q).filter(([, v]) => v !== undefined && v !== null).map(([k, v]) => [k, String(v)]));
     return call<{ items: Post[]; next: string | null }>(`/v1/raid/feed?${p}`);
   },

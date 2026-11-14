@@ -1,0 +1,1138 @@
+[
+  {
+    "step": "testnet account created (testnet registrar, 1.2 NEAR)",
+    "at": "2026-11-14T19:19:17.820Z",
+    "handle": "frogmaxi",
+    "account": "raid-frogmaxi-shlll.testnet",
+    "tx": "A1Zdns2R6fN7XrQo9MSWBk8ADNTuGm4H24sW83QtAfJb"
+  },
+  {
+    "step": "testnet account created (testnet registrar, 1.2 NEAR)",
+    "at": "2026-11-14T19:19:22.275Z",
+    "handle": "linehunter",
+    "account": "raid-linehunter-shlll.testnet",
+    "tx": "4wp4rY33FjtZfhbPcZP34RPkmxHEyCaHE8V69MCxAeMu"
+  },
+  {
+    "step": "testnet account created (testnet registrar, 1.2 NEAR)",
+    "at": "2026-11-14T19:19:26.724Z",
+    "handle": "chestwatch",
+    "account": "raid-chestwatch-shlll.testnet",
+    "tx": "4ehNH8XyaiHGCJAWKaH9WH49Yw7qWm3TCG4bnr6s3oqX"
+  },
+  {
+    "step": "testnet account created (testnet registrar, 1.2 NEAR)",
+    "at": "2026-11-14T19:19:31.158Z",
+    "handle": "dipbuyer",
+    "account": "raid-dipbuyer-shlll.testnet",
+    "tx": "AdXuq9w3fMF1fm6WRU4dsGdFMsDWFU4iaNwPD71v3Dhx"
+  },
+  {
+    "step": "testnet account created (testnet registrar, 1.2 NEAR)",
+    "at": "2026-11-14T19:19:35.727Z",
+    "handle": "memecartel",
+    "account": "raid-memecartel-shlll.testnet",
+    "tx": "9QFPR1DBqcbBwmij4esvukKcbjddw4nsbPR8rJhVuTg3"
+  },
+  {
+    "step": "testnet account created (testnet registrar, 1.2 NEAR)",
+    "at": "2026-11-14T19:19:39.886Z",
+    "handle": "pepepriest",
+    "account": "raid-pepepriest-shlll.testnet",
+    "tx": "FeS9xx1Nniw3MmCGVx42KaBJaQUQPs5uUypfSXmVwwZv"
+  },
+  {
+    "step": "testnet account created (testnet registrar, 1.2 NEAR)",
+    "at": "2026-11-14T19:19:44.117Z",
+    "handle": "basegoblin",
+    "account": "raid-basegoblin-shlll.testnet",
+    "tx": "8q36XJNikZ1cLAnGFks7QXYCnr9xDej4WmnHmGBELdaz"
+  },
+  {
+    "step": "testnet account created (testnet registrar, 1.2 NEAR)",
+    "at": "2026-11-14T19:19:48.409Z",
+    "handle": "solsailor",
+    "account": "raid-solsailor-shlll.testnet",
+    "tx": "9zDXPbYcd4zxBJQsrEc3NsApw8Wj6svwqsnE7t4styjx"
+  },
+  {
+    "step": "testnet account created (testnet registrar, 1.2 NEAR)",
+    "at": "2026-11-14T19:19:52.612Z",
+    "handle": "nearnomad",
+    "account": "raid-nearnomad-shlll.testnet",
+    "tx": "GAY699B2Bn2y3jKxLAUvgYyTa9X9oqv2a5hBzhG69GJZ"
+  },
+  {
+    "step": "testnet account created (testnet registrar, 1.2 NEAR)",
+    "at": "2026-11-14T19:19:56.934Z",
+    "handle": "twoxorbust",
+    "account": "raid-twoxorbust-shlll.testnet",
+    "tx": "2NvruRHzDnyfSA8WfHcAqqkxshjnQDBPz1QakQu4wH2x"
+  },
+  {
+    "step": "community state",
+    "at": "2026-11-14T19:19:57.735Z",
+    "people": {
+      "frogmaxi": "raid-frogmaxi-shlll.testnet",
+      "linehunter": "raid-linehunter-shlll.testnet",
+      "chestwatch": "raid-chestwatch-shlll.testnet",
+      "dipbuyer": "raid-dipbuyer-shlll.testnet",
+      "memecartel": "raid-memecartel-shlll.testnet",
+      "pepepriest": "raid-pepepriest-shlll.testnet",
+      "basegoblin": "raid-basegoblin-shlll.testnet",
+      "solsailor": "raid-solsailor-shlll.testnet",
+      "nearnomad": "raid-nearnomad-shlll.testnet",
+      "twoxorbust": "raid-twoxorbust-shlll.testnet"
+    },
+    "raids": {}
+  },
+  {
+    "step": "mint 250 tUSDC to frogmaxi",
+    "at": "2026-11-14T19:19:59.735Z",
+    "tx": "4oPmDWx1ECGx1Q5mX3GoBxrRrHo9ZXMsbFBd5YsWjEFo",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "mint 250 tUSDC to linehunter",
+    "at": "2026-11-14T19:20:01.449Z",
+    "tx": "2d86LNJKTfx6JjHCdSxuVg6WEnS3wMfTjf7hJSKYxM8u",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "mint 250 tUSDC to chestwatch",
+    "at": "2026-11-14T19:20:02.739Z",
+    "tx": "4Fwu9QhvCReBnGMVyKb5G2RrQ4tfpJyCpCqVLyrqjQUU",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "mint 250 tUSDC to dipbuyer",
+    "at": "2026-11-14T19:20:04.565Z",
+    "tx": "FzUuh4aKyL8nHgcf1QhEgpbDqAT3T1iRWdU4c2kkCVmE",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "mint 250 tUSDC to memecartel",
+    "at": "2026-11-14T19:20:06.338Z",
+    "tx": "7jB8BQRtw7rPiHNov9im5dGXs67Pj7Br4Bvdeug9dLWS",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "mint 250 tUSDC to pepepriest",
+    "at": "2026-11-14T19:20:08.273Z",
+    "tx": "CF2Swx5oRzxhtSBJwD2LbUXBtNTUkTLDzpFARuJVtnT2",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "mint 250 tUSDC to basegoblin",
+    "at": "2026-11-14T19:20:09.522Z",
+    "tx": "ExdhsFAbN1XHPcBLgN6C6HtYhCHwqsE6bMofp3GYstro",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "mint 250 tUSDC to solsailor",
+    "at": "2026-11-14T19:20:11.315Z",
+    "tx": "FJS9yqSRzVBaZoEn6pRDmnXRxEYvYfnHBEqC6Px7nT6W",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "mint 250 tUSDC to nearnomad",
+    "at": "2026-11-14T19:20:12.941Z",
+    "tx": "3Ju3SWFNjk572zxsyNTZPa1r1h4aW1SXL3ckdVcJ42ri",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "mint 250 tUSDC to twoxorbust",
+    "at": "2026-11-14T19:20:14.855Z",
+    "tx": "Bt5wiZhM6iFHafKaoY2iY9scyyfKm2W1tBeUvJw8nM4n",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "community state",
+    "at": "2026-11-14T19:20:14.856Z",
+    "people": {
+      "frogmaxi": "raid-frogmaxi-shlll.testnet",
+      "linehunter": "raid-linehunter-shlll.testnet",
+      "chestwatch": "raid-chestwatch-shlll.testnet",
+      "dipbuyer": "raid-dipbuyer-shlll.testnet",
+      "memecartel": "raid-memecartel-shlll.testnet",
+      "pepepriest": "raid-pepepriest-shlll.testnet",
+      "basegoblin": "raid-basegoblin-shlll.testnet",
+      "solsailor": "raid-solsailor-shlll.testnet",
+      "nearnomad": "raid-nearnomad-shlll.testnet",
+      "twoxorbust": "raid-twoxorbust-shlll.testnet"
+    },
+    "raids": {}
+  },
+  {
+    "step": "frogmaxi calls raid #4: Frogs to the line: $tPEPE 2x",
+    "at": "2026-11-14T19:20:17.475Z",
+    "tx": "5Grh9AyAxg9N4wWB5go8MuB2FSHFawDaHfH67JutKJ5G",
+    "ok": true,
+    "ret": 4,
+    "fails": []
+  },
+  {
+    "step": "linehunter backs raid #4 with 30 tUSDC",
+    "at": "2026-11-14T19:20:22.288Z",
+    "tx": "DMrYHCJoyXGG1pssZFPXaYpp8nC1PvsKu3ygzH84t342",
+    "ok": true,
+    "ret": "30000000",
+    "fails": []
+  },
+  {
+    "step": "chestwatch backs raid #4 with 25 tUSDC",
+    "at": "2026-11-14T19:20:27.353Z",
+    "tx": "4Xons2pEHi67GgBkmTev6dPbKqB7k1SY9gUFNEaYoLqo",
+    "ok": true,
+    "ret": "25000000",
+    "fails": []
+  },
+  {
+    "step": "pepepriest backs raid #4 with 40 tUSDC",
+    "at": "2026-11-14T19:20:32.141Z",
+    "tx": "CpoDmy2hW7TVX2aGawJznmwHvAU6fytMyQfyUuxFPmNB",
+    "ok": true,
+    "ret": "40000000",
+    "fails": []
+  },
+  {
+    "step": "nearnomad backs raid #4 with 15 tUSDC",
+    "at": "2026-11-14T19:20:36.942Z",
+    "tx": "Hoa44No3Hsn7YccbZKPd5N8pep8bcd6yFjAXspQA3j7",
+    "ok": true,
+    "ret": "15000000",
+    "fails": []
+  },
+  {
+    "step": "frogmaxi backs raid #4 with 20 tUSDC",
+    "at": "2026-11-14T19:20:41.752Z",
+    "tx": "WCXcG9Qqmi4rnkD2ZdorGdVsX1wbinch7XsaeT68CJ2",
+    "ok": true,
+    "ret": "20000000",
+    "fails": []
+  },
+  {
+    "step": "linehunter calls raid #5: Quick 1.5x on $tPEPE, in and out",
+    "at": "2026-11-14T19:20:43.966Z",
+    "tx": "Hw7moJxZGXXcW5kMjBzWpHD1uGChM15ANCvea2MWY6uN",
+    "ok": true,
+    "ret": 5,
+    "fails": []
+  },
+  {
+    "step": "dipbuyer backs raid #5 with 20 tUSDC",
+    "at": "2026-11-14T19:20:49.235Z",
+    "tx": "KhnHj1AWqCApf3JSaZBdkaeVzmGvCiVTX8gTk8v6zrY",
+    "ok": true,
+    "ret": "20000000",
+    "fails": []
+  },
+  {
+    "step": "basegoblin backs raid #5 with 35 tUSDC",
+    "at": "2026-11-14T19:20:54.038Z",
+    "tx": "25m63BUeVrdsTjnnZ9pgLzdyKB6xkNsv89cdmTBBRnBU",
+    "ok": true,
+    "ret": "35000000",
+    "fails": []
+  },
+  {
+    "step": "twoxorbust backs raid #5 with 25 tUSDC",
+    "at": "2026-11-14T19:20:58.009Z",
+    "tx": "3R7LtB5W2FeKoswDA1Lfhd5RiWjWX2QzXn6seruqK8my",
+    "ok": true,
+    "ret": "25000000",
+    "fails": []
+  },
+  {
+    "step": "linehunter backs raid #5 with 15 tUSDC",
+    "at": "2026-11-14T19:21:02.805Z",
+    "tx": "Adfpuax8QHcRXjAn1uq6kB6YmrT7g4bEBWh8hJdDJybA",
+    "ok": true,
+    "ret": "15000000",
+    "fails": []
+  },
+  {
+    "step": "dipbuyer calls raid #6: Bottom is in. $tPEPE 3x or bust",
+    "at": "2026-11-14T19:21:04.864Z",
+    "tx": "3cYu4JSdLJvaDTgervGqURLJDwuQfktMovGvtcdkrgs9",
+    "ok": true,
+    "ret": 6,
+    "fails": []
+  },
+  {
+    "step": "memecartel backs raid #6 with 30 tUSDC",
+    "at": "2026-11-14T19:21:09.575Z",
+    "tx": "7jgoUY6JmEJJdd5fDDuJTxqJUV5n6Jx9cyPJYoDzhqrG",
+    "ok": true,
+    "ret": "30000000",
+    "fails": []
+  },
+  {
+    "step": "solsailor backs raid #6 with 20 tUSDC",
+    "at": "2026-11-14T19:21:14.347Z",
+    "tx": "7EGmemyYJiwyY4kBEKG8YRtUcSa7UTAapTku4zicLq59",
+    "ok": true,
+    "ret": "20000000",
+    "fails": []
+  },
+  {
+    "step": "frogmaxi backs raid #6 with 15 tUSDC",
+    "at": "2026-11-14T19:21:18.796Z",
+    "tx": "5xNCxD12Hn3dNh3jahteZ2SwKnTK7jeBVADsq7N1mayo",
+    "ok": true,
+    "ret": "15000000",
+    "fails": []
+  },
+  {
+    "step": "dipbuyer backs raid #6 with 10 tUSDC",
+    "at": "2026-11-14T19:21:23.102Z",
+    "tx": "8BXiikpxM8USj6a7Hjo63R5S4MoGX1kBHvFVrpbVKGj4",
+    "ok": true,
+    "ret": "10000000",
+    "fails": []
+  },
+  {
+    "step": "memecartel calls raid #7: Cartel raid: $tPEPE to 2x",
+    "at": "2026-11-14T19:21:25.279Z",
+    "tx": "3A5MYCT252BiyQ6xGinL4AsvSiKZZCPYdE3qg2igZ7Ch",
+    "ok": true,
+    "ret": 7,
+    "fails": []
+  },
+  {
+    "step": "chestwatch backs raid #7 with 20 tUSDC",
+    "at": "2026-11-14T19:21:29.903Z",
+    "tx": "3jsSUxXoYvtbWLqgk6T1ukpmSLqCKEQavuNyt32NTX82",
+    "ok": true,
+    "ret": "20000000",
+    "fails": []
+  },
+  {
+    "step": "twoxorbust backs raid #7 with 30 tUSDC",
+    "at": "2026-11-14T19:21:34.499Z",
+    "tx": "8eKQ6627UocTE88vSB1FnM2JSB1aL8FADtStHpm1u72q",
+    "ok": true,
+    "ret": "30000000",
+    "fails": []
+  },
+  {
+    "step": "pepepriest backs raid #7 with 15 tUSDC",
+    "at": "2026-11-14T19:21:40.126Z",
+    "tx": "8h5WAiSZZiX1ZZyYDUAxXqcquxdwgFmh8Av16k16K4YE",
+    "ok": true,
+    "ret": "15000000",
+    "fails": []
+  },
+  {
+    "step": "memecartel backs raid #7 with 25 tUSDC",
+    "at": "2026-11-14T19:21:45.046Z",
+    "tx": "ixEHHfqWs9SsWBWu5iZJkYREsgJtXr2xAoX4EabmxZP",
+    "ok": true,
+    "ret": "25000000",
+    "fails": []
+  },
+  {
+    "step": "community state",
+    "at": "2026-11-14T19:21:45.047Z",
+    "people": {
+      "frogmaxi": "raid-frogmaxi-shlll.testnet",
+      "linehunter": "raid-linehunter-shlll.testnet",
+      "chestwatch": "raid-chestwatch-shlll.testnet",
+      "dipbuyer": "raid-dipbuyer-shlll.testnet",
+      "memecartel": "raid-memecartel-shlll.testnet",
+      "pepepriest": "raid-pepepriest-shlll.testnet",
+      "basegoblin": "raid-basegoblin-shlll.testnet",
+      "solsailor": "raid-solsailor-shlll.testnet",
+      "nearnomad": "raid-nearnomad-shlll.testnet",
+      "twoxorbust": "raid-twoxorbust-shlll.testnet"
+    },
+    "raids": {
+      "A": 4,
+      "B": 5,
+      "C": 6,
+      "D": 7
+    }
+  },
+  {
+    "step": "raid #4: execute_buy (signed quote, intents-sim venue)",
+    "at": "2026-11-14T19:23:24.365Z",
+    "tx": "FhHPZb1McBW859v6PEdrL4fzkXH1tZyXtL16h9jxhTLW",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #4: solver fills tPEPE",
+    "at": "2026-11-14T19:23:26.819Z",
+    "tx": "FpcWLg1fQcdNteA7SSc6fzW1pQRRmgNVb3qMByBLj3MT",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #4: settle -> Held",
+    "at": "2026-11-14T19:23:30.494Z",
+    "tx": "Epz2AgDvpe5LBmwQMnvQRFpobiK2Vhine5F5uHtCUKDG",
+    "ok": true,
+    "ret": "settled",
+    "fails": []
+  },
+  {
+    "step": "raid #5: execute_buy (signed quote, intents-sim venue)",
+    "at": "2026-11-14T19:23:53.690Z",
+    "tx": "EytGuUX8GjjyzC9bEDP4H1VEg4uoCaM1obkuoyBhCjSB",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #5: solver fills tPEPE",
+    "at": "2026-11-14T19:23:55.939Z",
+    "tx": "HnxPp5bByw79KS2vJoG4MQ8roM3FSs9Qxo2ohXhHatLY",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #5: settle -> Held",
+    "at": "2026-11-14T19:23:59.664Z",
+    "tx": "5bnA7MNz3H8iopYxcfCM8j3ToCzGaJxWx5jZDVENYkMc",
+    "ok": true,
+    "ret": "settled",
+    "fails": []
+  },
+  {
+    "step": "raid #6: execute_buy (signed quote, intents-sim venue)",
+    "at": "2026-11-14T19:24:10.443Z",
+    "tx": "5X4cYhcpccw4SSiMhZeDpMJ5KBArr8jXFsDg7kxDkas5",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #6: solver fills tPEPE",
+    "at": "2026-11-14T19:24:12.269Z",
+    "tx": "CVAwLbf9JJQjGsQAxAhMYwMrtR9ARmHEH8CnqpNVk4zo",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #6: settle -> Held",
+    "at": "2026-11-14T19:24:15.362Z",
+    "tx": "Bgh9z1woZw7YTsgYk7PWWuM5MCb8RaV7MCHYYU8GEvJM",
+    "ok": true,
+    "ret": "settled",
+    "fails": []
+  },
+  {
+    "step": "raid #7: execute_buy (signed quote, intents-sim venue)",
+    "at": "2026-11-14T19:24:34.489Z",
+    "tx": "BNgvo8cVCsfE367XSjpciEjaEF7MBRNCT36J1BUNHLPH",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #7: solver fills tPEPE",
+    "at": "2026-11-14T19:24:36.783Z",
+    "tx": "BQWy2PAgUXK9iKZWNpA9gDHJuNrQTBfFJBZoRnMtJzMv",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #7: settle -> Held",
+    "at": "2026-11-14T19:24:39.874Z",
+    "tx": "9r97omqwMG2F9ynaLEBnYpWvrayu1B4HyRAJ74qYxbkx",
+    "ok": true,
+    "ret": "settled",
+    "fails": []
+  },
+  {
+    "step": "community state",
+    "at": "2026-11-14T19:24:39.874Z",
+    "people": {
+      "frogmaxi": "raid-frogmaxi-shlll.testnet",
+      "linehunter": "raid-linehunter-shlll.testnet",
+      "chestwatch": "raid-chestwatch-shlll.testnet",
+      "dipbuyer": "raid-dipbuyer-shlll.testnet",
+      "memecartel": "raid-memecartel-shlll.testnet",
+      "pepepriest": "raid-pepepriest-shlll.testnet",
+      "basegoblin": "raid-basegoblin-shlll.testnet",
+      "solsailor": "raid-solsailor-shlll.testnet",
+      "nearnomad": "raid-nearnomad-shlll.testnet",
+      "twoxorbust": "raid-twoxorbust-shlll.testnet"
+    },
+    "raids": {
+      "A": 4,
+      "B": 5,
+      "C": 6,
+      "D": 7
+    }
+  },
+  {
+    "step": "raid #4: execute_sell at the line",
+    "at": "2026-11-14T19:24:43.426Z",
+    "tx": "CE7EAXgCYfbZFzZPgpFX9FTMhe3Pmo6i2T658jMDgFcG",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #4: solver fills tUSDC",
+    "at": "2026-11-14T19:24:45.460Z",
+    "tx": "EGCmmv77suyTYFnRPs3VhodekppPLPzrjtRa9TfUUYjZ",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #4: settle -> Closed",
+    "at": "2026-11-14T19:24:48.844Z",
+    "tx": "HZJKL9XA6hxCmuBQ1DGZ2cttLz3iC2TCXnbquAWHXGqD",
+    "ok": true,
+    "ret": "settled",
+    "fails": []
+  },
+  {
+    "step": "linehunter claim_share raid #4",
+    "at": "2026-11-14T19:24:50.939Z",
+    "tx": "4WhQS7bCwGdAazU9Kgz9dMaC6AwcUdijk6Wt9niF1k7a",
+    "ok": true,
+    "ret": "58350000",
+    "fails": []
+  },
+  {
+    "step": "chestwatch claim_share raid #4",
+    "at": "2026-11-14T19:24:53.059Z",
+    "tx": "53FnUM7G7mJhK27Kz3r3ns7c5dV6FWtvELG33ukYTpYm",
+    "ok": true,
+    "ret": "48625000",
+    "fails": []
+  },
+  {
+    "step": "pepepriest claim_share raid #4",
+    "at": "2026-11-14T19:24:54.951Z",
+    "tx": "Gb3qpxbbJ781KzzGEQ9F1H6TmQQiNoKuAAr4Rt27wYnc",
+    "ok": true,
+    "ret": "77800000",
+    "fails": []
+  },
+  {
+    "step": "nearnomad claim_share raid #4",
+    "at": "2026-11-14T19:24:57.344Z",
+    "tx": "6EWbLjJVX8uLaveq5jL5fWYki2Yg61kdPc2o286Bft2e",
+    "ok": true,
+    "ret": "29175000",
+    "fails": []
+  },
+  {
+    "step": "frogmaxi claim_share raid #4",
+    "at": "2026-11-14T19:24:59.357Z",
+    "tx": "8UTqQJGs9QRkW2NxV5nXhDFBf7v3vcABXDVfjZbxWMN9",
+    "ok": true,
+    "ret": "38900000",
+    "fails": []
+  },
+  {
+    "step": "frogmaxi claims caller fee and share",
+    "at": "2026-11-14T19:25:02.340Z",
+    "tx": "3EuNXWnxcLosJW8PV1hDMxTiGcU6fQvXXYtHMbqxojp5",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "linehunter claims to wallet",
+    "at": "2026-11-14T19:25:05.493Z",
+    "tx": "9sZ98gYDgp2XsWecm4TrWk3HD9c6rMDU1N1nsKoQBkhB",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "chestwatch claims to wallet",
+    "at": "2026-11-14T19:25:08.883Z",
+    "tx": "6T35vo7LndMgJtLuC7hejrm72S39om1WYX2RJp6bXUaf",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "pepepriest claims to wallet",
+    "at": "2026-11-14T19:25:12.594Z",
+    "tx": "8efmTw9MBfBbiX1vDkTxBnzWuzzt3zeYTpZHyg4UoipM",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "nearnomad claims to wallet",
+    "at": "2026-11-14T19:25:15.926Z",
+    "tx": "6cXQUC7Skv3bKFpVH9v7a1hhUFeXufqn8ba1392FyqfB",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #5: execute_sell at the line",
+    "at": "2026-11-14T19:25:18.678Z",
+    "tx": "A6Q1UbFpYFAg9Jo4UzzjJ85ZxQyasrVCTCanQ7YTQbMg",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #5: solver fills tUSDC",
+    "at": "2026-11-14T19:25:21.162Z",
+    "tx": "GzUvrSdXGFWDqJSReBRVs63YtLmab81qFYK4XtjFs3aR",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "raid #5: settle -> Closed",
+    "at": "2026-11-14T19:25:24.605Z",
+    "tx": "2fCfb9MLqEQtooA3zF5G1cNNnyVh215C3KcSjUx1a8qE",
+    "ok": true,
+    "ret": "settled",
+    "fails": []
+  },
+  {
+    "step": "dipbuyer claim_share raid #5",
+    "at": "2026-11-14T19:25:26.681Z",
+    "tx": "87Z9ymQmRCq78MVWXFPq3ikKSee9dG8npvtzdeFsttfL",
+    "ok": true,
+    "ret": "29360000",
+    "fails": []
+  },
+  {
+    "step": "basegoblin claim_share raid #5",
+    "at": "2026-11-14T19:25:29.162Z",
+    "tx": "9YTmzK4xTAvo7Bckf84rP88CpFrNNnjk3VJzZpmG12s3",
+    "ok": true,
+    "ret": "51380000",
+    "fails": []
+  },
+  {
+    "step": "twoxorbust claim_share raid #5",
+    "at": "2026-11-14T19:25:31.466Z",
+    "tx": "B43LH81dr5YsmFjpjqcATNdTd5aPkq9c9giXjaUKTmMJ",
+    "ok": true,
+    "ret": "36700000",
+    "fails": []
+  },
+  {
+    "step": "linehunter claim_share raid #5",
+    "at": "2026-11-14T19:25:34.006Z",
+    "tx": "2aDLwRyPPr7m1VmarF5vGGbCNxq6PuyvVxBgDBp5fwa4",
+    "ok": true,
+    "ret": "22020000",
+    "fails": []
+  },
+  {
+    "step": "linehunter claims caller fee and share",
+    "at": "2026-11-14T19:25:37.302Z",
+    "tx": "5fQRiw4BwztQczE8zxGDgEKyrP4nWnEq24eodZpdw6EM",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "dipbuyer claims to wallet",
+    "at": "2026-11-14T19:25:40.299Z",
+    "tx": "2Mh8oJfzUW3mX7zEoV4K8AjQrPUGQinni9dpc8UVoJ4F",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "basegoblin claims to wallet",
+    "at": "2026-11-14T19:25:43.305Z",
+    "tx": "3FmZHdF9Azh5Y7UiCkgfkgZMomL7TMs3NF2ugb2qDeJK",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "twoxorbust claims to wallet",
+    "at": "2026-11-14T19:25:46.414Z",
+    "tx": "Av2yfHs5jWmoQ1dDMv1nMz9RdTKZ6KsQUh4M9N1hSEPf",
+    "ok": true,
+    "fails": []
+  },
+  {
+    "step": "community state",
+    "at": "2026-11-14T19:25:46.414Z",
+    "people": {
+      "frogmaxi": "raid-frogmaxi-shlll.testnet",
+      "linehunter": "raid-linehunter-shlll.testnet",
+      "chestwatch": "raid-chestwatch-shlll.testnet",
+      "dipbuyer": "raid-dipbuyer-shlll.testnet",
+      "memecartel": "raid-memecartel-shlll.testnet",
+      "pepepriest": "raid-pepepriest-shlll.testnet",
+      "basegoblin": "raid-basegoblin-shlll.testnet",
+      "solsailor": "raid-solsailor-shlll.testnet",
+      "nearnomad": "raid-nearnomad-shlll.testnet",
+      "twoxorbust": "raid-twoxorbust-shlll.testnet"
+    },
+    "raids": {
+      "A": 4,
+      "B": 5,
+      "C": 6,
+      "D": 7
+    }
+  },
+  {
+    "step": "solsailor calls raid #8: Sailing $tPEPE to 2x. Crew up before the bell",
+    "at": "2026-11-14T19:25:48.787Z",
+    "tx": "FQ2Ui2nKhvSxXBr3eMxG9aa6KEbHVRVANprWuAph99uP",
+    "ok": true,
+    "ret": 8,
+    "fails": []
+  },
+  {
+    "step": "nearnomad backs raid #8 with 20 tUSDC",
+    "at": "2026-11-14T19:25:53.636Z",
+    "tx": "2Xk4yu8d2MhTdqQq4fGotCQBZXn41TVU46TDftcMW97a",
+    "ok": true,
+    "ret": "20000000",
+    "fails": []
+  },
+  {
+    "step": "basegoblin backs raid #8 with 15 tUSDC",
+    "at": "2026-11-14T19:25:58.919Z",
+    "tx": "ccH6jXg86ycLKKwYQjzp3KCSggz9QfA3wWhnHWSHTy9",
+    "ok": true,
+    "ret": "15000000",
+    "fails": []
+  },
+  {
+    "step": "solsailor backs raid #8 with 25 tUSDC",
+    "at": "2026-11-14T19:26:03.259Z",
+    "tx": "663ojXsLcWEyF7xpm25BFbv74oZ3A1DtyFGwHFLd4XTC",
+    "ok": true,
+    "ret": "25000000",
+    "fails": []
+  },
+  {
+    "step": "basegoblin calls raid #9: Goblin mode: $tPEPE 1.5x, small and fast",
+    "at": "2026-11-14T19:26:05.550Z",
+    "tx": "6noj8jC5UYKB9Yu1cJtzXLrRo5eZMBmBZyYgpXws442s",
+    "ok": true,
+    "ret": 9,
+    "fails": []
+  },
+  {
+    "step": "chestwatch backs raid #9 with 10 tUSDC",
+    "at": "2026-11-14T19:26:10.296Z",
+    "tx": "6ab6JRYcLY44dF6JLw7uiXhxwL6TTQe65YRFjd7EQKiL",
+    "ok": true,
+    "ret": "10000000",
+    "fails": []
+  },
+  {
+    "step": "dipbuyer backs raid #9 with 15 tUSDC",
+    "at": "2026-11-14T19:26:14.756Z",
+    "tx": "52jfFxnPhJhQVCgghtkvganXCijJqznGwMp3LeuBx7Ae",
+    "ok": true,
+    "ret": "15000000",
+    "fails": []
+  },
+  {
+    "step": "basegoblin backs raid #9 with 20 tUSDC",
+    "at": "2026-11-14T19:26:19.711Z",
+    "tx": "8tZxnc4q386W6a7UtoEkxTRtbsm8CRBxUBufi9EuMR4d",
+    "ok": true,
+    "ret": "20000000",
+    "fails": []
+  },
+  {
+    "step": "twoxorbust calls raid #10: 2x or bust. Literally. $tPEPE",
+    "at": "2026-11-14T19:26:21.940Z",
+    "tx": "DmdEh341yWYujqwdM5Yt1kvf8TXa23wwsrS5jYPK9kLz",
+    "ok": true,
+    "ret": 10,
+    "fails": []
+  },
+  {
+    "step": "pepepriest backs raid #10 with 20 tUSDC",
+    "at": "2026-11-14T19:26:26.341Z",
+    "tx": "9oep5huzMyHMheEHo4zZ7C5yL5T7fCdc1r4hHqpMsq9d",
+    "ok": true,
+    "ret": "20000000",
+    "fails": []
+  },
+  {
+    "step": "frogmaxi backs raid #10 with 15 tUSDC",
+    "at": "2026-11-14T19:26:31.280Z",
+    "tx": "4sVobxRZ89eTGY2SzmT5Mob8h8soJV7FGSZZSh6oLkyJ",
+    "ok": true,
+    "ret": "15000000",
+    "fails": []
+  },
+  {
+    "step": "twoxorbust backs raid #10 with 20 tUSDC",
+    "at": "2026-11-14T19:26:36.207Z",
+    "tx": "D7CJfUCo5y63oe3vjbVQEGr23fJRm13Dvrz5YE4BY6r2",
+    "ok": true,
+    "ret": "20000000",
+    "fails": []
+  },
+  {
+    "step": "community state",
+    "at": "2026-11-14T19:26:36.207Z",
+    "people": {
+      "frogmaxi": "raid-frogmaxi-shlll.testnet",
+      "linehunter": "raid-linehunter-shlll.testnet",
+      "chestwatch": "raid-chestwatch-shlll.testnet",
+      "dipbuyer": "raid-dipbuyer-shlll.testnet",
+      "memecartel": "raid-memecartel-shlll.testnet",
+      "pepepriest": "raid-pepepriest-shlll.testnet",
+      "basegoblin": "raid-basegoblin-shlll.testnet",
+      "solsailor": "raid-solsailor-shlll.testnet",
+      "nearnomad": "raid-nearnomad-shlll.testnet",
+      "twoxorbust": "raid-twoxorbust-shlll.testnet"
+    },
+    "raids": {
+      "A": 4,
+      "B": 5,
+      "C": 6,
+      "D": 7,
+      "E": 8,
+      "F": 9,
+      "G": 10
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:39.497Z",
+    "h": "frogmaxi",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:40.580Z",
+    "h": "linehunter",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:41.511Z",
+    "h": "pepepriest",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:41.738Z",
+    "h": "frogmaxi",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:42.061Z",
+    "h": "linehunter",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:43.273Z",
+    "h": "basegoblin",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:43.484Z",
+    "h": "linehunter",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:44.197Z",
+    "h": "dipbuyer",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:44.964Z",
+    "h": "solsailor",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:45.798Z",
+    "h": "memecartel",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:46.592Z",
+    "h": "twoxorbust",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:47.509Z",
+    "h": "chestwatch",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:47.797Z",
+    "h": "solsailor",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:48.520Z",
+    "h": "nearnomad",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:48.710Z",
+    "h": "basegoblin",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:48.935Z",
+    "h": "twoxorbust",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:49.129Z",
+    "h": "pepepriest",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:49.334Z",
+    "h": "dipbuyer",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:49.558Z",
+    "h": "nearnomad",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "post failed",
+    "at": "2026-11-14T19:26:49.774Z",
+    "h": "chestwatch",
+    "j": {
+      "error": "bad_request"
+    }
+  },
+  {
+    "step": "posts done",
+    "at": "2026-11-14T19:26:49.774Z",
+    "count": 0
+  },
+  {
+    "step": "community state",
+    "at": "2026-11-14T19:26:49.775Z",
+    "people": {
+      "frogmaxi": "raid-frogmaxi-shlll.testnet",
+      "linehunter": "raid-linehunter-shlll.testnet",
+      "chestwatch": "raid-chestwatch-shlll.testnet",
+      "dipbuyer": "raid-dipbuyer-shlll.testnet",
+      "memecartel": "raid-memecartel-shlll.testnet",
+      "pepepriest": "raid-pepepriest-shlll.testnet",
+      "basegoblin": "raid-basegoblin-shlll.testnet",
+      "solsailor": "raid-solsailor-shlll.testnet",
+      "nearnomad": "raid-nearnomad-shlll.testnet",
+      "twoxorbust": "raid-twoxorbust-shlll.testnet"
+    },
+    "raids": {
+      "A": 4,
+      "B": 5,
+      "C": 6,
+      "D": 7,
+      "E": 8,
+      "F": 9,
+      "G": 10
+    }
+  },
+  {
+    "step": "frogmaxi posts",
+    "at": "2026-11-14T19:27:12.116Z",
+    "id": "1",
+    "raidId": 4
+  },
+  {
+    "step": "linehunter posts",
+    "at": "2026-11-14T19:27:12.723Z",
+    "id": "2",
+    "raidId": 4
+  },
+  {
+    "step": "pepepriest posts",
+    "at": "2026-11-14T19:27:13.337Z",
+    "id": "3",
+    "raidId": 4
+  },
+  {
+    "step": "frogmaxi posts",
+    "at": "2026-11-14T19:27:13.948Z",
+    "id": "4",
+    "raidId": 4
+  },
+  {
+    "step": "linehunter posts",
+    "at": "2026-11-14T19:27:14.604Z",
+    "id": "5",
+    "raidId": 5
+  },
+  {
+    "step": "basegoblin posts",
+    "at": "2026-11-14T19:27:15.227Z",
+    "id": "6",
+    "raidId": 5
+  },
+  {
+    "step": "linehunter posts",
+    "at": "2026-11-14T19:27:15.847Z",
+    "id": "7",
+    "raidId": 5
+  },
+  {
+    "step": "dipbuyer posts",
+    "at": "2026-11-14T19:27:16.485Z",
+    "id": "8",
+    "raidId": 6
+  },
+  {
+    "step": "solsailor posts",
+    "at": "2026-11-14T19:27:17.091Z",
+    "id": "9",
+    "raidId": 6
+  },
+  {
+    "step": "memecartel posts",
+    "at": "2026-11-14T19:27:17.790Z",
+    "id": "10",
+    "raidId": 7
+  },
+  {
+    "step": "twoxorbust posts",
+    "at": "2026-11-14T19:27:18.405Z",
+    "id": "11",
+    "raidId": 7
+  },
+  {
+    "step": "chestwatch posts",
+    "at": "2026-11-14T19:27:19.014Z",
+    "id": "12",
+    "raidId": 7
+  },
+  {
+    "step": "solsailor posts",
+    "at": "2026-11-14T19:27:19.638Z",
+    "id": "13",
+    "raidId": 8
+  },
+  {
+    "step": "nearnomad posts",
+    "at": "2026-11-14T19:27:20.247Z",
+    "id": "14",
+    "raidId": 8
+  },
+  {
+    "step": "basegoblin posts",
+    "at": "2026-11-14T19:27:20.869Z",
+    "id": "15",
+    "raidId": 9
+  },
+  {
+    "step": "twoxorbust posts",
+    "at": "2026-11-14T19:27:21.488Z",
+    "id": "16",
+    "raidId": 10
+  },
+  {
+    "step": "pepepriest posts",
+    "at": "2026-11-14T19:27:22.102Z",
+    "id": "17",
+    "raidId": 10
+  },
+  {
+    "step": "dipbuyer posts",
+    "at": "2026-11-14T19:27:22.711Z",
+    "id": "18",
+    "raidId": 9
+  },
+  {
+    "step": "nearnomad posts",
+    "at": "2026-11-14T19:27:23.381Z",
+    "id": "19",
+    "raidId": 4
+  },
+  {
+    "step": "chestwatch posts",
+    "at": "2026-11-14T19:27:23.997Z",
+    "id": "20",
+    "raidId": 9
+  },
+  {
+    "step": "posts done",
+    "at": "2026-11-14T19:27:37.798Z",
+    "count": 20
+  },
+  {
+    "step": "community state",
+    "at": "2026-11-14T19:27:37.799Z",
+    "people": {
+      "frogmaxi": "raid-frogmaxi-shlll.testnet",
+      "linehunter": "raid-linehunter-shlll.testnet",
+      "chestwatch": "raid-chestwatch-shlll.testnet",
+      "dipbuyer": "raid-dipbuyer-shlll.testnet",
+      "memecartel": "raid-memecartel-shlll.testnet",
+      "pepepriest": "raid-pepepriest-shlll.testnet",
+      "basegoblin": "raid-basegoblin-shlll.testnet",
+      "solsailor": "raid-solsailor-shlll.testnet",
+      "nearnomad": "raid-nearnomad-shlll.testnet",
+      "twoxorbust": "raid-twoxorbust-shlll.testnet"
+    },
+    "raids": {
+      "A": 4,
+      "B": 5,
+      "C": 6,
+      "D": 7,
+      "E": 8,
+      "F": 9,
+      "G": 10
+    }
+  }
+]
