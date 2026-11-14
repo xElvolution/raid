@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useInView, useReducedMotion } from 'motion/react';
 import { ArrowRight, ArrowUpRight, Clapperboard, Radio, ShieldCheck, MessageCircle, BadgeCheck, Trophy, Megaphone, Users, Timer, ArrowLeftRight, Crosshair, Coins, Vote, KeyRound, Network } from 'lucide-react';
-import { Wordmark } from '@/components/Brand';
+import { Mark, Wordmark } from '@/components/Brand';
 import { TickerTape } from '@/components/Ticker';
 import { ThemeToggle } from '@/components/Shell';
 import { CoinAvatar, Delta } from '@/components/ui';
@@ -23,8 +23,8 @@ const PILLARS = [
   { t: 'Live raid rooms', b: 'Watch a raid form in real time: the pot, the price and the chat. Jump in before the timer ends.', I: Radio, href: '/reels?tab=live' },
   { t: 'Raids nobody can rug', b: 'The pooled money sits in a contract with no withdraw button. It only sells at the target or returns what’s left.', I: ShieldCheck, href: '/how' },
   { t: 'A real social feed', b: 'Post takes, memes and $tickers, reply, repost and follow the traders you trust.', I: MessageCircle, href: '/feed' },
-  { t: 'Verified callers', b: 'Earn a verified badge from your on-chain hit rate. Followers can auto-join your next raid.', I: BadgeCheck, href: '/leaderboard', soon: true },
-  { t: 'Seasons and crew wars', b: 'Groups compete on a season leaderboard for the best results.', I: Trophy, href: '/war', soon: true },
+  { t: 'Verified callers', b: 'Earn a verified badge from your on-chain hit rate. Followers can auto-join your next raid.', I: BadgeCheck, href: '/leaderboard' },
+  { t: 'Seasons and crew wars', b: 'Callers and crews ranked each month by real on-chain profit.', I: Trophy, href: '/leaderboard' },
 ] as const;
 
 const STEPS = [
@@ -157,7 +157,8 @@ export default function Landing() {
                 <ArrowRight size={13} className="text-faint" />
               </Link>
             </Rise>
-            <h1 className="display mx-auto mt-6 text-[36px] leading-[.95] md:text-[112px] md:leading-[.88]">
+            <Rise delay={0.02}><Mark size={76} className="mx-auto mt-6 drop-shadow-[0_12px_30px_rgb(255_90_31/.35)] md:size-[110px]" /></Rise>
+            <h1 className="display mx-auto mt-4 text-[36px] leading-[.95] md:text-[112px] md:leading-[.88]">
               <MaskLine delay={0.08}>RAID:</MaskLine>
               <span className="tone2 relative block">
                 <MaskLine delay={0.2}>Fomo with an army.</MaskLine>
@@ -202,7 +203,7 @@ export default function Landing() {
             {PILLARS.map((x) => (
               <Link key={x.t} href={x.href} className="lift panel flex min-w-0 gap-3 !rounded-[18px] p-3.5 md:p-5">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-signal/12 text-lime"><x.I size={19} /></span>
-                <span className="min-w-0"><span className="flex items-center gap-2 text-[15px] font-semibold">{x.t}{'soon' in x && x.soon && <span className="rounded-full bg-raised px-2 py-0.5 text-[10.5px] font-medium text-mute">Coming soon</span>}</span><span className="mt-0.5 block text-[13px] leading-snug text-mute">{x.b}</span></span>
+                <span className="min-w-0"><span className="flex items-center gap-2 text-[15px] font-semibold">{x.t}</span><span className="mt-0.5 block text-[13px] leading-snug text-mute">{x.b}</span></span>
               </Link>
             ))}
           </div>

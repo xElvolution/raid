@@ -12,8 +12,11 @@ import { useNow, useRaids } from '@/lib/hooks';
 import { useQuote, fmtPrice } from '@/lib/market';
 import { COINS } from '@/lib/coins';
 import { target, xLabel } from '@/lib/raid';
-import { signInSocial, useSession } from '@/lib/social';
-import { toast } from '@/lib/bus';
+import { signInSocial, social, useSession } from '@/lib/social';
+import { signInSheet, toast } from '@/lib/bus';
+import { Avatar } from './app/Avatar';
+import { CoinCard } from './app/CoinCard';
+import { VerifiedBadge } from './app/Verified';
 import { useQueryClient } from '@tanstack/react-query';
 
 const PROVIDER = { x: 'X', instagram: 'Instagram', tiktok: 'TikTok' } as const;
@@ -46,31 +49,35 @@ export function ReelView({ r, active }: { r: Reel; active: boolean }) {
       )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-[#0b0b0d] via-[#0b0b0d]/70 to-transparent" />
       <div className="absolute left-2.5 right-2.5 top-14 flex items-center gap-1.5">
-        {r.kind === 'video' && <button onClick={() => setMuted((m) => !m)} aria-label={muted ? 'Unmute' : 'Mute'} className="pointer-events-auto ml-auto grid h-8 w-8 place-items-center rounded-full bg-black/40">{muted ? <VolumeX size={15} /> : <Volume2 size={15} />}</button>}
+        {r.kind === 'video' && <button onClick={() => setMuted((m) => !m)} aria-label={muted ? 'Unmute' : 'Mute'} className="pointer-events-auto ml-auto grid h-9 w-9 place-items-center rounded-full glass-dark">{muted ? <VolumeX size={16} /> : <Volume2 size={16} />}</button>}
       </div>
       <ReelRail r={r} />
-      <div className="absolute bottom-0 left-0 right-14 p-3 md:p-4">
-        <p className="flex items-center gap-1.5 text-[13px] font-semibold"><Link href={`/u/${r.handle}`} className="truncate">@{r.handle}</Link>{r.kind === 'video' && r.duration_s ? <span className="mono text-[10.5px] font-normal text-white/50">{Math.round(r.duration_s)}s</span> : null}</p>
-        {r.caption && <p className="mt-1 text-[13.5px] leading-snug text-white/90 line-clamp-2">{r.caption}</p>}
-        {sym && (
-          <div className="mt-2 flex items-center gap-2 rounded-[16px] bg-white/12 p-2 backdrop-blur">
-            <Link href={`/coin/${sym}`} className="flex min-w-0 flex-1 items-center gap-2">
-              <CoinAvatar symbol={sym} image={q.data?.image} size={30} />
-              <span className="min-w-0"><span className="block truncate text-[13.5px] font-bold">${sym} <span className="mono text-[11.5px] font-medium text-white/70">{fmtPrice(q.data?.priceUsd)}</span></span><span className="flex items-center gap-1.5">{raid ? <PhaseChip r={raid} now={now} /> : <span className="text-[11px] text-white/60">live price</span>}<Delta pct={q.data?.change24h} className="text-[11px]" /></span></span>
-            </Link>
-            {raid && raid.status === 'Open' && now < raid.opens_until_ms
-              ? <button onClick={() => { rememberReel(raid.id, r.id); openJoin(raid.id); }} className="press h-10 shrink-0 rounded-[13px] bg-lime px-4 text-[13.5px] font-bold text-[#1c0900]">Join raid</button>
-              : <Link href={`/coin/${sym}`} className="press grid h-10 shrink-0 place-items-center rounded-[13px] bg-white px-4 text-[13.5px] font-bold text-[#0b0b0d]">Buy</Link>}
-          </div>
-        )}
-        {raid && <p className="mt-1.5 text-[11px] text-white/55">Creator reward: {r.backs ? `${r.backs} joined from this reel · ` : ''}{raid.hit ? (r.backs ? 'raid hit, reward earned' : 'raid hit, no joins came from this reel') : 'paid if this raid hits'} · tracked by RAID</p>}
+      <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
+        <div className="mr-14 flex items-center gap-2">
+          <Link href={`/u/${r.handle}`} className="flex min-w-0 items-center gap-2"><Avatar id={r.near_account} handle={r.handle} size={36} /><span className="truncate text-[15px] font-semibold">{r.display_name || r.handle}</span><VerifiedBadge account={r.near_account} /></Link>
+          <FollowBtn handle={r.handle} />
+        </div>
+        <p className="mr-14 mt-1.5 text-[14px] leading-snug text-white/90 line-clamp-2">{sym ? <>@{r.handle} is shilling <b className="text-white">${sym}</b>{r.caption ? <span className="text-white/70"> · {r.caption}</span> : null}</> : r.caption}</p>
+        {sym && <div className="mt-2.5" onClickCapture={() => raid && rememberReel(raid.id, r.id)}><CoinCard symbol={sym} raidId={raid?.id} dark /></div>}
       </div>
     </article>
   );
 }
 
+function FollowBtn({ handle }: { handle: string }) {
+  const sess = useSession();
+  const [on, setOn] = useState(false);
+  if (sess?.handle === handle) return null;
+  const go = async () => {
+    if (!sess) return signInSheet.emit();
+    const n = !on; setOn(n);
+    try { await social.follow(handle, n); } catch { setOn(!n); toast({ title: 'Couldn’t follow', tone: 'down' }); }
+  };
+  return <button onClick={go} className={`press h-8 shrink-0 rounded-full px-3.5 text-[12.5px] font-bold ${on ? 'glass-dark text-white' : 'bg-white text-black'}`}>{on ? 'Following' : 'Follow'}</button>;
+}
+
 function RailBtn({ onClick, href, label, children, count }: { onClick?: () => void; href?: string; label: string; children: React.ReactNode; count?: string }) {
-    const inner = <><span className="grid h-10 w-10 place-items-center rounded-full bg-black/35 backdrop-blur">{children}</span>{count !== undefined && <span className="mt-0.5 text-[11px] font-semibold">{count}</span>}</>;
+    const inner = <><span className="grid h-12 w-12 place-items-center rounded-full glass-dark">{children}</span>{count !== undefined && <span className="mt-0.5 text-[11px] font-semibold">{count}</span>}</>;
     return href ? <Link href={href} aria-label={label} className="flex flex-col items-center">{inner}</Link> : <button onClick={onClick} aria-label={label} className="press flex flex-col items-center">{inner}</button>;
 }
 
@@ -89,8 +96,7 @@ function ReelRail({ r }: { r: Reel }) {
     try { if (navigator.share) await navigator.share({ title: r.caption || 'RAID reel', url }); else { await navigator.clipboard.writeText(url); toast({ title: 'Link copied', tone: 'lime' }); } } catch { /* closed */ }
   };
   return (
-    <div className="absolute bottom-24 right-2 flex flex-col items-center gap-3.5 text-white">
-      <RailBtn href={`/u/${r.handle}`} label={`Follow @${r.handle}`}><UserPlus size={19} /></RailBtn>
+    <div className="absolute bottom-[8.5rem] right-2 flex flex-col items-center gap-4 text-white">
       <RailBtn onClick={like} label="Like" count={String(n)}><motion.span animate={liked ? { scale: [1, 1.35, 1] } : { scale: 1 }}><Heart size={21} className={liked ? 'fill-[#ff3b5c] text-[#ff3b5c]' : ''} /></motion.span></RailBtn>
       <RailBtn onClick={() => openComposer({ text: `${r.coin ? `$${r.coin} ` : ''}`, raidId: r.raid_id ?? undefined })} label="Comment"><MessageCircle size={20} /></RailBtn>
       <RailBtn onClick={share} label="Share"><Send size={19} /></RailBtn>

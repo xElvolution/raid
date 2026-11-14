@@ -21,7 +21,7 @@ export function SignInSheet() {
   return (
     <AnimatePresence>{open && (
       <motion.div className="fixed inset-0 z-[75] flex items-end justify-center bg-black/40 md:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setOpen(false)}>
-        <motion.div role="dialog" aria-label="Sign in" onClick={(e) => e.stopPropagation()} initial={{ y: 40 }} animate={{ y: 0 }} exit={{ y: 40 }} className="w-full max-w-[420px] rounded-t-[22px] bg-bg p-4 pb-[max(16px,env(safe-area-inset-bottom))] md:rounded-[22px]">
+        <motion.div role="dialog" aria-label="Sign in" onClick={(e) => e.stopPropagation()} initial={{ y: 40 }} animate={{ y: 0 }} exit={{ y: 40 }} className="w-full max-w-[420px] glass-strong rounded-t-[26px] p-4 pb-[max(16px,env(safe-area-inset-bottom))] md:rounded-[22px]">
           <div className="flex items-center"><h2 className="text-[18px] font-semibold tracking-[-0.02em]">Sign in to RAID</h2><button onClick={() => setOpen(false)} aria-label="Close" className="ml-auto grid h-8 w-8 place-items-center rounded-full hover:bg-raised"><X size={17} /></button></div>
           <p className="mt-1 text-[13px] text-mute">Your wallet is your account. Posting only needs a signature, no gas.</p>
           <button onClick={() => { setOpen(false); void connectWallet(); }} className="press mt-4 flex h-12 w-full items-center gap-3 rounded-[14px] bg-ink px-4 text-[14px] font-semibold text-bg"><Wallet size={18} />Connect a NEAR wallet<span className="ml-auto text-[12px] font-normal opacity-60">Meteor, MyNEAR</span></button>
@@ -51,7 +51,7 @@ export function Onboarding() {
     <AnimatePresence>{c && (
       <motion.div className="fixed inset-0 z-[85] flex items-end justify-center bg-black/50 md:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
         <motion.div key={i} drag="x" dragConstraints={{ left: 0, right: 0 }} onDragEnd={(_, d) => { if (d.offset.x < -50) (i! < 2 ? setI(i! + 1) : done()); if (d.offset.x > 50 && i! > 0) setI(i! - 1); }}
-          initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="w-full max-w-[420px] rounded-t-[22px] bg-bg p-5 pb-[max(20px,env(safe-area-inset-bottom))] md:rounded-[22px]">
+          initial={{ x: 40, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className="w-full max-w-[420px] glass-strong rounded-t-[26px] p-5 pb-[max(20px,env(safe-area-inset-bottom))] md:rounded-[22px]">
           <div className="flex items-center gap-1.5">{CARDS.map((_, k) => <span key={k} className={`h-1.5 rounded-full ${k === i ? 'w-5 bg-signal' : 'w-1.5 bg-line'}`} />)}<button onClick={done} className="ml-auto text-[13px] font-medium text-mute">Skip</button></div>
           <span className="mt-5 grid h-12 w-12 place-items-center rounded-full bg-signal/15 text-lime"><c.Icon size={22} /></span>
           <h2 className="mt-3 text-[20px] font-semibold tracking-[-0.02em]">{c.t}</h2>

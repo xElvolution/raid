@@ -180,7 +180,7 @@ export function Modal({ open, onClose, children, label, wide }: { open: boolean;
         <motion.div className="fixed inset-0 z-[70] flex items-end md:items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
           <div className="absolute inset-0 bg-[#15161a]/45 backdrop-blur-md" onClick={onClose} />
           <motion.div role="dialog" aria-modal="true" aria-label={label}
-            className={`relative w-full ${wide ? 'md:max-w-[620px]' : 'md:max-w-[480px]'} max-h-[92dvh] overflow-y-auto no-scrollbar bg-panel border border-line rounded-t-[26px] md:rounded-[26px] shadow-[0_40px_80px_-30px_rgb(0_0_0/.5)] pb-[env(safe-area-inset-bottom)]`}
+            className={`relative w-full ${wide ? 'md:max-w-[620px]' : 'md:max-w-[480px]'} max-h-[92dvh] overflow-y-auto no-scrollbar glass-strong rounded-t-[26px] md:rounded-[26px] shadow-[0_40px_80px_-30px_rgb(0_0_0/.5)] pb-[env(safe-area-inset-bottom)]`}
             initial={{ y: 60, opacity: 0.6 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }} transition={{ type: 'spring', stiffness: 420, damping: 38 }}>
             <button onClick={onClose} aria-label="Close" className="press absolute right-2.5 top-2.5 z-10 grid h-8 w-8 md:h-9 md:w-9 place-items-center rounded-full bg-raised text-mute hover:text-ink"><X size={16} /></button>
             {children}

@@ -1,27 +1,24 @@
 'use client';
 import Link from 'next/link';
 import { Fragment, use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { ArrowUpRight, Flame, Gauge, Lock, ShieldCheck, Timer, TimerReset } from 'lucide-react';
+import { VerifiedBadge } from '@/components/app/Verified';
+import { FollowCaller } from '@/components/app/AutoJoin';
+import { ArrowUpRight, Flame, Gauge, Lock, Share2, ShieldCheck, Timer, TimerReset, TrendingUp, UserPlus, Users } from 'lucide-react';
 import { Shell } from '@/components/Shell';
-import { ChromeChest, FlipClock } from '@/components/Chrome';
 import { ChartPanel } from '@/components/ChartPanel';
-import { Avatar, TestnetChip } from '@/components/app/Avatar';
-import { Loop } from '@/components/app/RaidEmbed';
+import { Avatar } from '@/components/app/Avatar';
 import { Tabs } from '@/components/app/Tabs';
 import { displayName, personByAccount, profileHref } from '@/lib/people';
-import { Button, CoinAvatar, Empty, ErrorState, Segmented, Skeleton } from '@/components/ui';
-import { PayoutBox, RiskNote } from '@/components/Payout';
-import { AnyChainBack } from '@/components/AnyChainBack';
+import { CoinAvatar, Delta, Empty, ErrorState, Skeleton } from '@/components/ui';
 import { Composer, Feed } from '@/components/Social';
 import { useBackers, useChestConfig, useNow, useRaid, useRaids } from '@/lib/hooks';
 import { useQuote, fmtPrice, countdown, shortAddr } from '@/lib/market';
 import { coinByAsset, explorerAccount, explorerTx } from '@/lib/coins';
 import { LifecycleReceipts, raidReceipt } from '@/components/Proof';
 import { crewName } from '@/lib/crews';
-import { attributeReel, rememberReel } from '@/lib/reels';
-import { CHEST_ID, NETWORK, raidApi, target, tx, usdcOf, xLabel, liveMultiple } from '@/lib/raid';
-import { send, useAccount, connect } from '@/lib/wallet';
+import { rememberReel } from '@/lib/reels';
+import { CHEST_ID, NETWORK, payoutAtLine, target, usdcOf, xLabel } from '@/lib/raid';
+
 import { toast } from '@/lib/bus';
 import { openJoin } from '@/components/app/Flow';
 import type { ChartLine } from '@/components/chart/CoinChart';
@@ -31,7 +28,7 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   const raid = useRaid(Number(id));
   useEffect(() => { const ref = new URLSearchParams(location.search).get('reel'); if (ref && /^\d+$/.test(ref)) rememberReel(Number(id), ref); }, [id]);
   const all = useRaids();
-  const [tab, setTab] = useState<'room' | 'crew' | 'chart' | 'rules'>('room');
+  const [tab, setTab] = useState<'room' | 'crew' | 'rules'>('room');
   const [backSeen, setBackSeen] = useState(false);
   const io = useRef<IntersectionObserver | null>(null);
   const backRef = useCallback((el: HTMLElement | null) => {
@@ -46,67 +43,91 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   const t = r ? target(r) : null;
   const coin = r ? coinByAsset(r.target) : undefined;
   const q = useQuote(t?.symbol);
+  const base = t ? t.symbol.replace(/^t(?=[A-Z])/, '') : '';
+  const bq = useQuote(base);
+  const backers = useBackers(Number(id));
+  const people = backers.data ?? [];
 
   const entryPrice = r && coin && Number(r.held) > 0 ? usdcOf(r.entry_cost) / (Number(r.held) / 10 ** coin.decimals) : null;
   const lines = useMemo<ChartLine[]>(() => {
     if (!r) return [];
     const x = r.target_x_bps / 1e4;
     if (entryPrice) return [{ price: entryPrice, label: 'ENTRY', tone: 'brand' }, { price: entryPrice * x, label: `SELL ${xLabel(r.target_x_bps)}`, tone: 'lime' }];
-    return q.data ? [{ price: q.data.priceUsd * x, label: `${xLabel(r.target_x_bps)} IF BOUGHT NOW`, tone: 'lime' }] : [];
-  }, [r, entryPrice, q.data]);
+    const qq = q.data ?? bq.data;
+    return qq ? [{ price: qq.priceUsd * x, label: `GOAL ${xLabel(r.target_x_bps)} FROM NOW`, tone: 'lime' }] : [];
+  }, [r, entryPrice, q.data, bq.data]);
 
   if (raid.isLoading) return <Shell title="Raid" back="/raids"><Skeleton className="h-28" /><Skeleton className="mt-4 h-[22.5rem]" /></Shell>;
   if (raid.error) return <Shell title="Raid" back="/raids"><ErrorState title="Can’t reach the war chest" body="The NEAR RPC didn’t answer." retry={() => raid.refetch()} /></Shell>;
   if (!r || !t) return <Shell title="Raid" back="/raids"><Empty title={`No raid #${id}`} body="This raid doesn’t exist on the chest contract." action={<Link href="/raids" className="text-brand font-semibold">See all raids</Link>} /></Shell>;
 
   const open = r.status === 'Open' && now > 0 && now < r.opens_until_ms;
-  const mult = liveMultiple(r, q.data?.priceUsd, coin?.decimals);
   const inCountdown = r.status === 'Open' && !open && !!r.buy_after_ms && now > 0 && now < r.buy_after_ms;
   const callerRaids = (all.data ?? []).filter((x) => x.caller === r.caller);
   const rc = raidReceipt(r.id);
   const crewLabel = crewName(r.caller);
   const crew = crewLabel ? { name: crewLabel } : null;
 
-  const tabs = [{ key: 'room', label: 'Room' }, { key: 'crew', label: 'Who’s in' }, { key: 'chart', label: 'Chart' }, { key: 'rules', label: 'Receipts' }] as const;
+  const tabs = [{ key: 'room', label: 'Chat' }, { key: 'crew', label: 'Who’s in' }, { key: 'rules', label: 'Activity' }] as const;
+  const maxPot = cfg.data?.max_pot ? usdcOf(cfg.data.max_pot) : 0;
+  const pot = usdcOf(r.pot);
+  const step = r.status === 'Closed' ? 3 : r.status === 'Held' ? 2 : open || inCountdown ? 0 : 1;
+  const pay = cfg.data ? payoutAtLine(10, r.target_x_bps, cfg.data.caller_fee_bps, cfg.data.buyback_bps) : null;
+  const shareUrl = `https://x.com/intent/post?text=${encodeURIComponent(`I’m in a $${base} raid to ${xLabel(r.target_x_bps)} on RAID. Pool with us before the timer ends:`)}&url=${encodeURIComponent(`https://app.raid.5-189-170-85.sslip.io/raids/${r.id}`)}`;
   return (
     <Shell title={`Raid #${r.id}`} back="/raids">
       <header className="pt-3">
-        <Link href={profileHref(r.caller)} className="flex items-center gap-2.5">
-          <Avatar id={r.caller} size={36} />
-          <span className="min-w-0"><span className="block truncate text-[14px] font-semibold leading-tight">{crew ? crew.name : displayName(r.caller)}</span><span className="block text-[12.5px] text-mute">{crew ? 'Crew: a group that raids together' : `${callerRaids.length} called · ${callerRaids.filter((x) => x.hit).length} hit`}</span></span>
-          {personByAccount(r.caller) && <TestnetChip className="ml-auto" />}
-        </Link>
-        <div className="mt-5 flex items-center gap-3">
-          <CoinAvatar symbol={t.symbol} image={q.data?.image} size={48} />
-          <h2 className="text-[26px] font-semibold leading-none tracking-[-0.05em] md:text-[48px]">${t.symbol} <span className="text-signal">{xLabel(r.target_x_bps)}</span></h2>
-          <ChromeChest size={72} open={r.hit} fill={cfg.data?.max_pot ? usdcOf(r.pot) / usdcOf(cfg.data.max_pot) : 0.4} className="pointer-events-none -my-4 ml-auto" />
+        <div className="flex items-center gap-3">
+          <CoinAvatar symbol={base} image={bq.data?.image} size={60} />
+          <div className="min-w-0 flex-1">
+            <h2 className="text-[24px] font-semibold leading-none tracking-[-0.04em]">${t.symbol}</h2>
+            <p className="mt-1.5 flex items-center gap-2 text-[13px] text-mute"><span className="mono text-ink">{fmtPrice(bq.data?.priceUsd)}</span><Delta pct={bq.data?.change24h} className="text-[12px]" />{t.symbol !== base && <span className="text-faint">{base} price</span>}</p>
+          </div>
+          <span className="glass rounded-[16px] px-3 py-2 text-center"><span className="block text-[10.5px] font-medium uppercase tracking-[.08em] text-mute">Goal</span><span className="block text-[22px] font-bold leading-none text-lime">{xLabel(r.target_x_bps)}</span></span>
         </div>
-        <p className="mt-3 text-[15px] leading-snug">{r.title}</p>
+        {r.title && <p className="mt-3 text-[14px] leading-snug">{r.title}</p>}
+        <div className="mt-3 flex items-center gap-2.5">
+        <Link href={profileHref(r.caller)} className="flex min-w-0 flex-1 items-center gap-2.5">
+          <Avatar id={r.caller} size={34} />
+          <span className="min-w-0 flex-1"><span className="flex items-center gap-1"><span className="truncate text-[13.5px] font-semibold leading-tight">{crew ? crew.name : displayName(r.caller)}</span><VerifiedBadge account={r.caller} /></span><span className="block text-[12px] text-mute">{crew ? 'Crew: a group that raids together' : `Started ${callerRaids.length} · hit ${callerRaids.filter((x) => x.hit).length}`}</span></span>
+        </Link>
+        <FollowCaller account={r.caller} />
+        </div>
       </header>
 
-      <section className="panel relative mt-5 overflow-hidden rounded-[22px] p-3.5">
-        <p className="eyebrow">{mult ? 'Now at' : open ? 'Crew closes in' : inCountdown ? 'Chest may buy in' : r.status === 'Closed' ? 'Settled' : r.status === 'Open' ? 'Waiting for the buy' : 'Retreat in'}</p>
-        <div className="mt-3 text-[30px] leading-none">
-          {mult ? <span className="mono font-semibold">{mult.toFixed(2)}x</span>
-            : r.status === 'Closed' ? <span className={`font-semibold tracking-[-0.04em] ${r.hit ? 'text-lime' : ''}`}>{r.hit ? 'Line hit' : 'Retreated'}</span>
-            : r.status === 'Open' && !open && !inCountdown ? <span className="font-semibold tracking-[-0.04em]">Ready</span>
-            : now ? <FlipClock ms={open ? r.opens_until_ms - now : inCountdown ? r.buy_after_ms! - now : r.retreat_at_ms - now} />
-            : <span className="mono">--:--</span>}
+      <div className="mt-4"><ChartPanel symbol={base} lines={lines} height={300} /></div>
+      {t.symbol !== base && <p className="mt-1.5 text-[11.5px] text-faint">Testnet raid on {t.symbol}. The chart shows real {base} so you can see the market.</p>}
+
+      <section className="glass mt-4 rounded-[20px] p-3.5">
+        <div className="flex items-baseline justify-between gap-2">
+          <p className="text-[14px] font-semibold">{people.length} {people.length === 1 ? 'person' : 'people'} in</p>
+          <p className="text-[13px] text-mute">{open ? <>Closes in <b className="mono text-ink">{countdown(r.opens_until_ms - now)}</b></> : inCountdown ? <>Buys in <b className="mono text-ink">{countdown(r.buy_after_ms! - now)}</b></> : r.status === 'Closed' ? (r.hit ? 'Goal hit' : 'Sold early') : r.status === 'Held' ? 'Bought, waiting for the goal' : 'Waiting to buy'}</p>
         </div>
-        <div className="mt-6 grid grid-cols-3 gap-3">
-          <Stat k="Pot" v={usdcOf(r.pot).toFixed(0)} u="tUSDC" />
-          <Stat k="Entry" v={Number(r.entry_cost) ? usdcOf(r.entry_cost).toFixed(0) : '–'} u={Number(r.entry_cost) ? 'tUSDC' : 'not bought'} />
-          <Stat k={r.status === 'Closed' ? 'To crew' : 'Price'} v={r.status === 'Closed' ? usdcOf(r.for_backers ?? '0').toFixed(0) : fmtPrice(q.data?.priceUsd)} u={r.status === 'Closed' ? 'tUSDC' : ''} />
+        <div className="mt-2.5 h-2.5 overflow-hidden rounded-full bg-raised"><div className="h-full rounded-full bg-gradient-to-r from-[#ff7a1a] to-[#ff3d0a]" style={{ width: `${maxPot ? Math.min(100, (pot / maxPot) * 100) : 100}%` }} /></div>
+        <div className="mt-2.5 flex items-center gap-2">
+          <span className="flex -space-x-2">{people.slice(0, 5).map(([a]) => <span key={a} className="rounded-full ring-2 ring-bg"><Avatar id={a} size={24} /></span>)}</span>
+          <span className="mono text-[13px]"><b>{pot.toFixed(0)}</b>{maxPot ? <span className="text-mute"> / {maxPot.toFixed(0)}</span> : null} <span className="text-mute">tUSDC</span></span>
         </div>
-        <Loop r={r} className="mt-6" />
-        {open && r.buy_after_ms && <p className="mt-4 text-[13px] leading-relaxed text-mute">Then a public countdown runs until <b className="mono text-ink">{new Date(r.buy_after_ms).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</b> before the chest may buy.</p>}
-        {inCountdown && <p className="mt-4 text-[13px] leading-relaxed text-mute">Everyone sees the target and the buy time. No surprise buys.</p>}
-        {r.status === 'Open' && !open && !inCountdown && <p className="mt-4 text-[13px] leading-relaxed text-mute">Countdown over. A keeper hands the chest a signed 1Click quote, and the chest checks it before buying.</p>}
       </section>
 
-      {open && <button ref={backRef} onClick={() => openJoin(r.id)} className="press mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-full btn-signal text-[14.5px] font-semibold">Join this raid<span className="mono text-[12.5px] opacity-70">{countdown(r.opens_until_ms - now)} left</span></button>}
+      <section className="mt-3 grid grid-cols-3 gap-2">
+        {[{ I: UserPlus, t: 'Join' }, { I: Users, t: 'Buys together' }, { I: TrendingUp, t: `Sells at ${xLabel(r.target_x_bps)}` }].map((x, i) => (
+          <div key={x.t} className={`flex flex-col items-center gap-1.5 rounded-[16px] py-3 text-center ${i === Math.min(step, 2) ? 'glass' : ''}`}>
+            <span className={`grid h-10 w-10 place-items-center rounded-full ${i < step || (i === 2 && r.hit) ? 'bg-up/15 text-up' : i === Math.min(step, 2) ? 'bg-signal text-white' : 'bg-raised text-faint'}`}><x.I size={18} /></span>
+            <span className={`text-[12.5px] font-medium ${i === Math.min(step, 2) ? 'text-ink' : 'text-mute'}`}>{x.t}</span>
+          </div>
+        ))}
+      </section>
 
-      <div className="sticky top-12 z-30 -mx-4 mt-6 bg-bg/85 px-4 backdrop-blur-xl md:top-16 md:mx-0 md:px-0">
+      {pay && cfg.data && (
+        <section className="mt-3 rounded-[20px] bg-raised/70 p-3.5 text-[13.5px] leading-relaxed">
+          <p>Put in <b>10</b> → about <b className="text-up">{pay.payout.toFixed(1)} back</b> if ${t.symbol} hits {xLabel(r.target_x_bps)}, after the {cfg.data.caller_fee_bps / 100}% caller fee and {cfg.data.buyback_bps / 100}% buyback.</p>
+          <p className="mt-1 text-mute">If it doesn’t hit by {now ? new Date(r.retreat_at_ms).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '…'}, it sells at market and you get back what’s left, which can be less than you put in.</p>
+        </section>
+      )}
+
+      <div ref={backRef} className="h-px" />
+      <div className="sticky top-12 z-20 -mx-4 mt-6 glass-bar px-4 md:top-16 md:mx-0 md:px-0">
         <Tabs id="room" value={tab} onChange={setTab} items={tabs.map((x) => ({ ...x }))} />
       </div>
 
@@ -120,12 +141,6 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
         <section id="crew" className="pt-2">
           <CrewList id={r.id} />
           <div className="mt-4 flex gap-3 rounded-[20px] bg-raised/70 p-4 text-[13px] leading-relaxed text-mute"><Lock size={16} className="mt-0.5 shrink-0 text-lime" />The caller’s fee is locked until this raid hits {xLabel(r.target_x_bps)}. If it retreats, the fee is gone.</div>
-        </section>
-      )}
-      {tab === 'chart' && (
-        <section className="pt-4">
-          <ChartPanel symbol={t.symbol} lines={lines} />
-          {!entryPrice && <p className="mt-3 text-[12.5px] leading-relaxed text-faint">Not bought yet, so the line shows where {xLabel(r.target_x_bps)} would sit at today’s price. Once the chest buys, it moves to the real entry × {xLabel(r.target_x_bps)}.</p>}
         </section>
       )}
       {tab === 'rules' && (
@@ -150,11 +165,13 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
         </section>
       )}
 
-      {open && !backSeen && (
-        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 px-4 pb-3 md:hidden">
-          <button onClick={() => openJoin(r.id)} className="press flex h-12 w-full items-center justify-center gap-2 rounded-full btn-signal text-[14.5px] font-semibold shadow-[0_18px_40px_-12px_rgb(255_90_31/.6)]">Join this raid <span className="mono text-[12.5px] opacity-70">{countdown(r.opens_until_ms - now)}</span></button>
+      <div className="fixed inset-x-3 bottom-[calc(76px+env(safe-area-inset-bottom))] z-30 md:static md:mt-6">
+        <div className="glass-strong flex gap-2 rounded-full p-1.5">
+          {open ? <button onClick={() => openJoin(r.id)} className="press flex h-11 flex-1 items-center justify-center rounded-full btn-signal text-[14.5px] font-semibold">Join raid</button>
+            : <Link href="/raids" className="press flex h-11 flex-1 items-center justify-center rounded-full bg-ink text-[14px] font-semibold text-bg">See open raids</Link>}
+          <a href={shareUrl} target="_blank" rel="noreferrer" className="press flex h-11 items-center justify-center gap-1.5 rounded-full px-4 text-[13.5px] font-semibold hairline"><Share2 size={15} />Share to X</a>
         </div>
-      )}
+      </div>
     </Shell>
   );
 }

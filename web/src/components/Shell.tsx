@@ -1,4 +1,5 @@
 'use client';
+import { AlertsBell } from './app/Alerts';
 /**
  * The RAID app frame. Built around the raid loop, not a sidebar of sections:
  *   Feed (what crews are doing) · Raids (the board) · Call (+) · Crews (DAOs at war) · You (your card).
@@ -9,7 +10,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ChevronLeft, Clapperboard, Crosshair, Flag, Home, Moon, Plus, Rocket, Settings, Sun, Trophy, Wallet } from 'lucide-react';
+import { Aperture, ChevronLeft, CircleDollarSign, Clapperboard, Crosshair, Flag, Home, Moon, PenLine, Plus, Radio, Rocket, Settings, Sun, Trophy, Wallet } from 'lucide-react';
 import { TickerTape } from './Ticker';
 import { Mark, Wordmark } from './Brand';
 import { Avatar } from './app/Avatar';
@@ -93,7 +94,7 @@ export function Shell({ children, title, back, actions, rail = true, flush, tabs
   return (
     <div className="min-h-dvh bg-bg">
       {/* Top bar */}
-      <header className={`${immersive ? 'hidden md:block' : ''} sticky top-0 z-40 bg-bg/80 backdrop-blur-xl backdrop-saturate-150 transition-shadow ${scrolled ? 'shadow-[0_1px_0_var(--color-line)]' : ''}`}>
+      <header className={`${immersive ? 'hidden md:block' : ''} sticky top-0 z-40 glass-bar transition-shadow`}>
         <div className="mx-auto flex h-12 max-w-[1180px] items-center gap-1.5 px-3 md:h-16 md:px-6">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             {back ? <button onClick={() => (history.length > 1 ? router.back() : router.push(back))} aria-label="Back" className="press -ml-2 grid h-10 w-10 place-items-center rounded-full hover:bg-raised"><ChevronLeft size={22} /></button>
@@ -112,6 +113,7 @@ export function Shell({ children, title, back, actions, rail = true, flush, tabs
           )}
           <div className="flex flex-1 items-center justify-end gap-1">
             {actions}
+            <AlertsBell />
             <ThemeToggle />
             <Link href="/settings" aria-label="Settings" className="press hidden h-9 w-9 place-items-center rounded-full text-mute hover:bg-raised hover:text-ink md:grid"><Settings size={18} /></Link>
             <button onClick={() => openCall()} className="press hidden h-10 items-center gap-1.5 rounded-full btn-signal px-4 text-[14px] font-semibold md:flex"><Plus size={17} strokeWidth={2.6} />Call a raid</button>
@@ -131,38 +133,42 @@ export function Shell({ children, title, back, actions, rail = true, flush, tabs
 
       <AnimatePresence>{create && (
         <motion.div className="fixed inset-0 z-[60] flex items-end bg-black/40 md:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setCreate(false)}>
-          <motion.div initial={{ y: 30 }} animate={{ y: 0 }} exit={{ y: 30 }} className="w-full rounded-t-[22px] bg-bg p-3 pb-[max(14px,env(safe-area-inset-bottom))]" onClick={(e) => e.stopPropagation()}>
-            {[
-              { t: 'Post', b: 'A take, a meme, a $coin', f: () => openComposer() },
-              { t: 'Story', b: 'Gone in 24 hours', f: () => openComposer({ story: true }) },
-              { t: 'Start a raid', b: 'Pick a coin and a target. Others join in.', f: () => openCall() },
-              { t: 'Post a reel', b: 'A short video that sells a coin', f: () => router.push('/reels?new=1') },
-            ].map((x) => <button key={x.t} onClick={() => { setCreate(false); x.f(); }} className="flex w-full items-center gap-3 rounded-[14px] px-3 py-3 text-left hover:bg-raised"><span className="min-w-0"><span className="block text-[14.5px] font-semibold">{x.t}</span><span className="block text-[12.5px] text-mute">{x.b}</span></span></button>)}
+          <motion.div initial={{ y: 30 }} animate={{ y: 0 }} exit={{ y: 30 }} className="glass-strong w-full rounded-t-[26px] p-3 pb-[max(14px,env(safe-area-inset-bottom))]" onClick={(e) => e.stopPropagation()}>
+            <div className="mx-auto mb-3 h-1 w-9 rounded-full bg-line" />
+            <div className="grid grid-cols-3 gap-2.5">
+              {[
+                { t: 'Post', I: PenLine, g: 'from-[#ff5a1f] to-[#ff9a3c]', f: () => openComposer() },
+                { t: 'Reel', I: Clapperboard, g: 'from-[#15161a] to-[#3a3b42]', f: () => router.push('/reels?new=1') },
+                { t: 'Story', I: Aperture, g: 'from-[#5b3df5] to-[#b18cff]', f: () => openComposer({ story: true }) },
+                { t: 'Go live', I: Radio, g: 'from-[#e0353f] to-[#ff8a8f]', f: () => router.push('/golive') },
+                { t: 'Start raid', I: Crosshair, g: 'from-[#0d8f50] to-[#3fd98b]', f: () => openCall() },
+                { t: 'Tag token', I: CircleDollarSign, g: 'from-[#0a6cff] to-[#7cc3ff]', f: () => openComposer({ text: '$' }) },
+              ].map((x) => (
+                <button key={x.t} onClick={() => { setCreate(false); x.f(); }} className="press flex flex-col items-center gap-2 rounded-[18px] bg-raised/60 py-3.5">
+                  <span className={`grid h-14 w-14 place-items-center rounded-[18px] bg-gradient-to-br ${x.g} text-white shadow-[0_8px_20px_-10px_rgb(0_0_0/.5)]`}><x.I size={26} strokeWidth={2} /></span>
+                  <span className="text-[13px] font-semibold">{x.t}</span>
+                </button>
+              ))}
+            </div>
           </motion.div>
         </motion.div>
       )}</AnimatePresence>
 
       {/* Phone bottom bar: thumb reach */}
-      <nav aria-label="Tabs" className={`fixed inset-x-0 bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden ${immersive ? 'dark-nav border-white/10 bg-[#0b0b0d] [&_a]:!text-white/55 [&_a[aria-current=page]]:!text-white' : 'border-line bg-bg/92'}`}>
-        <div className="grid h-[54px] grid-cols-5 items-center">
+      <nav aria-label="Tabs" className="fixed inset-x-3 bottom-[max(10px,env(safe-area-inset-bottom))] z-40 md:hidden">
+        <div className={`grid h-[58px] grid-cols-5 items-center rounded-full ${immersive ? 'glass-dark [&_a]:text-white/60' : 'glass-strong'}`}>
           {BOTTOM.map((n) => n === null ? (
             <button key="call" onClick={() => setCreate(true)} aria-label="Create" className="grid place-items-center">
               <motion.span whileTap={{ scale: 0.88 }} className="grid h-10 w-10 place-items-center rounded-full btn-signal"><Plus size={21} strokeWidth={2.6} /></motion.span>
             </button>
           ) : n === 'you' ? (
-            <Link key="you" href={acct ? `/u/${acct}` : '/u/me'} aria-current={on('/u') ? 'page' : undefined} className={`flex flex-col items-center gap-0.5 text-[10.5px] font-medium ${on('/u') ? 'text-ink' : 'text-faint'}`}>
-              {acct ? <Avatar id={acct} size={22} ring={on('/u')} /> : <span className={`grid h-[22px] w-[22px] place-items-center rounded-full border-2 ${on('/u') ? 'border-ink' : 'border-faint'}`}><span className="h-2 w-2 rounded-full bg-current" /></span>}You
+            <Link key="you" href={acct ? `/u/${acct}` : '/u/me'} aria-current={on('/u') ? 'page' : undefined} className={`flex flex-col items-center gap-0.5 text-[10.5px] font-medium leading-[12px] ${on('/u') ? '!text-lime' : 'text-faint'}`}>
+              <span className="grid h-[26px] w-[44px] place-items-center rounded-full">{acct ? <Avatar id={acct} size={21} ring={on('/u')} /> : <span className={`grid h-[21px] w-[21px] place-items-center rounded-full border-2 ${on('/u') ? 'border-ink' : 'border-faint'}`}><span className="h-2 w-2 rounded-full bg-current" /></span>}</span>You
             </Link>
           ) : (
-            n.href === '/raids' ? (
-              <Link key={n.href} href={n.href} aria-current={on(n.href) ? 'page' : undefined} className="flex flex-col items-center gap-0.5 text-[10.5px] font-bold !text-lime">
-                <span className={`grid h-[22px] w-[34px] place-items-center rounded-full ${on(n.href) ? 'bg-signal text-white' : 'bg-signal/15'}`}><n.Icon size={16} strokeWidth={2.6} /></span>{n.label}
-              </Link>
-            ) : (
-            <Link key={n.href} href={n.href} aria-current={on(n.href) ? 'page' : undefined} className={`flex flex-col items-center gap-0.5 text-[10.5px] font-medium ${on(n.href) ? 'text-ink' : 'text-faint'}`}>
-              <n.Icon size={21} strokeWidth={on(n.href) ? 2.3 : 1.7} />{n.label}
+            <Link key={n.href} href={n.href} aria-current={on(n.href) ? 'page' : undefined} className={`flex flex-col items-center gap-0.5 text-[10.5px] font-medium leading-[12px] ${on(n.href) ? '!text-lime' : 'text-faint'}`}>
+              <span className="grid h-[26px] w-[44px] place-items-center"><n.Icon size={21} strokeWidth={on(n.href) ? 2.3 : 1.8} /></span>{n.label}
             </Link>
-            )
           ))}
         </div>
       </nav>

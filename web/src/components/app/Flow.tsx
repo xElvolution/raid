@@ -27,7 +27,7 @@ export function StepSheet({ open, onClose, label, step, total, onBack, children 
     <AnimatePresence>{open && (
       <motion.div className="fixed inset-0 z-[78] flex items-end justify-center bg-black/45 md:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
         <motion.div role="dialog" aria-label={label} onClick={(e) => e.stopPropagation()} initial={{ y: 60 }} animate={{ y: 0 }} exit={{ y: 60 }} transition={{ type: 'spring', stiffness: 420, damping: 36 }}
-          className="max-h-[88dvh] w-full max-w-[440px] overflow-y-auto rounded-t-[22px] bg-bg px-4 pt-3 pb-[max(16px,env(safe-area-inset-bottom))] md:rounded-[22px]">
+          className="max-h-[88dvh] w-full max-w-[440px] overflow-y-auto glass-strong rounded-t-[26px] px-4 pt-3 pb-[max(16px,env(safe-area-inset-bottom))] md:rounded-[22px]">
           <div className="mx-auto mb-2 h-1 w-9 rounded-full bg-line md:hidden" />
           <div className="flex items-center gap-1">
             {onBack ? <button onClick={onBack} aria-label="Back" className="press -ml-1.5 grid h-8 w-8 place-items-center rounded-full hover:bg-raised"><ArrowLeft size={17} /></button> : <span className="w-1" />}

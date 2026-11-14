@@ -2,20 +2,13 @@
 /** Reels: a full-screen vertical player with For you | Following | Live tabs on top, like any short-video app. */
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { Loader2, Plus, Users } from 'lucide-react';
+import { Loader2, Plus, Radio } from 'lucide-react';
+import { useStreams } from '@/lib/livecam';
+import { LiveView } from '@/components/app/LiveView';
 import { Shell } from '@/components/Shell';
 import { ReelComposer, ReelView } from '@/components/Reels';
-import { PhaseChip } from '@/components/RaidCard';
-import { CoinAvatar, Delta } from '@/components/ui';
-import { FlipClock } from '@/components/Chrome';
-import { Loop } from '@/components/app/RaidEmbed';
-import { openJoin } from '@/components/app/Flow';
 import { useReels } from '@/lib/reels';
 import { useSession } from '@/lib/social';
-import { useBackers, useNow, useRaids } from '@/lib/hooks';
-import { useQuote, fmtPrice } from '@/lib/market';
-import { target, usdcOf, xLabel, type Raid } from '@/lib/raid';
-import { displayName } from '@/lib/people';
 import { signInSheet } from '@/lib/bus';
 
 type Tab = 'foryou' | 'following' | 'live';
@@ -54,50 +47,22 @@ function ReelsFeed({ following }: { following: boolean }) {
 }
 
 /** One live raid room, full screen: coin, live price, pot, timer, who's in, and Join. */
-function LiveRoom({ r, now }: { r: Raid; now: number }) {
-  const t = target(r);
-  const q = useQuote(t.symbol.replace(/^t(?=[A-Z])/, ''));
-  const crew = useBackers(r.id);
-  const open = r.status === 'Open' && now > 0 && now < r.opens_until_ms;
-  const ms = open ? r.opens_until_ms - now : r.buy_after_ms && now < r.buy_after_ms ? r.buy_after_ms - now : 0;
-  const people = crew.data ?? [];
-  return (
-    <article className="relative h-full w-full overflow-hidden bg-[radial-gradient(120%_70%_at_50%_0%,#3a1a0c_0,#0b0b0d_65%)] text-white">
-      <div className="absolute inset-x-0 top-14 px-5">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-signal px-2.5 py-1 text-[11px] font-bold tracking-[.06em]"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />LIVE ROOM</span>
-        <p className="mt-2 text-[12px] text-white/55">Live data room · no video</p>
-      </div>
-      <div className="absolute inset-x-0 top-[30%] px-5 text-center">
-        <div className="mx-auto w-fit"><CoinAvatar symbol={t.symbol} image={q.data?.image} size={72} /></div>
-        <h2 className="mt-3 text-[28px] font-semibold tracking-[-0.04em]">${t.symbol} <span className="text-signal">{xLabel(r.target_x_bps)}</span></h2>
-        <p className="mt-1 flex items-center justify-center gap-2 text-[13px] text-white/70"><span className="mono">{fmtPrice(q.data?.priceUsd)}</span><Delta pct={q.data?.change24h} className="text-[12px]" /></p>
-        <div className="mt-5 flex justify-center text-[34px]">{ms > 0 ? <FlipClock ms={ms} /> : <PhaseChip r={r} now={now} />}</div>
-        <p className="mt-2 text-[12px] text-white/55">{open ? 'until the group buys together' : ms > 0 ? 'public countdown to the buy' : ''}</p>
-        <div className="mx-auto mt-6 grid max-w-[18rem] grid-cols-2 gap-3 text-left">
-          <div className="rounded-[14px] bg-white/8 p-3"><p className="text-[11.5px] text-white/55">Pot</p><p className="mono mt-0.5 text-[17px] font-semibold">{usdcOf(r.pot).toFixed(0)} <span className="text-[11px] text-white/50">tUSDC</span></p></div>
-          <div className="rounded-[14px] bg-white/8 p-3"><p className="text-[11.5px] text-white/55">In the raid</p><p className="mono mt-0.5 text-[17px] font-semibold">{people.length} <span className="text-[11px] text-white/50">people</span></p></div>
-        </div>
-        <Loop r={r} className="mx-auto mt-5 max-w-[18rem] [&_*]:!text-white/70" />
-      </div>
-      <div className="absolute inset-x-0 bottom-0 p-4">
-        {people.length > 0 && <p className="mb-2 flex items-center gap-1.5 truncate text-[12.5px] text-white/70"><Users size={14} />{people.slice(0, 3).map(([a]) => displayName(a)).join(', ')}{people.length > 3 ? ` and ${people.length - 3} more` : ''} joined</p>}
-        <div className="flex gap-2">
-          <Link href={`/raids/${r.id}`} className="press flex h-12 flex-1 items-center justify-center rounded-full bg-white/12 text-[14px] font-semibold">Open chat</Link>
-          {open && <button onClick={() => openJoin(r.id)} className="press flex h-12 flex-[1.4] items-center justify-center rounded-full btn-signal text-[14.5px] font-semibold">Join raid</button>}
-        </div>
-      </div>
-    </article>
-  );
-}
-
 function LiveFeed() {
-  const raids = useRaids();
-  const now = useNow();
-  const [, setActive] = useState(0);
-  const live = (raids.data ?? []).filter((r) => r.status === 'Open').sort((a, b) => usdcOf(b.pot) - usdcOf(a.pot));
-  if (raids.isLoading) return <div className="grid h-full place-items-center text-white/60"><Loader2 className="animate-spin" /></div>;
-  if (!live.length) return <Center title="No live rooms right now" body="A room opens when someone starts a raid. Start one and others can join live." action={<Link href="/raids" className="press inline-flex h-11 items-center rounded-full btn-signal px-6 text-[14px] font-semibold">Start a raid</Link>} />;
-  return <Pager count={live.length} onActive={setActive}>{live.map((r, i) => <div key={r.id} data-i={i} className="h-full w-full snap-start snap-always"><LiveRoom r={r} now={now} /></div>)}</Pager>;
+  const streams = useStreams();
+  const [active, setActive] = useState(0);
+  const list = streams.data ?? [];
+  if (streams.isLoading) return <div className="grid h-full place-items-center"><Loader2 className="animate-spin text-white/50" /></div>;
+  if (!list.length) return (
+    <div className="grid h-full place-items-center px-8 text-center text-white">
+      <div>
+        <span className="mx-auto grid h-16 w-16 place-items-center rounded-[20px] bg-gradient-to-br from-[#e0353f] to-[#ff8a8f]"><Radio size={28} /></span>
+        <p className="mt-4 text-[19px] font-semibold">Nobody is live right now</p>
+        <p className="mt-1.5 text-[14px] text-white/60">Start a stream with your camera and pin the coin you’re talking about.</p>
+        <Link href="/golive" className="press mt-5 inline-flex h-12 items-center gap-2 rounded-full bg-[#ff2d55] px-6 text-[15px] font-bold">Go live</Link>
+      </div>
+    </div>
+  );
+  return <Pager count={list.length} onActive={setActive}>{list.map((s, i) => <div key={s.id} data-i={i} className="h-full w-full snap-start snap-always"><LiveView s={s} active={i === active} /></div>)}</Pager>;
 }
 
 export default function ReelsPage() {
@@ -111,7 +76,7 @@ export default function ReelsPage() {
   const pick = (t: Tab) => { setTab(t); history.replaceState(null, '', t === 'foryou' ? '/reels' : `/reels?tab=${t}`); };
   return (
     <Shell immersive rail={false} flush>
-      <div className="fixed inset-x-0 top-0 bottom-[calc(54px+env(safe-area-inset-bottom))] z-30 bg-[#0b0b0d] md:static md:mx-auto md:h-[calc(100dvh-8rem)] md:max-w-[420px] md:overflow-hidden md:rounded-[18px]">
+      <div className="fixed inset-0 z-30 bg-[#0b0b0d] pb-[calc(76px+env(safe-area-inset-bottom))] md:pb-0 md:static md:mx-auto md:h-[calc(100dvh-8rem)] md:max-w-[420px] md:overflow-hidden md:rounded-[18px]">
         <div className="absolute inset-x-0 top-0 z-20 flex h-12 items-center justify-center bg-gradient-to-b from-black/60 to-transparent px-3">
           <nav role="tablist" aria-label="Reels" className="flex items-center gap-5">
             {TABS.map(([k, l]) => (

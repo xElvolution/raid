@@ -13,7 +13,7 @@ export function ChartPanel({ symbol, lines, height = 320 }: { symbol: string; li
   return (
     <section className="panel overflow-hidden">
       <div className="flex items-center justify-between gap-2 border-b border-line px-2.5 py-2 md:px-3 md:py-2.5">
-        <Segmented id={`tf-${symbol}`} value={tf} onChange={setTf} options={[{ value: '15m', label: '15m' }, { value: '1h', label: '1h' }, { value: '4h', label: '4h' }, { value: '1d', label: '1d' }]} />
+        <Segmented id={`tf-${symbol}`} value={tf} onChange={setTf} options={[{ value: '5m', label: '5m' }, { value: '15m', label: '15m' }, { value: '1h', label: '1h' }, { value: '4h', label: '4h' }, { value: '1d', label: '1D' }]} />
         <div className="flex items-center gap-1">
           <button onClick={() => setMode('candles')} aria-label="Candles" aria-pressed={mode === 'candles'} className={`press grid h-8 w-8 place-items-center rounded-[10px] ${mode === 'candles' ? 'bg-raised text-ink' : 'text-mute'}`}><CandlestickChart size={16} /></button>
           <button onClick={() => setMode('area')} aria-label="Line" aria-pressed={mode === 'area'} className={`press grid h-8 w-8 place-items-center rounded-[10px] ${mode === 'area' ? 'bg-raised text-ink' : 'text-mute'}`}><LineChart size={16} /></button>

@@ -1,17 +1,16 @@
+import { useId } from 'react';
 /**
- * The RAID mark: three rounded bars climbing toward a flare-orange sell line; the last bar breaks through it.
- * Built on a 4px grid so it stays crisp from a 16px favicon to a billboard.
+ * The RAID brand: the dotted-ring arrow mark and the wordmark.
  */
-export function Mark({ size = 28, className = '', mono = false, light = false }: { size?: number; className?: string; mono?: boolean; light?: boolean }) {
-  const fg = mono ? 'currentColor' : light ? '#f2f1ec' : 'var(--color-ink)';
-  const sig = mono ? 'currentColor' : 'var(--color-signal)';
+const DOTS: [number, number][] = [[50.0,15.0],[57.34,15.83],[64.32,18.27],[70.58,22.2],[75.8,27.42],[79.73,33.68],[82.17,40.66],[83.0,48.0],[82.17,55.34],[79.73,62.32],[75.8,68.58],[70.58,73.8],[64.32,77.73],[35.68,77.73],[29.42,73.8],[24.2,68.58],[20.27,62.32],[17.83,55.34],[17.0,48.0],[17.83,40.66],[20.27,33.68],[24.2,27.42],[29.42,22.2],[35.68,18.27],[42.66,15.83]];
+const ARROW = 'M50 25.4 L65.5 51 L53.6 42.6 L59 84.6 L50 71 L41 84.6 L46.4 42.6 L34.5 51 Z';
+/** RAID mark: a ring of dots (the crew) around an arrow going up (the raid). Orange gradient; `mono` uses currentColor. */
+export function Mark({ size = 28, className = '', mono = false }: { size?: number; className?: string; mono?: boolean; light?: boolean }) {
+  const id = useId().replace(/:/g, '');
   return (
-    <svg viewBox="0 0 28 28" width={size} height={size} className={className} aria-hidden>
-      <rect x="1" y="17" width="5.5" height="10" rx="2.75" fill={fg} opacity=".38" />
-      <rect x="8.25" y="12" width="5.5" height="15" rx="2.75" fill={fg} opacity=".66" />
-      <rect x="15.5" y="7" width="5.5" height="20" rx="2.75" fill={fg} />
-      <rect x="22.5" y="1" width="5" height="26" rx="2.5" fill={sig} />
-      <rect x="0" y="9" width="28" height="2" rx="1" fill={sig} />
+    <svg viewBox="14 12 72 77" width={size} height={size} className={className} aria-hidden>
+      <defs><linearGradient id={`rg${id}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#ff7a1a" /><stop offset="1" stopColor="#ff3d0a" /></linearGradient></defs>
+      <g fill={mono ? 'currentColor' : `url(#rg${id})`}>{DOTS.map(([x, y], i) => <circle key={i} cx={x} cy={y} r="2.55" />)}<path d={ARROW} /></g>
     </svg>
   );
 }

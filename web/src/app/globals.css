@@ -75,6 +75,7 @@ html[data-theme="dark"] .tone2 { color: #6f6f69; }
 
 /* ---- Surfaces ---- */
 .panel { background: var(--pearl); border: 0; border-radius: var(--radius-card); box-shadow: var(--pearl-shadow); }
+.panel.glass, .glass.panel { background: var(--glass-bg); }
 .glass { background: var(--c-glass); border: 1px solid var(--color-line); border-radius: var(--radius-card); backdrop-filter: blur(18px) saturate(1.4); }
 /* The dark "obsidian" field: hero blocks inside the app. Graphite with a chrome sheen and a flare glow. */
 .cobalt-field, .obsidian {
@@ -206,3 +207,19 @@ html.theme-vt::view-transition-new(root) { z-index: 2; }
 .obsidian .on-pearl .text-mute, .cobalt-field .on-pearl .text-mute { color: #6c6d67; }
 .obsidian .on-pearl .eyebrow, .cobalt-field .on-pearl .eyebrow { color: #6c6d67; }
 .on-pearl { --c-ink: #15161a; --c-mute: #6c6d67; --c-faint: #a3a39b; --c-line: #e0ded5; --c-raised: #ebe9e2; --c-panel: #fbfaf7; --c-bg: #f2f1ec; }
+
+/* ===== Glass: translucent surfaces with blur, a soft hairline and an inner highlight. Tokens per theme. ===== */
+:root, html[data-theme="light"] {
+  --glass-bg: rgb(251 250 247 / .68); --glass-bg-strong: rgb(251 250 247 / .82);
+  --glass-border: rgb(21 22 26 / .08); --glass-hi: rgb(255 255 255 / .75);
+  --glass-shadow: 0 10px 30px -14px rgb(21 22 26 / .28);
+}
+html[data-theme="dark"] {
+  --glass-bg: rgb(22 22 26 / .62); --glass-bg-strong: rgb(22 22 26 / .8);
+  --glass-border: rgb(255 255 255 / .1); --glass-hi: rgb(255 255 255 / .07);
+  --glass-shadow: 0 14px 36px -16px rgb(0 0 0 / .8);
+}
+.glass { background: var(--glass-bg); -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%); border: 1px solid var(--glass-border); box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow); }
+.glass-strong { background: var(--glass-bg-strong); -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%); border: 1px solid var(--glass-border); box-shadow: inset 0 1px 0 var(--glass-hi), var(--glass-shadow); }
+.glass-bar { background: var(--glass-bg); -webkit-backdrop-filter: blur(18px) saturate(170%); backdrop-filter: blur(18px) saturate(170%); border-bottom: 1px solid var(--glass-border); }
+.glass-dark { background: rgb(18 18 22 / .55); -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%); border: 1px solid rgb(255 255 255 / .12); box-shadow: inset 0 1px 0 rgb(255 255 255 / .08), 0 14px 36px -16px rgb(0 0 0 / .8); }

@@ -4,6 +4,7 @@ import { quotes } from '@/lib/server-market';
 import { cached, fail, getJson, json } from '@/lib/server-cache';
 
 const TF: Record<string, { gecko: [string, number]; limit: number; cgDays: number }> = {
+  '5m': { gecko: ['minute', 5], limit: 144, cgDays: 1 },
   '15m': { gecko: ['minute', 15], limit: 96, cgDays: 1 },
   '1h': { gecko: ['hour', 1], limit: 168, cgDays: 7 },
   '4h': { gecko: ['hour', 4], limit: 180, cgDays: 30 },

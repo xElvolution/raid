@@ -63,7 +63,7 @@ export function ComposerSheet() {
       {o && (
         <motion.div className="fixed inset-0 z-[70] flex items-end justify-center bg-black/40 md:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close}>
           <motion.div role="dialog" aria-label="New post" onClick={(e) => e.stopPropagation()} initial={{ y: 40 }} animate={{ y: 0 }} exit={{ y: 40 }} transition={{ type: 'spring', stiffness: 420, damping: 36 }}
-            className="flex max-h-[92dvh] w-full max-w-[560px] flex-col rounded-t-[22px] bg-bg pb-[env(safe-area-inset-bottom)] md:rounded-[22px]">
+            className="flex max-h-[92dvh] w-full max-w-[560px] flex-col glass-strong rounded-t-[26px] pb-[env(safe-area-inset-bottom)] md:rounded-[22px]">
             <div className="flex items-center gap-2 border-b border-line px-3 py-2">
               <button onClick={close} aria-label="Close" className="press grid h-9 w-9 place-items-center rounded-full hover:bg-raised"><X size={18} /></button>
               {!o.replyTo && !o.quote && (

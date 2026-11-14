@@ -31,7 +31,9 @@ export function CoinChart({ candles, mode = 'candles', lines = [], height = 300 
       timeScale: { borderVisible: false, timeVisible: true, secondsVisible: false, rightOffset: 3 },
       crosshair: { mode: CrosshairMode.Magnet, vertLine: { color: rgba(P.ink, 0.35), labelBackgroundColor: P.brand }, horzLine: { color: rgba(P.ink, 0.35), labelBackgroundColor: P.brand } },
       localization: { priceFormatter: (v: number) => fmtPrice(v).replace('$', '') },
-      handleScroll: { vertTouchDrag: false },
+      handleScroll: { vertTouchDrag: false, horzTouchDrag: true, mouseWheel: true, pressedMouseMove: true },
+      handleScale: { pinch: true, mouseWheel: true, axisPressedMouseMove: true },
+      kineticScroll: { touch: true, mouse: false },
     });
     const data = [...candles].sort((a, b) => a.t - b.t).filter((x, i, arr) => i === 0 || Math.floor(x.t / 1000) > Math.floor(arr[i - 1]!.t / 1000));
     const pf = { type: 'custom' as const, formatter: (v: number) => fmtPrice(v).replace('$', ''), minMove: 1e-12 };
