@@ -10,10 +10,89 @@ import { CREWS, WAR, type Crew, type Proposal, daoTx, inWar, members, proposalTi
 import { countdown, shortName } from '@/lib/market';
 import { COINS, coinByAsset, explorerAccount } from '@/lib/coins';
 import { usdcOf, xLabel } from '@/lib/raid';
-import { send, useAccount } from '@/lib/wallet';
+import { connect, send, useAccount } from '@/lib/wallet';
 import { toast } from '@/lib/bus';
+import { Tabs } from '@/components/app/Tabs';
+import { StepSheet, H, P, Primary } from '@/components/app/Flow';
 
-export default function WarPage() {
+const CREW_INFO: Record<string, string> = {
+  frogs: 'Raids frog coins like $PEPE. Members vote on the coin and the target before anyone puts money in.',
+  dogs: 'Raids dog coins like $DOGE and $SHIB. Small targets, fast exits.',
+};
+export default function CrewsPage() {
+  const [tab, setTab] = useState<'crews' | 'war'>('crews');
+  return (
+    <Shell title="Crews">
+      <Tabs id="crews" value={tab} onChange={setTab} items={[{ key: 'crews', label: 'Crews' }, { key: 'war', label: 'Crew war' }]} />
+      {tab === 'crews' ? <CrewsList /> : <div className="pt-3"><WarBoard /></div>}
+    </Shell>
+  );
+}
+
+function CrewsList() {
+  const raids = useRaids();
+  return (
+    <div className="pt-3">
+      <p className="text-[13.5px] leading-relaxed text-mute"><b className="text-ink">A crew is a group that raids together.</b> Members vote on which coin to raid next, and the raid is started in the crew’s name. Joining is free apart from a small refundable deposit.</p>
+      <ul className="mt-3 divide-y divide-line">
+        {CREWS.map((c) => { const sc = warScore(c, raids.data ?? [], () => true); return (
+          <li key={c.key} className="flex items-start gap-3 py-3.5">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-[11px] font-bold" style={{ background: c.color, color: c.ink }}>{c.tag}</span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[14.5px] font-semibold">{c.name}</span>
+              <span className="mt-0.5 block text-[13px] leading-snug text-mute">{CREW_INFO[c.key]}</span>
+              <span className="mt-1 block text-[12px] text-faint">{sc.raids.length} raid{sc.raids.length === 1 ? '' : 's'} · {sc.hits} hit</span>
+            </span>
+            <JoinCrew crew={c} />
+          </li>
+        ); })}
+      </ul>
+    </div>
+  );
+}
+
+function JoinCrew({ crew }: { crew: Crew }) {
+  const acct = useAccount();
+  const dao = useDao(crew.dao);
+  const [step, setStep] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
+  const mem = members(dao.data?.policy);
+  const isMember = !!acct && mem.includes(acct);
+  const role = dao.data?.policy.roles.find((r) => typeof r.kind === 'object' && r.kind.Group)?.name ?? 'council';
+  const bond = dao.data?.policy.proposal_bond ?? '100000000000000000000000';
+  const bondNear = Number(bond) / 1e24;
+  async function ask() {
+    if (!acct) return;
+    setBusy(true);
+    try { await send(daoTx.askToJoin(crew.dao, bond, acct, role)); setStep(2); }
+    catch (e) { if ((e as Error).message !== 'connect_wallet') toast({ title: 'Not sent', body: (e as Error).message.slice(0, 140), tone: 'down' }); }
+    finally { setBusy(false); }
+  }
+  return (
+    <>
+      {isMember ? <span className="mt-1 rounded-full bg-raised px-3 py-1.5 text-[12.5px] font-semibold text-mute">Member</span>
+        : <button onClick={() => setStep(0)} className="press mt-0.5 h-9 shrink-0 rounded-full btn-signal px-4 text-[13.5px] font-semibold">Join</button>}
+      <StepSheet open={step !== null} onClose={() => setStep(null)} label={`Join ${crew.name}`} step={step ?? 0} total={3} onBack={step === 1 && !busy ? () => setStep(0) : undefined}>
+        {step === 0 ? <>
+          <H>How joining a crew works</H>
+          <P>You send a join request. Current members vote on it, and once enough say yes you’re in. As a member you can suggest raids and vote on them. You’ll get your deposit back when the vote finishes.</P>
+          <p className="mt-2 text-[12.5px] text-mute">{mem.length} member{mem.length === 1 ? '' : 's'} today.</p>
+          <Primary onClick={() => (acct ? setStep(1) : void connect())}>{acct ? 'Continue' : 'Sign in first'}</Primary>
+        </> : step === 1 ? <>
+          <H>Send your join request?</H>
+          <P>Your wallet will ask you to approve a refundable deposit of {bondNear} test NEAR to {crew.name}. Nothing else is taken.</P>
+          <Primary busy={busy} onClick={() => void ask()}>{busy ? 'Waiting for approval…' : 'Approve and send'}</Primary>
+        </> : <>
+          <H>Request sent</H>
+          <P>{crew.name} members will vote on it. You’ll see “Member” here once it passes.</P>
+          <Primary onClick={() => setStep(null)}>Done</Primary>
+        </>}
+      </StepSheet>
+    </>
+  );
+}
+
+function WarBoard() {
   const raids = useRaids();
   const now = useNow();
   const [a, b] = CREWS.map((c) => warScore(c, raids.data ?? [], inWar)) as [WarScore, WarScore];
@@ -21,7 +100,7 @@ export default function WarPage() {
   const lead = warLeader(a, b);
   const over = now > WAR.end;
   return (
-    <Shell title="Raid War">
+    <>
       <section className="panel overflow-hidden">
         <div className="flex items-center justify-between gap-2 border-b border-line px-3 py-2 md:px-4 md:py-2.5">
           <span className="flex items-center gap-1.5 eyebrow"><Swords size={12} />War #{WAR.id} · crew vs crew · 24 h</span>
@@ -56,7 +135,7 @@ export default function WarPage() {
         {[a, b].map((s) => <CrewPanel key={s.crew.key} crew={s.crew} score={s} />)}
       </div>
       {raids.error && <div className="mt-3"><ErrorState title="Can’t reach the war chest" retry={() => raids.refetch()} /></div>}
-    </Shell>
+    </>
   );
 }
 

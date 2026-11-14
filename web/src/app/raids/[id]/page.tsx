@@ -67,13 +67,13 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   const crewLabel = crewName(r.caller);
   const crew = crewLabel ? { name: crewLabel } : null;
 
-  const tabs = [{ key: 'room', label: 'Room' }, { key: 'crew', label: 'Crew' }, { key: 'chart', label: 'Chart' }, { key: 'rules', label: 'Receipts' }] as const;
+  const tabs = [{ key: 'room', label: 'Room' }, { key: 'crew', label: 'Who’s in' }, { key: 'chart', label: 'Chart' }, { key: 'rules', label: 'Receipts' }] as const;
   return (
     <Shell title={`Raid #${r.id}`} back="/raids">
       <header className="pt-3">
         <Link href={profileHref(r.caller)} className="flex items-center gap-2.5">
           <Avatar id={r.caller} size={36} />
-          <span className="min-w-0"><span className="block truncate text-[14px] font-semibold leading-tight">{crew ? crew.name : displayName(r.caller)}</span><span className="block text-[12.5px] text-mute">{crew ? 'Crew DAO · passed by vote' : `${callerRaids.length} called · ${callerRaids.filter((x) => x.hit).length} hit`}</span></span>
+          <span className="min-w-0"><span className="block truncate text-[14px] font-semibold leading-tight">{crew ? crew.name : displayName(r.caller)}</span><span className="block text-[12.5px] text-mute">{crew ? 'Crew: a group that raids together' : `${callerRaids.length} called · ${callerRaids.filter((x) => x.hit).length} hit`}</span></span>
           {personByAccount(r.caller) && <TestnetChip className="ml-auto" />}
         </Link>
         <div className="mt-5 flex items-center gap-3">

@@ -9,7 +9,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ChevronLeft, Clapperboard, Crosshair, Flag, Home, Moon, Plus, Radio, Settings, Sun, Wallet } from 'lucide-react';
+import { ChevronLeft, Clapperboard, Crosshair, Flag, Home, Moon, Plus, Radio, Rocket, Settings, Sun, Trophy, Wallet } from 'lucide-react';
+import { TickerTape } from './Ticker';
 import { Mark, Wordmark } from './Brand';
 import { Avatar } from './app/Avatar';
 import { RadarRail } from './app/Radar';
@@ -31,6 +32,8 @@ const TABS = [
   { href: '/live', label: 'Live', Icon: Radio },
   { href: '/raids', label: 'Raids', Icon: Crosshair },
   { href: '/war', label: 'Crews', Icon: Flag },
+  { href: '/launch', label: 'Launch', Icon: Rocket },
+  { href: '/leaderboard', label: 'Ranks', Icon: Trophy },
 ] as const;
 const BOTTOM = [TABS[0], TABS[1], null, TABS[2], 'you'] as const;
 
@@ -118,6 +121,7 @@ export function Shell({ children, title, back, actions, rail = true, flush, tabs
           </div>
         </div>
         {tabs && <div className="mx-auto max-w-[1180px] md:px-6">{tabs}</div>}
+        <div className="hidden md:block"><TickerTape /></div>
         {!NET.live && <p className="bg-ink py-1 text-center text-[11.5px] text-bg">Mainnet: browsing only, raids launch soon. <Link href="/settings" className="underline">Switch to Testnet</Link></p>}
       </header>
 

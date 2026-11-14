@@ -1,4 +1,5 @@
 'use client';
+import { Rocket, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowUpRight, ChevronRight } from 'lucide-react';
@@ -30,7 +31,7 @@ export default function RaidsPage() {
   const pot = all.reduce((s, r) => s + usdcOf(r.pot), 0);
   const hit = all.filter((r) => r.hit).length;
   return (
-    <Shell title="Raids">
+    <Shell title="Raids" actions={<><Link href="/leaderboard" aria-label="Ranks" className="press grid h-9 w-9 place-items-center rounded-full text-mute hover:bg-raised md:hidden"><Trophy size={18} /></Link><Link href="/launch" aria-label="Launchpad" className="press grid h-9 w-9 place-items-center rounded-full text-mute hover:bg-raised md:hidden"><Rocket size={18} /></Link></>}>
       <header className="pb-5 pt-4 md:pt-2">
         <h1 className="text-[24px] font-semibold leading-[1.02] tracking-[-0.045em] md:text-[44px]">Pick a coin. <span className="text-faint">Set the line.</span></h1>
         <p className="mt-3 max-w-[44ch] text-[14.5px] leading-relaxed text-mute">Someone picks a coin and a target. Others pool money in. It buys together and sells automatically when the target is hit.</p>

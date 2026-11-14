@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Plus } from 'lucide-react';
-import { CoinAvatar } from '../ui';
+import { CoinAvatar, Delta } from '../ui';
 import { ChromeChest } from '../Chrome';
 import { useNow, useRaids, useBuyback } from '@/lib/hooks';
-import { countdown } from '@/lib/market';
+import { countdown, fmtPrice, useQuotes } from '@/lib/market';
 import { phase, stepIndex, target, usdcOf, xLabel, type Raid } from '@/lib/raid';
 import { openCall } from '@/lib/bus';
 
@@ -86,7 +86,30 @@ export function RadarRail() {
           </Link></li>
         ))}
       </ul>
+      <Movers />
       <p className="mt-6 px-1 text-[12px] leading-relaxed text-faint">RAID runs on the NEAR testnet chest. Raids can lose money. Nothing here is investment advice.</p>
     </aside>
+  );
+}
+
+/** Movers 24h with a one-tap Raid, restored from the old right rail. */
+function Movers() {
+  const q = useQuotes();
+  const movers = [...(q.data ?? [])].sort((a, b) => Math.abs(b.change24h ?? 0) - Math.abs(a.change24h ?? 0)).slice(0, 5);
+  if (!movers.length) return null;
+  return (
+    <>
+      <p className="eyebrow mt-6 px-1">Movers 24h</p>
+      <ul className="mt-1">
+        {movers.map((c) => (
+          <li key={c.symbol} className="flex items-center gap-2.5 px-1 py-2">
+            <CoinAvatar symbol={c.symbol} image={c.image} size={28} />
+            <Link href={`/coin/${c.symbol}`} className="min-w-0 flex-1 hover:underline"><span className="block text-[13px] font-semibold">${c.symbol}</span><span className="block mono text-[11px] text-mute">{fmtPrice(c.priceUsd)}</span></Link>
+            <Delta pct={c.change24h} className="text-[11.5px]" />
+            <button onClick={() => openCall(c.symbol)} className="press ml-1 h-7 rounded-full px-2.5 text-[11.5px] font-semibold hairline">Raid</button>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }

@@ -83,6 +83,7 @@ export const useDao = (dao: string) => useQuery({ queryKey: ['dao', dao], queryF
 
 /** Wallet-ready DAO calls. Proposals carry the DAO's bond (0.1 NEAR on RAID crews); voting needs no deposit. */
 export const daoTx = {
+  askToJoin: (dao: string, bond: string, member: string, role: string) => ({ receiverId: dao, method: 'add_proposal', deposit: bond, gas: '100000000000000', args: { proposal: { description: `Add ${member} to the crew$$$$Join request from the RAID app`, kind: { AddMemberToRole: { member_id: member, role } } } } }),
   vote: (dao: string, p: Proposal, action: 'VoteApprove' | 'VoteReject') => ({ receiverId: dao, method: 'act_proposal', args: { id: p.id, action, proposal: p.kind }, deposit: '0', gas: '200000000000000' }),
   proposeRaid: (dao: string, bond: string, a: { title: string; target: string; target_x_bps: number }) => ({
     receiverId: dao, method: 'add_proposal', deposit: bond, gas: '100000000000000',
