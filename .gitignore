@@ -15,3 +15,14 @@ scripts/*/node_modules
 
 # judge keys for the submission form (never commit)
 *.local.md
+
+# local / generated
+.open-next/
+**/.wrangler/
+.wrangler/
+
+# credentials and keys (never commit)
+**/.near-credentials/
+*.pem
+id_rsa
+id_ed25519
