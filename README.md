@@ -2,6 +2,8 @@
 
 **Call a raid on any memecoin. Your crew backs it. A keyless war chest on NEAR buys together and can only sell at the line.**
 
+Live page: [https://raid.5-189-170-85.sslip.io](https://raid.5-189-170-85.sslip.io)
+
 > NEAR HACKATHON, Nov 2026. Tracks: `memecoins` (primary), `defi`, `open`, `social` (crews are Sputnik DAOs).
 > Status: **NEAR testnet**. Nothing is deployed to mainnet and no real funds are used. Every number below links to a testnet transaction.
 > Baseline disclosure (Q-003/Q-004): the social app shell comes from the team's earlier project *Called* (`docs/REUSE-MAP.md`).
@@ -30,7 +32,7 @@ It is a game with rules enforced by a contract, not an investment product.
 ### Around the raid
 - **Raid War** (`/war`): two crews compete for 24 hours. Firepower is USDC backed into their DAO-called raids; hits are realised multiples. A share card is rendered at `/api/war/card`.
 - **Crews are Sputnik DAOs** (`sputnikv2.testnet`): a raid is a `FunctionCall` proposal to `call_raid`. When it passes, **the DAO itself is the caller**, so the caller fee goes to the crew treasury.
-- **Reels** (`/reels`): a vertical video feed that markets raids. Upload an mp4 of up to 60 s, or paste an X, Instagram or TikTok link. Each reel shows the coin, the live raid phase and a Back button. A back through a reel is verified on chain and credits the creator 20% of the caller's fee on a hit (*off-chain attribution, demo*). `/reels/top` ranks creators.
+- **Reels** (`/reels`): a vertical video feed that markets raids. Upload an mp4 of up to 60 s, or paste an X, Instagram or TikTok link. Each reel shows the coin, the live raid phase and a Back button. A back through a reel is verified on chain and credits the creator 20% of the caller's fee on a hit (*off-chain attribution, not yet on the contract*). `/reels/top` ranks creators.
 - **Launchpad** (`/launch`): bonding-curve coins priced in USDC, with a 1% creator fee. It also shows live fair launches from meme.cooking (read-only).
 - **Social:** a feed and crew chat on every raid, with NEP-413 sign-in (no gas).
 - **Telegram bot:** `/raid PEPE 2x` posts a countdown card with a Back button. It edits the card as the crew fills and announces the hit or retreat (code and mock tests; not run live).
@@ -117,7 +119,7 @@ The back transactions show one failed receipt, on `intents-not-on-testnet.…`: 
 
 ## Run it
 1. `cd contracts && cargo test`: chest and launchpad unit tests (lifecycle, countdown, fee split, caps, bridged beneficiary, keyless claims).
-2. `cd api && npm ci && npm test`: social, reels and Telegram bot tests. `npm run dev:local` serves the API on :8787 with PGlite. `SEED_DEMO=1` adds labelled DEMO posts and reels.
+2. `cd api && npm ci && npm test`: social, reels and Telegram bot tests. `npm run dev:local` serves the API on :8787 with PGlite. `SEED_DEMO=1` adds clearly labelled sample posts and reels (the seed script uses `demo_*` account names).
 3. `cd web && npm ci && npm run build && npx next start -p 3420`, then open `/raids`. Raids are read live from the testnet chest.
 4. `cd scripts && npm ci && node testnet-e2e.mjs a` (then `b` about 20 minutes later) replays the rehearsal on testnet. `node mainnet-go-no-go.mjs check` is read-only, and spending stages refuse to run without `--i-confirm-mainnet`.
 5. `cd api && npm run telegram:mock` is a dry run of the bot. `TELEGRAM_BOT_TOKEN=… npm run telegram` runs it live.
@@ -129,15 +131,16 @@ The back transactions show one failed receipt, on `intents-not-on-testnet.…`: 
 | `contracts/raid-launchpad` | Bonding-curve launchpad: `create_coin`, buy via `ft_transfer_call`, `sell`, `claim_fees` |
 | `contracts/test-usdc` | Testnet stablecoin |
 | `web/` | Next.js app: raids, war, reels, launch, feed, judges, keyless backing |
+| `landing/` | Public static landing page, live at https://raid.5-189-170-85.sslip.io |
 | `api/` | Social API, reels, Telegram bot |
-| `scripts/` | Testnet runs, E2E rehearsal, receipts, screenshot runner, demo-reel renderer |
-| `docs/` | Build log, E2E checklist, any-chain design, keyless research, demo script, X post draft |
+| `scripts/` | Testnet runs, E2E rehearsal, receipts, screenshot runner, reel renderer |
+| `docs/` | Build log, E2E checklist, any-chain design, keyless research, walkthrough script, X post draft |
 | `evidence/` | Resolved testnet transactions and run logs |
 
 ## Known limits (honest)
 - **Testnet only.** NEAR Intents and 1Click are mainnet services. Testnet raids record stakes, DAO calls and Chain Signatures signatures, but cannot swap, so no testnet raid has settled and Raid War hits are 0. The settle and claim paths are covered by contract unit tests (`full_raid_lifecycle`, `miss_pays_no_fees_and_backers_can_lose`, `anyone_can_settle_a_keyless_backer_into_intents`).
 - On testnet, a stand-in account plays the Intents bridge for MetaMask and Phantom backs. The signatures themselves are checked by mainnet `intents.near` (read-only `simulate_intents`).
-- Reel-creator rewards are tracked by the API, not by the contract (*off-chain attribution, demo*). Seeded reels and posts are marked DEMO and come from `demo_*` accounts; the reels are rendered from real price candles. No real people appear.
+- Reel-creator rewards are tracked by the API, not by the contract (*off-chain attribution, not yet on the contract*). Seeded reels and posts are marked as sample data and come from `demo_*` accounts; the reels are rendered from real price candles. No real people appear.
 - The buyback reserve accumulates on hits and has no spend method yet. Launchpad coins live in the launchpad ledger, not separate NEP-141 contracts. Graduation to a DEX pool is not built.
 - One in-flight swap per token, enforced by the contract. **Not audited.** Tiny amounts only.
 
