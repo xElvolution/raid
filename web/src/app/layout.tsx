@@ -17,6 +17,7 @@ const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://app.raid.5-189-170-85.sslip.io'),
   title: { default: `${BRAND.name} · Call it. Crew up. Cash out at the line.`, template: `%s · ${BRAND.name}` },
   description: BRAND.pitch,
   applicationName: BRAND.name,

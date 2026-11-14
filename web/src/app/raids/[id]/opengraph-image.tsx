@@ -16,13 +16,13 @@ export default async function OG({ params }: { params: Promise<{ id: string }> }
       <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
         <div style={{ width: 56, height: 56, borderRadius: 16, background: 'linear-gradient(135deg,#ff7a1a,#ff3d0a)', display: 'flex' }} />
         <div style={{ fontSize: 40, fontWeight: 800, letterSpacing: -1 }}>RAID</div>
-        <div style={{ marginLeft: 'auto', fontSize: 28, color: 'rgba(255,255,255,.6)' }}>Raid #{id}</div>
+        <div style={{ marginLeft: 'auto', fontSize: 28, color: 'rgba(255,255,255,.6)' }}>{`Raid #${id}`}</div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         <div style={{ fontSize: 120, fontWeight: 800, letterSpacing: -4, lineHeight: 1 }}>{r ? `$${sym}` : 'Raid not found'}</div>
         {r && <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginTop: 24 }}>
-          <div style={{ fontSize: 56, fontWeight: 800, color: '#ff5a1f' }}>Goal {xLabel(r.target_x_bps)}</div>
-          <div style={{ fontSize: 40, color: 'rgba(255,255,255,.75)' }}>{usdcOf(r.pot).toFixed(0)} tUSDC pooled</div>
+          <div style={{ fontSize: 56, fontWeight: 800, color: '#ff5a1f' }}>{`Goal ${xLabel(r.target_x_bps)}`}</div>
+          <div style={{ fontSize: 40, color: 'rgba(255,255,255,.75)' }}>{`${usdcOf(r.pot).toFixed(0)} tUSDC pooled`}</div>
         </div>}
       </div>
       <div style={{ display: 'flex', fontSize: 34, color: 'rgba(255,255,255,.85)' }}>{status}</div>
