@@ -41,11 +41,13 @@ Meme raids happen in Telegram and X every day. Someone calls a coin and a target
 
 RAID puts that raid on a NEAR contract. A caller, or a crew DAO by vote, names a coin, a line (1.5x, 2x or 3x) and a retreat deadline. The crew backs the raid with USDC during a public window, from a NEAR wallet or from MetaMask or Phantom with no NEAR account, through NEAR Intents. After a public countdown, a keyless war chest buys the whole pot in one swap. It can only sell at or above the line, or at market after the retreat deadline. On a hit, fees come only from profit: 2.5% to the caller and 7.5% to a buyback reserve. On a miss, nobody takes a fee.
 
+Around the chest is a social app: a feed, reels with a live coin card, camera livestreams with a pinned coin, a live Tokens list, callers verified by their on-chain hit rate, and monthly seasons ranked by realised on-chain profit.
+
 NEAR is the settlement and the rules layer. The chest lives on NEAR, checks 1Click-signed quotes on chain, can sign its own buy intent with Chain Signatures, and pays any-chain backers into an Intents account. Crews are Sputnik DAO v2 accounts, so a passed proposal is the call, and the caller fee lands in the crew treasury.
 
 Status: NEAR testnet. One raid has gone the whole way: Open, Bought, Held, Sold at the line, Closed, every backer and the caller paid (120 in, 246 out). A second raid missed the line after retreat: the chest sold at market and paid no fees. NEAR Intents and 1Click have no testnet, so testnet swaps run against a venue contract that speaks the same methods as intents.near, with a solver that sets the prices. The chest rules, quote checks, countdown, line, fee split and claims are the real contract. Nothing is on mainnet yet.
 
-Character count of the form description above: 1640 (limit 2000).
+Character count of the form description above: 1872 (limit 2000).
 
 ## Tracks chosen, with reasons
 
@@ -53,7 +55,7 @@ It is still one submission. List every track the project fits.
 
 1. `memecoins` (primary). Track brief: memecoins where the meme does something, treasuries with rules, onchain rituals and challenges, judged on the mechanic. A RAID call is that mechanic: a public line, a shared chest, a forced sell rule, and a fee that exists only on a hit.
 2. `defi`. Track brief: trading that settles across chains through NEAR Intents and Chain Signatures. The chest buys and sells through Intents, checks 1Click-signed quotes on chain, can sign its own buy intent with Chain Signatures, and accepts backs from NEAR, EVM and Solana-style accounts.
-3. `social`. Track brief: shared budgets and collective ownership on Sputnik DAO, without rebuilding the multisig. Each crew is a Sputnik DAO v2. A raid can be a FunctionCall proposal to `call_raid`. When it passes, the DAO is the caller, and the caller fee goes to the crew treasury. The app also has a public feed and profiles for callers and backers.
+3. `social`. Track brief: shared budgets and collective ownership on Sputnik DAO, without rebuilding the multisig. Each crew is a Sputnik DAO v2. A raid can be a FunctionCall proposal to `call_raid`. When it passes, the DAO is the caller, and the caller fee goes to the crew treasury. The app is social first: a feed, reels, camera livestreams, profiles, follows, verified callers and a seasons leaderboard for callers and crews.
 
 Optional: `open`, if the lead wants the "does not fit a single category" track as well. The product already fits the three above, so `open` is not required.
 
@@ -65,8 +67,11 @@ Not recommended: `thesis`, `privacy`, `business`, `swarms`, `security`, `agents`
 - NEAR Intents and 1Click are mainnet-only (Q-007). There is no Intents testnet. On testnet, the chest points at `contracts/intents-sim` (`raidvenue-mwgr1iba.testnet`), which implements the methods the chest calls on `intents.near`. A solver account plays the market maker and sets the prices, so fills and the price move are simulated. The chest code, quote checks, countdown, line rule, fee split and claims are the real contract.
 - No swap has run through live `intents.near` and 1Click yet. That needs a small mainnet run, which the lead has not approved.
 - MetaMask and Phantom signatures were checked read-only with mainnet `intents.near` `simulate_intents`. On testnet, a stand-in account plays the bridge for those backs.
-- Raids that judges call on the hosted app stay Open until someone runs the buy with a solver quote. There is no automatic keeper on testnet.
+- Raids called on the hosted app stay Open until someone runs the buy with a solver quote. There is no automatic keeper on testnet.
 - Reel-creator rewards are tracked by the API, not by the contract. The buyback reserve accumulates on hits and has no spend method yet. The launchpad does not yet graduate coins to a DEX. The contract is not audited. Tiny amounts only.
+- Verified badges and the seasons leaderboard are computed in the app from on-chain raid records (the contract has no badge or season state). Auto-join is an off-chain preference saved on the device: it prepares a Join when a followed caller opens a raid, and the user still approves it in their wallet.
+- Livestreams are browser-to-browser WebRTC (one streamer to each viewer) with signaling on the RAID API and public STUN only. There is no TURN relay, so a viewer behind a strict network can fail to connect. Streams are not recorded.
+- Test funds come from the in-app faucet. It opens a testnet account `u-xxxx.raidapp.testnet` for a key made in the browser, then sends test NEAR and 500 tUSDC. The parent key stays on the server.
 
 ## Required X post
 
@@ -95,7 +100,7 @@ Write the README for a machine reader as well as a human one (Q-017): what the p
 
 Relevant Qs:
 
-- Q-001 / Q-003 / Q-004 / Q-005: work from the 2026-10-19 announcement to 2026-11-14 counts. Earlier commits are baseline. Libraries and the team's own pre-window code are allowed if listed. RAID already discloses that the social app shell comes from the team's earlier project Called (`docs/REUSE-MAP.md`), and that the chest, launchpad, raids, crews, keyless backing and judge kit are new in the window.
+- Q-001 / Q-003 / Q-004 / Q-005: work from the 2026-10-19 announcement to 2026-11-14 counts. Earlier commits are baseline. Libraries and the team's own pre-window code are allowed if listed. RAID already discloses that the social app shell comes from the team's earlier project Called (`docs/REUSE-MAP.md`), and that the chest, launchpad, raids, crews, keyless backing, reels, livestreams, the Tokens list, verified callers, seasons, alerts and the test-funds faucet are new in the window.
 - Q-010: testnet-only projects are eligible. Mainnet is required only where the integration is mainnet-only. RAID is eligible as a testnet project, with the Intents stand-in disclosed.
 - Q-012: the repository must be public by the deadline. A hosted app is a plus; keep it up to 2026-11-18, ideally 2026-11-25.
 - Q-014: any license is fine; MIT is already in the repo. Keep the repo public through judging.
@@ -127,6 +132,16 @@ Miss path, raid #2 (3x line, 1 hour retreat): 20 tUSDC backed, bought, held, the
 
 Full table: root README. Raw log: `evidence/testnet-lifecycle-run.json`. Receipt list for the app: `evidence/lifecycle-receipts.json` (not written into `web/`; the UI worker can copy it).
 
-Live app (NEAR testnet): https://raid.5-189-170-85.sslip.io
-Judges: https://raid.5-189-170-85.sslip.io/judges
-Raid #1: https://raid.5-189-170-85.sslip.io/raids/1
+Live app (NEAR testnet): https://raid.5-189-170-85.sslip.io (also https://app.raid.5-189-170-85.sslip.io)
+
+What to open, as "do X, see Y":
+
+- Home `/feed`: stories row, then For you, Following and Tokens tabs. Tokens is a live list (price, 24h, volume, market cap) with a Watchlist tab. Tap a row to see its token page: interactive chart, raids on the coin, posts about it, Buy and Start raid.
+- Raid `/raids`: open raids, then a raid page such as `/raids/1`. It shows the coin, the goal badge, the caller with verified badge and Follow, an interactive chart (5m to 1D, candles or line, pinch zoom) with Entry and Target lines, the pot meter, the payoff in plain words, three steps (Join, Buys together, Sells at the line), and Chat, Who's in and Activity tabs. Join raid and Share to X sit in a bottom bar. Each raid has its own share image for X.
+- Reels `/reels`: For you, Following and Live tabs. Each reel shows the creator, Follow, "@x is shilling $COIN" and a coin card with price, 24h, market cap, sparkline, Buy and Join raid.
+- Live: the + button, then Go live (`/golive`). Turn on the camera, pin a coin, go live. Viewers open Reels, then Live, and see the video with chat, hearts, viewer count and the pinned coin.
+- Ranks `/leaderboard`: the season leaderboard for callers and crews by realised profit, and Get verified with progress toward the badge.
+- Alerts: the bell in the top bar lists raids opened, bought, hit or sold early, and Auto-join prompts.
+- Test funds: sign in, then Get test funds. The account is created under `raidapp.testnet`.
+
+There is no separate judges page any more: `/judges` redirects to the feed, and every page is readable without signing in.

@@ -19,7 +19,7 @@ export function useOpenRaidFor(symbol: string, raidId?: number | null) {
   return list.find((r) => r.id === raidId) ?? list.sort((a, b) => b.id - a.id)[0];
 }
 
-export function CoinCard({ symbol, raidId, dark = false }: { symbol: string; raidId?: number | null; dark?: boolean }) {
+export function CoinCard({ symbol, raidId, dark = false, onJoin }: { symbol: string; raidId?: number | null; dark?: boolean; onJoin?: (raidId: number) => void }) {
   const q = useQuote(symbol);
   const c = useCandles(symbol, '1h');
   const raid = useOpenRaidFor(symbol, raidId);
@@ -29,7 +29,7 @@ export function CoinCard({ symbol, raidId, dark = false }: { symbol: string; rai
   const name = COINS.find((x) => x.symbol === symbol)?.name ?? symbol;
   return (
     <>
-      <div className={`${dark ? 'glass-dark text-white' : 'glass'} flex items-center gap-2.5 rounded-[18px] p-2.5`}>
+      <div onPointerDown={(e) => e.stopPropagation()} className={`${dark ? 'glass-dark text-white' : 'glass'} relative z-10 flex touch-manipulation items-center gap-2.5 rounded-[18px] p-2.5`}>
         <button onClick={() => setSheet(true)} className="flex min-w-0 flex-1 items-center gap-2.5 text-left" aria-label={`About $${symbol}`}>
           <CoinAvatar symbol={symbol} image={q.data?.image} size={38} />
           <span className="min-w-0 flex-1">
@@ -38,8 +38,8 @@ export function CoinCard({ symbol, raidId, dark = false }: { symbol: string; rai
           </span>
           {closes.length > 2 && <span className="block w-[56px] shrink-0"><Spark values={closes} width={56} height={26} stroke={up ? "var(--color-up)" : "var(--color-down)"} /></span>}
         </button>
-        <Link href={`/coin/${symbol}`} className={`press grid h-10 shrink-0 place-items-center rounded-full px-4 text-[13.5px] font-bold ${dark ? 'bg-white text-black' : 'bg-ink text-bg'}`}>Buy</Link>
-        {raid && <button onClick={() => openJoin(raid.id)} className="press h-10 shrink-0 rounded-full btn-signal px-3.5 text-[13.5px] font-bold">Join raid</button>}
+        <button type="button" onClick={(e) => { e.stopPropagation(); setSheet(true); }} className={`press relative z-10 h-11 shrink-0 touch-manipulation rounded-full px-4 text-[13.5px] font-bold ${dark ? 'bg-white text-black' : 'bg-ink text-bg'}`}>Buy</button>
+        {raid && <button type="button" onClick={(e) => { e.stopPropagation(); onJoin?.(raid.id); openJoin(raid.id); }} className="press relative z-10 h-11 shrink-0 touch-manipulation rounded-full btn-signal px-3.5 text-[13.5px] font-bold">Join raid</button>}
       </div>
       <StepSheet open={sheet} onClose={() => setSheet(false)} label={`$${symbol}`} step={0} total={1}>
         <div className="flex items-center gap-3 pt-3">
@@ -52,7 +52,7 @@ export function CoinCard({ symbol, raidId, dark = false }: { symbol: string; rai
         </div>
         {raid && <p className="mt-3 text-[13px] text-mute">A ${target(raid).symbol} raid to {xLabel(raid.target_x_bps)} is open right now.</p>}
         <div className="mt-4 grid grid-cols-2 gap-2">
-          <Link href={`/coin/${symbol}`} onClick={() => setSheet(false)} className="press flex h-12 items-center justify-center rounded-full bg-ink text-[14px] font-semibold text-bg">Buy</Link>
+          {q.data?.url ? <a href={q.data.url} target="_blank" rel="noreferrer" className="press flex h-12 items-center justify-center rounded-full bg-ink text-[14px] font-semibold text-bg">Buy ${symbol}</a> : <Link href={`/coin/${symbol}`} onClick={() => setSheet(false)} className="press flex h-12 items-center justify-center rounded-full bg-ink text-[14px] font-semibold text-bg">Buy ${symbol}</Link>}
           {raid ? <button onClick={() => { setSheet(false); openJoin(raid.id); }} className="press h-12 rounded-full btn-signal text-[14px] font-semibold">Join raid</button>
             : <button onClick={() => { setSheet(false); openCall(symbol); }} className="press h-12 rounded-full btn-signal text-[14px] font-semibold">Start a raid</button>}
         </div>

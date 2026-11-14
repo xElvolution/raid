@@ -16,7 +16,8 @@ export function AlertsBell() {
   const aj = useAutoJoin();
   const [open, setOpen] = useState(false);
   const [seen, setSeen] = useState<string[]>([]);
-  useEffect(() => { try { setSeen(JSON.parse(localStorage.getItem(KEY) ?? '[]')); } catch { /* none */ } }, []);
+  const [loaded, setLoaded] = useState<false | 'new' | 'old'>(false);
+  useEffect(() => { try { const v = localStorage.getItem(KEY); setSeen(v ? JSON.parse(v) : []); setLoaded(v ? 'old' : 'new'); } catch { setLoaded('old'); } }, []);
   const items = useMemo(() => (raids.data ?? []).slice().sort((a, b) => b.id - a.id).slice(0, 20).map((r) => {
     const sym = target(r).symbol;
     const k = `${r.id}:${r.status}:${r.hit}`;
@@ -26,7 +27,9 @@ export function AlertsBell() {
     if (live && r.caller in aj) return { k: k + ':aj', r, I: Crosshair, tone: 'text-lime', t: `Auto-join ready: $${sym} to ${xLabel(r.target_x_bps)}`, b: `${displayName(r.caller)} opened a raid. Join with ${aj[r.caller]} tUSDC, you approve it.`, join: true };
     return { k, r, I: Crosshair, tone: 'text-lime', t: live ? `New raid on $${sym} to ${xLabel(r.target_x_bps)}` : `Raid #${r.id} $${sym} is about to buy`, b: live ? `By ${displayName(r.caller)}. Join before the timer ends.` : 'Join window closed.' };
   }).sort((a, b) => Number('join' in b) - Number('join' in a)), [raids.data, now, aj]);
-  const unread = items.filter((x) => !seen.includes(x.k)).length;
+  // First visit: everything already on the chest counts as seen, so the badge only counts what happens next.
+  useEffect(() => { if (loaded === 'new' && raids.data) { const ks = items.map((x) => x.k); setSeen(ks); localStorage.setItem(KEY, JSON.stringify(ks)); setLoaded('old'); } }, [loaded, raids.data, items]);
+  const unread = loaded === 'old' ? items.filter((x) => !seen.includes(x.k)).length : 0;
   const openSheet = () => { setOpen(true); const ks = items.map((x) => x.k); setSeen(ks); localStorage.setItem(KEY, JSON.stringify(ks)); };
   return (
     <>

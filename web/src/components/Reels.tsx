@@ -52,13 +52,13 @@ export function ReelView({ r, active }: { r: Reel; active: boolean }) {
         {r.kind === 'video' && <button onClick={() => setMuted((m) => !m)} aria-label={muted ? 'Unmute' : 'Mute'} className="pointer-events-auto ml-auto grid h-9 w-9 place-items-center rounded-full glass-dark">{muted ? <VolumeX size={16} /> : <Volume2 size={16} />}</button>}
       </div>
       <ReelRail r={r} />
-      <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
-        <div className="mr-14 flex items-center gap-2">
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 p-3 md:p-4">
+        <div className="pointer-events-auto mr-14 flex w-fit max-w-[calc(100%-3.5rem)] items-center gap-2">
           <Link href={`/u/${r.handle}`} className="flex min-w-0 items-center gap-2"><Avatar id={r.near_account} handle={r.handle} size={36} /><span className="truncate text-[15px] font-semibold">{r.display_name || r.handle}</span><VerifiedBadge account={r.near_account} /></Link>
           <FollowBtn handle={r.handle} />
         </div>
         <p className="mr-14 mt-1.5 text-[14px] leading-snug text-white/90 line-clamp-2">{sym ? <>@{r.handle} is shilling <b className="text-white">${sym}</b>{r.caption ? <span className="text-white/70"> · {r.caption}</span> : null}</> : r.caption}</p>
-        {sym && <div className="mt-2.5" onClickCapture={() => raid && rememberReel(raid.id, r.id)}><CoinCard symbol={sym} raidId={raid?.id} dark /></div>}
+        {sym && <div className="pointer-events-auto relative z-20 mt-2.5"><CoinCard symbol={sym} raidId={raid?.id} dark onJoin={(id) => rememberReel(id, r.id)} /></div>}
       </div>
     </article>
   );
@@ -96,7 +96,7 @@ function ReelRail({ r }: { r: Reel }) {
     try { if (navigator.share) await navigator.share({ title: r.caption || 'RAID reel', url }); else { await navigator.clipboard.writeText(url); toast({ title: 'Link copied', tone: 'lime' }); } } catch { /* closed */ }
   };
   return (
-    <div className="absolute bottom-[8.5rem] right-2 flex flex-col items-center gap-4 text-white">
+    <div className="absolute bottom-[8.5rem] right-2 z-20 flex flex-col items-center gap-4 text-white">
       <RailBtn onClick={like} label="Like" count={String(n)}><motion.span animate={liked ? { scale: [1, 1.35, 1] } : { scale: 1 }}><Heart size={21} className={liked ? 'fill-[#ff3b5c] text-[#ff3b5c]' : ''} /></motion.span></RailBtn>
       <RailBtn onClick={() => openComposer({ text: `${r.coin ? `$${r.coin} ` : ''}`, raidId: r.raid_id ?? undefined })} label="Comment"><MessageCircle size={20} /></RailBtn>
       <RailBtn onClick={share} label="Share"><Send size={19} /></RailBtn>

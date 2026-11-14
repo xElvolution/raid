@@ -4,7 +4,8 @@
  * an explicit Approve step before any transaction, then a clear success state.
  */
 import Link from 'next/link';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Check, Droplets, Loader2, ShieldCheck, Wallet, X } from 'lucide-react';
@@ -22,10 +23,14 @@ export const claimSheet = bus<void>();
 export const openJoin = (id: number) => joinSheet.emit({ id });
 export const openClaim = () => claimSheet.emit();
 
+const noop = () => () => {};
+/** Sheets render into <body> so a blurred or fixed ancestor (glass header, full-screen reels) can't clip, offset or cover them. */
 export function StepSheet({ open, onClose, label, step, total, onBack, children }: { open: boolean; onClose: () => void; label: string; step: number; total: number; onBack?: () => void; children: ReactNode }) {
-  return (
+  const client = useSyncExternalStore(noop, () => true, () => false);
+  if (!client) return null;
+  return createPortal(
     <AnimatePresence>{open && (
-      <motion.div className="fixed inset-0 z-[78] flex items-end justify-center bg-black/45 md:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
+      <motion.div className="fixed inset-0 z-[90] flex items-end justify-center bg-black/45 md:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
         <motion.div role="dialog" aria-label={label} onClick={(e) => e.stopPropagation()} initial={{ y: 60 }} animate={{ y: 0 }} exit={{ y: 60 }} transition={{ type: 'spring', stiffness: 420, damping: 36 }}
           className="max-h-[88dvh] w-full max-w-[440px] overflow-y-auto glass-strong rounded-t-[26px] px-4 pt-3 pb-[max(16px,env(safe-area-inset-bottom))] md:rounded-[22px]">
           <div className="mx-auto mb-2 h-1 w-9 rounded-full bg-line md:hidden" />
@@ -38,7 +43,8 @@ export function StepSheet({ open, onClose, label, step, total, onBack, children 
           <AnimatePresence mode="wait"><motion.div key={step} initial={{ x: 24, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -24, opacity: 0 }} transition={{ duration: 0.18 }}>{children}</motion.div></AnimatePresence>
         </motion.div>
       </motion.div>
-    )}</AnimatePresence>
+    )}</AnimatePresence>,
+    document.body,
   );
 }
 export const H = ({ children }: { children: ReactNode }) => <h2 className="mt-3 text-[19px] font-semibold leading-tight tracking-[-0.02em]">{children}</h2>;
