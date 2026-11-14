@@ -21,14 +21,14 @@ export default function ReelsPage() {
   }, [items.length, q]);
   return (
     <Shell title="Reels" rail={false} flush actions={<>
-      <Link href="/reels/top" aria-label="Top reel creators" className="press grid h-9 w-9 place-items-center rounded-[10px] text-mute hover:bg-raised hover:text-ink"><Trophy size={17} /></Link>
-      <button onClick={() => setCompose(true)} aria-label="Post a reel" className="press flex h-9 items-center gap-1 rounded-[10px] bg-lime px-2.5 text-[12.5px] font-bold text-[#0a1a00]"><Plus size={15} strokeWidth={3} />Reel</button>
+      <Link href="/reels/top" aria-label="Top reel creators" className="press grid h-9 w-9 place-items-center rounded-[13px] text-mute hover:bg-raised hover:text-ink"><Trophy size={17} /></Link>
+      <button onClick={() => setCompose(true)} aria-label="Post a reel" className="press flex h-9 items-center gap-1 rounded-[13px] bg-lime px-2.5 text-[12.5px] font-bold text-[#1c0900]"><Plus size={15} strokeWidth={3} />Reel</button>
     </>}>
       <div ref={box} className="-mt-3 md:mt-0 mx-auto h-[calc(100dvh-9.6rem)] md:h-[calc(100dvh-8rem)] w-full max-w-[420px] snap-y snap-mandatory overflow-y-auto no-scrollbar md:rounded-[18px]">
         {items.map((r, i) => <div key={r.id} data-i={i} className="h-full w-full md:pb-3"><ReelView r={r} active={i === active} /></div>)}
         {q.isLoading && <Skeleton className="h-full w-full" />}
         {q.error && <div className="p-4"><ErrorState title="Can’t reach the reels API" body="The RAID social API didn’t answer." retry={() => q.refetch()} /></div>}
-        {!q.isLoading && !q.error && !items.length && <Empty title="No reels yet" body="Post the first one: a short clip that sells a raid." action={<button onClick={() => setCompose(true)} className="press h-10 rounded-[10px] bg-lime px-4 font-bold text-[#0a1a00]">Post a reel</button>} />}
+        {!q.isLoading && !q.error && !items.length && <Empty title="No reels yet" body="Post the first one: a short clip that sells a raid." action={<button onClick={() => setCompose(true)} className="press h-10 rounded-[13px] bg-lime px-4 font-bold text-[#1c0900]">Post a reel</button>} />}
       </div>
       <ReelComposer open={compose} onClose={() => setCompose(false)} />
     </Shell>

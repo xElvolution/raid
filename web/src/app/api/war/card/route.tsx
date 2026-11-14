@@ -18,23 +18,23 @@ export async function GET() {
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: right ? 'flex-end' : 'flex-start', width: 440 }}>
       <div style={{ display: 'flex', background: s!.crew.color, color: s!.crew.ink, fontSize: 28, padding: '8px 18px', borderRadius: 12 }}>{s!.crew.tag}</div>
       <div style={{ display: 'flex', fontSize: 52, marginTop: 18, textTransform: 'uppercase' }}>{s!.crew.name}</div>
-      <div style={{ display: 'flex', alignItems: 'flex-end', marginTop: 4 }}><span style={{ fontSize: 84, color: s!.crew.color === '#3355ff' ? '#8fa4ff' : s!.crew.color }}>{s!.firepower.toFixed(0)}</span><span style={{ fontSize: 22, color: '#8c93c4', marginLeft: 10, marginBottom: 16 }}>PTS</span></div>
+      <div style={{ display: 'flex', alignItems: 'flex-end', marginTop: 4 }}><span style={{ fontSize: 84, color: s!.crew.color === '#3a3b42' ? '#8fa4ff' : s!.crew.color }}>{s!.firepower.toFixed(0)}</span><span style={{ fontSize: 22, color: '#8c93c4', marginLeft: 10, marginBottom: 16 }}>PTS</span></div>
       <div style={{ display: 'flex', fontSize: 22, color: '#8c93c4', fontFamily: 'sans-serif' }}>{`${s!.hits} hit · ${s!.raids.length} raid${s!.raids.length === 1 ? '' : 's'} · ${s!.backed.toFixed(0)} USDC backed`}</div>
     </div>
   );
   return new ImageResponse(
     (
-      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#04061a', color: '#f3f5ff', fontFamily: 'Archivo', padding: 56 }}>
+      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#0b0b0d', color: '#f3f5ff', fontFamily: 'Archivo', padding: 56 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 26 }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}><span style={{ color: '#c6ff3d' }}>RAID</span><span style={{ marginLeft: 16, color: '#8c93c4' }}>{`WAR #${WAR.id} · 24H`}</span></div>
-          <div style={{ display: 'flex', fontSize: 22, color: over ? '#8c93c4' : '#c6ff3d' }}>{over ? 'FINAL' : 'LIVE'}</div>
+          <div style={{ display: 'flex', alignItems: 'center' }}><span style={{ color: '#ff5a1f' }}>RAID</span><span style={{ marginLeft: 16, color: '#8c93c4' }}>{`WAR #${WAR.id} · 24H`}</span></div>
+          <div style={{ display: 'flex', fontSize: 22, color: over ? '#8c93c4' : '#ff5a1f' }}>{over ? 'FINAL' : 'LIVE'}</div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 40 }}>
           {side(a)}
           <div style={{ display: 'flex', fontSize: 60, color: '#5a6196' }}>VS</div>
           {side(b, true)}
         </div>
-        <div style={{ display: 'flex', marginTop: 36, height: 44, borderRadius: 12, overflow: 'hidden', background: '#111842' }}>
+        <div style={{ display: 'flex', marginTop: 36, height: 44, borderRadius: 12, overflow: 'hidden', background: '#1d1d21' }}>
           <div style={{ display: 'flex', width: `${pa}%`, background: a!.crew.color }} />
           <div style={{ display: 'flex', flex: 1, background: b!.crew.color }} />
         </div>

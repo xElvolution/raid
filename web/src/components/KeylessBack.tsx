@@ -21,13 +21,13 @@ export function KeylessConnect({ wallet, onWallet }: { wallet: KeylessWallet | n
     try { onWallet(await connectKeyless(k)); } catch (e) { setErr((e as Error).message.slice(0, 120)); } finally { setBusy(null); }
   }
   if (wallet) return (
-    <div className="mt-3 flex items-center gap-2 rounded-[11px] bg-raised p-2 pl-2.5">
+    <div className="mt-3 flex items-center gap-2 rounded-[14px] bg-raised p-2 pl-2.5">
       {wallet.kind === 'phantom' ? <PhantomGlyph /> : <FoxGlyph />}
       <div className="min-w-0 flex-1 leading-tight">
         <p className="truncate text-[12px] font-semibold">{LABEL[wallet.kind]} · <span className="mono">{shortAddr(wallet.address)}</span></p>
         <p className="truncate mono text-[10.5px] text-mute">stake account {shortAddr(wallet.account)}</p>
       </div>
-      <button onClick={() => onWallet(null)} aria-label="Disconnect" className="press grid h-8 w-8 shrink-0 place-items-center rounded-[9px] text-mute hover:text-ink"><X size={15} /></button>
+      <button onClick={() => onWallet(null)} aria-label="Disconnect" className="press grid h-8 w-8 shrink-0 place-items-center rounded-[12px] text-mute hover:text-ink"><X size={15} /></button>
     </div>
   );
   return (
@@ -35,7 +35,7 @@ export function KeylessConnect({ wallet, onWallet }: { wallet: KeylessWallet | n
       <p className="text-[12px] text-mute leading-snug">No NEAR account needed: your wallet key owns the stake.</p>
       <div className="mt-2 grid grid-cols-2 gap-1.5">
         {(['phantom', 'metamask'] as const).map((k) => (
-          <button key={k} onClick={() => void go(k)} disabled={!!busy} className="press flex h-10 items-center justify-center gap-2 rounded-[10px] hairline text-[12.5px] font-semibold hover:bg-raised disabled:opacity-60">
+          <button key={k} onClick={() => void go(k)} disabled={!!busy} className="press flex h-10 items-center justify-center gap-2 rounded-[13px] hairline text-[12.5px] font-semibold hover:bg-raised disabled:opacity-60">
             {busy === k ? <Loader2 size={15} className="animate-spin" /> : k === 'phantom' ? <PhantomGlyph /> : <FoxGlyph />}{LABEL[k]}
           </button>
         ))}
@@ -66,7 +66,7 @@ export function KeylessSign({ wallet, raidId, usdc }: { wallet: KeylessWallet; r
   }
   const ok = res?.v.verifier.status === 'signature_ok_no_balance' || res?.v.verifier.status === 'executes';
   return (
-    <div className="mt-3 rounded-[12px] hairline p-2.5 md:p-3">
+    <div className="mt-3 rounded-[16px] hairline p-2.5 md:p-3">
       <div className="flex items-start gap-2">
         <KeyRound size={15} className="mt-0.5 shrink-0 text-brand" />
         <div className="min-w-0 flex-1">
@@ -74,7 +74,7 @@ export function KeylessSign({ wallet, raidId, usdc }: { wallet: KeylessWallet; r
           <p className="mt-0.5 text-[11.5px] text-mute leading-snug">Sign one intent in {LABEL[wallet.kind]}: {amount.toFixed(2)} USDC goes to the chest for raid #{raidId}, credited to {shortAddr(wallet.account)}. No gas, no NEAR account.</p>
         </div>
       </div>
-      <button onClick={() => void sign()} disabled={busy} className="press mt-2.5 flex h-10 w-full items-center justify-center gap-2 rounded-[10px] bg-ink text-[12.5px] font-semibold text-bg disabled:opacity-60">
+      <button onClick={() => void sign()} disabled={busy} className="press mt-2.5 flex h-10 w-full items-center justify-center gap-2 rounded-[13px] bg-ink text-[12.5px] font-semibold text-bg disabled:opacity-60">
         {busy ? <><Loader2 size={15} className="animate-spin" />Waiting for {LABEL[wallet.kind]}…</> : <>Sign back intent ({wallet.kind === 'metamask' ? 'ERC-191' : 'Ed25519'})</>}
       </button>
       {err && <p className="mt-1.5 text-[11.5px] text-down">{err}</p>}

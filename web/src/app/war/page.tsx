@@ -33,7 +33,7 @@ export default function WarPage() {
           <CrewHead s={b} right />
         </div>
         <div className="px-3 pt-3 md:px-5 md:pt-4">
-          <div className="flex h-[1.75rem] md:h-10 overflow-hidden rounded-[8px] md:rounded-[10px] bg-raised" role="meter" aria-label="Firepower share" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round((a.firepower / total) * 100)}>
+          <div className="flex h-[1.75rem] md:h-10 overflow-hidden rounded-[10px] md:rounded-[13px] bg-raised" role="meter" aria-label="Firepower share" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round((a.firepower / total) * 100)}>
             <motion.div className="flex items-center pl-2 mono text-[11px] md:text-[13px] font-bold" style={{ background: a.crew.color, color: a.crew.ink }} initial={{ width: '50%' }} animate={{ width: `${(a.firepower / total) * 100}%` }} transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}>{Math.round((a.firepower / total) * 100)}%</motion.div>
             <motion.div className="flex flex-1 items-center justify-end pr-2 mono text-[11px] md:text-[13px] font-bold" style={{ background: b.crew.color, color: b.crew.ink }}>{Math.round((b.firepower / total) * 100)}%</motion.div>
           </div>
@@ -45,7 +45,7 @@ export default function WarPage() {
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line px-3 py-2.5 md:px-5 md:py-3">
           <p className="text-[12px] md:text-[13px] text-mute">{lead ? <><b className="text-ink">{lead.crew.name}</b> {over ? 'won' : 'leads'} on {lead.hits !== (lead === a ? b : a).hits ? 'hits' : 'firepower'}.</> : 'Dead even.'}</p>
           <div className="flex gap-1.5">
-            <a href="/api/war/card" target="_blank" rel="noreferrer" className="press inline-flex h-[2.375rem] md:h-9 items-center gap-1.5 rounded-[9px] px-3 text-[12.5px] font-semibold hairline hover:bg-raised"><Share2 size={14} />Share card</a>
+            <a href="/api/war/card" target="_blank" rel="noreferrer" className="press inline-flex h-[2.375rem] md:h-9 items-center gap-1.5 rounded-[12px] px-3 text-[12.5px] font-semibold hairline hover:bg-raised"><Share2 size={14} />Share card</a>
             <ShareX a={a} b={b} />
           </div>
         </div>
@@ -63,7 +63,7 @@ export default function WarPage() {
 function CrewHead({ s, right }: { s: WarScore; right?: boolean }) {
   return (
     <div className={`min-w-0 ${right ? 'text-right' : ''}`}>
-      <span className="inline-grid h-[1.875rem] w-[2.75rem] md:h-10 md:w-14 place-items-center rounded-[8px] wide text-[11px] md:text-[14px]" style={{ background: s.crew.color, color: s.crew.ink }}>{s.crew.tag}</span>
+      <span className="inline-grid h-[1.875rem] w-[2.75rem] md:h-10 md:w-14 place-items-center rounded-[10px] wide text-[11px] md:text-[14px]" style={{ background: s.crew.color, color: s.crew.ink }}>{s.crew.tag}</span>
       <p className="wide mt-1.5 truncate text-[0.9375rem] md:text-[22px]">{s.crew.name}</p>
       <p className="mono mt-1 text-[10.5px] md:text-[12px] text-mute">{s.hits} hit · {s.raids.length} raid{s.raids.length === 1 ? '' : 's'}</p>
     </div>
@@ -71,7 +71,7 @@ function CrewHead({ s, right }: { s: WarScore; right?: boolean }) {
 }
 function ScoreBar({ s, max }: { s: WarScore; max: number }) {
   return (
-    <div className="rounded-[10px] p-2 md:p-3 hairline">
+    <div className="rounded-[13px] p-2 md:p-3 hairline">
       <p className="eyebrow truncate">{s.crew.tag} firepower</p>
       <p className="mono mt-1 text-[1.125rem] md:text-[22px] font-bold leading-none">{s.firepower.toFixed(0)}<span className="ml-1 text-[10px] text-mute">pts</span></p>
       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-raised"><motion.div className="h-full rounded-full" style={{ background: s.crew.color }} initial={{ width: 0 }} animate={{ width: `${(s.firepower / max) * 100}%` }} transition={{ duration: 1.1 }} /></div>
@@ -81,7 +81,7 @@ function ScoreBar({ s, max }: { s: WarScore; max: number }) {
 }
 function ShareX({ a, b }: { a: WarScore; b: WarScore }) {
   const text = `Raid War #${WAR.id} on @NEARProtocol: ${a.crew.name} ${a.firepower.toFixed(0)} vs ${b.crew.name} ${b.firepower.toFixed(0)}. Crews are Sputnik DAOs; every raid is a DAO vote. #NEARHackathon`;
-  return <a href={`https://x.com/intent/post?text=${encodeURIComponent(text)}`} target="_blank" rel="noreferrer" className="press inline-flex h-[2.375rem] md:h-9 items-center gap-1.5 rounded-[9px] bg-ink px-3 text-[12.5px] font-semibold text-bg">Post</a>;
+  return <a href={`https://x.com/intent/post?text=${encodeURIComponent(text)}`} target="_blank" rel="noreferrer" className="press inline-flex h-[2.375rem] md:h-9 items-center gap-1.5 rounded-[12px] bg-ink px-3 text-[12.5px] font-semibold text-bg">Post</a>;
 }
 
 function CrewPanel({ crew, score }: { crew: Crew; score: WarScore }) {
@@ -94,7 +94,7 @@ function CrewPanel({ crew, score }: { crew: Crew; score: WarScore }) {
   return (
     <section className="panel overflow-hidden">
       <header className="flex items-center gap-2.5 border-b border-line px-3 py-2.5 md:px-4 md:py-3">
-        <span className="grid h-8 w-8 place-items-center rounded-[8px] wide text-[10px]" style={{ background: crew.color, color: crew.ink }}>{crew.tag}</span>
+        <span className="grid h-8 w-8 place-items-center rounded-[10px] wide text-[10px]" style={{ background: crew.color, color: crew.ink }}>{crew.tag}</span>
         <div className="min-w-0 flex-1">
           <p className="wide truncate text-[0.9375rem] md:text-[17px]">{crew.name}</p>
           <a href={explorerAccount(crew.dao)} target="_blank" rel="noreferrer" className="mono flex items-center gap-1 truncate text-[10.5px] text-mute hover:text-ink">Sputnik DAO · {shortName(crew.dao)}<ExternalLink size={10} /></a>
@@ -147,8 +147,8 @@ function ProposalRow({ p, crew, need, canVote }: { p: Proposal; crew: Crew; need
       </div>
       {canVote ? (
         <div className="flex gap-1">
-          <button onClick={() => void vote('VoteApprove')} aria-label="Vote yes" className="press grid h-[2.375rem] w-[2.375rem] md:h-9 md:w-9 place-items-center rounded-[9px] bg-lime text-[#0a1a00]"><Check size={16} strokeWidth={3} /></button>
-          <button onClick={() => void vote('VoteReject')} aria-label="Vote no" className="press grid h-[2.375rem] w-[2.375rem] md:h-9 md:w-9 place-items-center rounded-[9px] hairline"><X size={16} /></button>
+          <button onClick={() => void vote('VoteApprove')} aria-label="Vote yes" className="press grid h-[2.375rem] w-[2.375rem] md:h-9 md:w-9 place-items-center rounded-[12px] bg-lime text-[#1c0900]"><Check size={16} strokeWidth={3} /></button>
+          <button onClick={() => void vote('VoteReject')} aria-label="Vote no" className="press grid h-[2.375rem] w-[2.375rem] md:h-9 md:w-9 place-items-center rounded-[12px] hairline"><X size={16} /></button>
         </div>
       ) : <Chip tone={tone}>{p.status === 'InProgress' ? 'Voting' : p.status === 'Approved' ? 'Passed' : p.status}</Chip>}
     </div>
@@ -165,9 +165,9 @@ function ProposeRaid({ crew, bond }: { crew: Crew; bond?: string }) {
   };
   return (
     <div className="flex items-center gap-1.5 border-t border-line bg-raised/40 px-3 py-2.5 md:px-4">
-      <select aria-label="Coin" value={sym} onChange={(e) => setSym(e.target.value)} className="h-[2.375rem] md:h-9 min-w-0 flex-1 rounded-[9px] bg-panel px-2 text-[12.5px] font-semibold hairline">{COINS.map((c) => <option key={c.symbol}>{c.symbol}</option>)}</select>
-      <select aria-label="Line" value={x} onChange={(e) => setX(Number(e.target.value))} className="h-[2.375rem] md:h-9 w-[4.25rem] rounded-[9px] bg-panel px-2 text-[12.5px] font-semibold hairline">{[15000, 20000, 30000].map((v) => <option key={v} value={v}>{xLabel(v)}</option>)}</select>
-      <button onClick={() => void go()} title="Anyone can propose; the crew votes. 0.1 NEAR testnet bond." className="press h-[2.375rem] md:h-9 shrink-0 rounded-[9px] bg-brand px-3 text-[12.5px] font-bold text-white">Propose</button>
+      <select aria-label="Coin" value={sym} onChange={(e) => setSym(e.target.value)} className="h-[2.375rem] md:h-9 min-w-0 flex-1 rounded-[12px] bg-panel px-2 text-[12.5px] font-semibold hairline">{COINS.map((c) => <option key={c.symbol}>{c.symbol}</option>)}</select>
+      <select aria-label="Line" value={x} onChange={(e) => setX(Number(e.target.value))} className="h-[2.375rem] md:h-9 w-[4.25rem] rounded-[12px] bg-panel px-2 text-[12.5px] font-semibold hairline">{[15000, 20000, 30000].map((v) => <option key={v} value={v}>{xLabel(v)}</option>)}</select>
+      <button onClick={() => void go()} title="Anyone can propose; the crew votes. 0.1 NEAR testnet bond." className="press h-[2.375rem] md:h-9 shrink-0 rounded-[12px] bg-brand px-3 text-[12.5px] font-bold text-white">Propose</button>
     </div>
   );
 }

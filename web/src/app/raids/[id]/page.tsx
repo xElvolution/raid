@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowUpRight, Flame, Gauge, Lock, ShieldCheck, Timer, TimerReset } from 'lucide-react';
 import { Shell } from '@/components/Shell';
+import { ChromeChest, FlipClock } from '@/components/Chrome';
 import { ChartPanel } from '@/components/ChartPanel';
 import { PhaseChip } from '@/components/RaidCard';
 import { Button, CoinAvatar, Delta, Empty, ErrorState, Flash, Identicon, Segmented, Skeleton } from '@/components/ui';
@@ -56,33 +57,56 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
 
   return (
     <Shell title={`Raid #${r.id}`} back="/raids">
-      <section className="flex flex-wrap items-center gap-x-3 gap-y-2 md:gap-x-4 md:gap-y-3">
-        <CoinAvatar symbol={t.symbol} image={q.data?.image} size={52} />
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2"><h2 className="wide-black text-[1.5rem] md:text-[44px] leading-none">${t.symbol}</h2><PhaseChip r={r} now={now} /></div>
-          <p className="mt-1 md:mt-1.5 text-[12px] md:text-[13px] text-mute truncate">{r.title}</p>
-        </div>
-        <div className="text-right">
-          <Flash value={q.data?.priceUsd}><p className="mono text-[1.25rem] md:text-[22px] font-bold">{fmtPrice(q.data?.priceUsd)}</p></Flash>
-          <Delta pct={q.data?.change24h} className="text-[12px]" />
+      <section className="obsidian grain relative overflow-hidden rounded-[26px] md:rounded-[32px]">
+        <div className="relative grid gap-4 p-4 md:grid-cols-[1.3fr_1fr] md:gap-6 md:p-7">
+          <div className="min-w-0">
+            <div className="flex items-center gap-3">
+              <CoinAvatar symbol={t.symbol} image={q.data?.image} size={52} className="ring-2 ring-white/15" />
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2"><h2 className="text-[1.75rem] font-semibold leading-none tracking-[-0.05em] md:text-[44px]">${t.symbol}</h2><PhaseChip r={r} now={now} /></div>
+                <p className="mt-1.5 truncate text-[12.5px] text-white/55 md:text-[13.5px]">{r.title}</p>
+              </div>
+            </div>
+            <div className="mt-5 flex items-end gap-6 md:mt-7">
+              <div>
+                <p className="eyebrow">Sell line</p>
+                <p className="mt-1.5 text-[3.25rem] font-semibold leading-[.85] tracking-[-0.07em] text-[#ff7a40] md:text-[88px]">{xLabel(r.target_x_bps)}</p>
+              </div>
+              <div className="pb-1">
+                <p className="eyebrow">Price now</p>
+                <Flash value={q.data?.priceUsd}><p className="mono mt-1.5 text-[1.125rem] font-semibold md:text-[22px]">{fmtPrice(q.data?.priceUsd)}</p></Flash>
+                <Delta pct={q.data?.change24h} className="text-[12px]" />
+              </div>
+            </div>
+            <div className="mt-5 rounded-[18px] bg-white/[.06] p-3 shadow-[inset_0_0_0_1px_rgb(255_255_255/.08)] md:mt-7 md:p-4">
+              <p className="eyebrow">{mult ? 'Now at' : open ? 'Crew closes in' : inCountdown ? 'Chest may buy in' : r.status === 'Closed' ? 'Settled' : 'Retreat in'}</p>
+              <div className="mt-2 text-[1.75rem] text-white md:text-[40px]">
+                {mult ? <span className="mono font-semibold">{mult.toFixed(2)}x</span>
+                  : r.status === 'Closed' ? <span className="font-semibold tracking-[-0.04em]">{r.hit ? 'Line hit' : 'Retreated'}</span>
+                  : now ? <FlipClock dark ms={open ? r.opens_until_ms - now : inCountdown ? r.buy_after_ms! - now : r.retreat_at_ms - now} />
+                  : <span className="mono">--:--</span>}
+              </div>
+            </div>
+          </div>
+          <div className="relative flex flex-col items-center justify-end gap-3">
+            <ChromeChest size={230} open={r.hit} fill={cfg.data?.max_pot ? usdcOf(r.pot) / usdcOf(cfg.data.max_pot) : 0.4} className="max-md:w-[150px] md:-mb-2" />
+            <div className="grid w-full grid-cols-2 gap-2">
+              <div className="rounded-[20px] bg-white/[.06] p-3 shadow-[inset_0_0_0_1px_rgb(255_255_255/.08)]"><p className="eyebrow">Crew pot</p><p className="mono mt-1.5 text-[1.125rem] font-semibold md:text-[20px]">{usdcOf(r.pot).toFixed(2)}<span className="ml-1 text-[10.5px] text-white/50">USDC</span></p></div>
+              <div className="rounded-[20px] bg-white/[.06] p-3 shadow-[inset_0_0_0_1px_rgb(255_255_255/.08)]"><p className="eyebrow">Entry</p><p className="mono mt-1.5 text-[1.125rem] font-semibold md:text-[20px]">{Number(r.entry_cost) ? <>{usdcOf(r.entry_cost).toFixed(2)}<span className="ml-1 text-[10.5px] text-white/50">USDC</span></> : 'Not yet'}</p></div>
+            </div>
+          </div>
         </div>
       </section>
-
-      <div className="mt-3 md:mt-4 grid grid-cols-3 gap-1.5 md:gap-2">
-        <Big k="Sell line" v={xLabel(r.target_x_bps)} lime />
-        <Big k="Crew pot" v={usdcOf(r.pot).toFixed(2)} unit="USDC" />
-        <Big k={mult ? 'Now at' : open ? 'Crew closes' : inCountdown ? 'Chest buys in' : 'Retreat in'} v={mult ? `${mult.toFixed(2)}x` : open ? countdown(r.opens_until_ms - now) : inCountdown ? countdown(r.buy_after_ms! - now) : now ? countdown(r.retreat_at_ms - now) : '—'} />
-      </div>
 
       <div className="mt-3 md:mt-4"><ChartPanel symbol={t.symbol} lines={lines} /></div>
       {!entryPrice && <p className="mt-2 px-1 text-[11.5px] text-faint">Not bought yet, so the lime line shows where {xLabel(r.target_x_bps)} would sit at today’s price. Once the chest buys, it moves to the real entry × {xLabel(r.target_x_bps)}.</p>}
 
-      <section className="panel mt-3 md:mt-4 p-3 md:p-4">
+      <section className="panel mt-3 md:mt-4 p-4 md:p-5">
         <p className="eyebrow">Raid progress</p>
         <ol className="mt-2.5 md:mt-3 grid grid-cols-5 gap-1.5">
           {STEPS.map((s, i) => (
             <li key={s} className="min-w-0">
-              <motion.div className={`h-1.5 rounded-full ${i <= step ? (i === step ? 'bg-lime' : 'bg-ink') : 'bg-raised'}`} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }} transition={{ delay: 0.1 + i * 0.08 }} />
+              <motion.div className={`h-2 rounded-full ${i <= step ? (i === step ? 'bg-signal' : 'bg-ink') : 'bg-raised'}`} initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} style={{ originX: 0 }} transition={{ delay: 0.1 + i * 0.08 }} />
               <p className={`mt-2 truncate text-[11px] font-semibold ${i === step ? 'text-ink' : 'text-faint'}`}>{s}</p>
             </li>
           ))}
@@ -100,13 +124,13 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
             <Identicon seed={r.caller} size={46} />
             <div className="min-w-0"><p className="font-semibold truncate group-hover:underline">{crew ? crew.name : shortAddr(r.caller)}</p>{crew && <p className="mono text-[10.5px] text-lime">Crew DAO · passed by vote</p>}<p className="text-[12px] text-mute">{callerRaids.length} raid{callerRaids.length === 1 ? '' : 's'} called · {callerRaids.filter((x) => x.hit).length} hit</p></div>
           </Link>
-          <div className="mt-4 rounded-[12px] bg-raised p-3 text-[12.5px] text-mute"><Lock size={14} className="mb-1 text-lime" />The caller’s fee is locked until this raid hits {xLabel(r.target_x_bps)}. If it retreats, the fee is gone.</div>
+          <div className="mt-4 rounded-[20px] bg-raised/70 p-3.5 text-[12.5px] text-mute"><Lock size={14} className="mb-1 text-lime" />The caller’s fee is locked until this raid hits {xLabel(r.target_x_bps)}. If it retreats, the fee is gone.</div>
           <CrewList id={r.id} />
         </section>
       </div>
 
       <section className="mt-6">
-        <div className="mb-2 flex items-end justify-between"><h3 className="wide text-[1rem]">Crew chat</h3><span className="mono text-[11px] text-faint">posts tagged raid #{r.id}</span></div>
+        <div className="mb-2 flex items-end justify-between"><h3 className="wide text-[1.25rem]">Crew chat</h3><span className="mono text-[11px] text-faint">posts tagged raid #{r.id}</span></div>
         <div className="space-y-3">
           <Composer raidId={r.id} coin={t.symbol} placeholder={`Talk to the $${t.symbol} crew…`} />
           <Feed raidId={r.id} emptyTitle="No crew chatter yet" emptyBody="Say why you’re in, or why you’re not." />
@@ -137,14 +161,6 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   );
 }
 
-function Big({ k, v, unit, lime }: { k: string; v: string; unit?: string; lime?: boolean }) {
-  return (
-    <div className={`min-w-0 rounded-[12px] md:rounded-[14px] p-2.5 md:p-4 ${lime ? 'bg-lime text-[#0a1a00]' : 'panel'}`}>
-      <p className={`eyebrow ${lime ? '!text-[#0a1a00]/60' : ''}`}>{k}</p>
-      <p className="mt-1.5 md:mt-2 truncate mono text-[1.0625rem] md:text-[22px] font-bold leading-none">{v}{unit && <span className="ml-1 text-[10.5px] font-medium opacity-60">{unit}</span>}</p>
-    </div>
-  );
-}
 function Rule({ icon, t, children }: { icon: React.ReactNode; t: string; children: React.ReactNode }) {
   return <li className="flex gap-2.5"><span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-raised text-lime">{icon}</span><span><span className="block font-semibold">{t}</span><span className="text-mute leading-snug">{children}</span></span></li>;
 }
@@ -179,11 +195,11 @@ function BackPanel({ id, open, bps, pot }: { id: number; open: boolean; bps: num
       <Segmented id={`via-${id}`} className="mt-3 w-full [&>button]:flex-1" value={via} onChange={setVia} options={[{ value: 'near', label: 'NEAR wallet' }, { value: 'any', label: 'Phantom · MetaMask' }]} />
       {via === 'any' ? <AnyChainBack raidId={id} bps={bps} open={open} /> : (
         <>
-          <label className={`mt-3 flex h-12 md:h-14 items-center gap-2 rounded-[11px] md:rounded-[12px] bg-raised px-3.5 md:px-4 ${open ? 'focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]' : 'opacity-60'}`}>
+          <label className={`mt-3 flex h-12 md:h-14 items-center gap-2 rounded-[14px] md:rounded-[16px] bg-raised px-3.5 md:px-4 ${open ? 'focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]' : 'opacity-60'}`}>
             <input inputMode="decimal" value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9.]/g, ''))} disabled={!open} aria-label={`Amount in ${unit}`} className="w-full bg-transparent mono text-[1.5rem] font-bold outline-none" />
             <span className="mono text-[12px] text-mute">{unit}</span>
           </label>
-          <div className="mt-2 grid grid-cols-4 gap-1.5">{['1', '5', '25', '100'].map((v) => <button key={v} disabled={!open} onClick={() => setAmt(v)} className={`press h-9 rounded-[9px] mono text-[12px] font-bold ${amt === v ? 'bg-ink text-bg' : 'hairline text-mute'} disabled:opacity-50`}>{v}</button>)}</div>
+          <div className="mt-2 grid grid-cols-4 gap-1.5">{['1', '5', '25', '100'].map((v) => <button key={v} disabled={!open} onClick={() => setAmt(v)} className={`press h-9 rounded-[12px] mono text-[12px] font-bold ${amt === v ? 'bg-ink text-bg' : 'hairline text-mute'} disabled:opacity-50`}>{v}</button>)}</div>
           {open && isFinite(room) && <p className="mt-2 mono text-[11px] text-mute">Room for you: {room.toFixed(2)} {unit} (cap {maxBack} per backer, {maxPot} per raid){n > room ? ` · ${(n - room).toFixed(2)} would be refunded` : ''}</p>}
           <PayoutBox stake={fits || 0} bps={bps} cfg={cfg.data} unit={unit} className="mt-3" />
           <RiskNote className="mt-3" />

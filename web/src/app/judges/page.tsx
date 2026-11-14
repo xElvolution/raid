@@ -42,21 +42,21 @@ export default function JudgesPage() {
           <div className="flex items-center gap-2.5 px-3 py-3 md:px-4">
             <CheckCircle2 size={18} className="text-lime" />
             <p className="min-w-0 flex-1 truncate text-[13px]">Signing as <b className="mono">{acct}</b></p>
-            <button onClick={() => { leaveJudgeMode(); toast({ title: 'Judge mode off' }); }} className="press inline-flex h-[2.375rem] md:h-9 items-center gap-1.5 rounded-[9px] px-3 text-[12.5px] font-semibold hairline"><LogOut size={14} />Leave</button>
+            <button onClick={() => { leaveJudgeMode(); toast({ title: 'Judge mode off' }); }} className="press inline-flex h-[2.375rem] md:h-9 items-center gap-1.5 rounded-[12px] px-3 text-[12.5px] font-semibold hairline"><LogOut size={14} />Leave</button>
           </div>
         ) : (
           <div className="grid gap-2 px-3 py-3 md:px-4">
-            <button disabled={making} onClick={() => void make()} className="press h-11 rounded-[10px] bg-lime text-[14px] font-bold text-[#0a1a00] disabled:opacity-45">{making ? 'Making your testnet account…' : 'Get a testnet judge account'}</button>
+            <button disabled={making} onClick={() => void make()} className="press h-11 rounded-[13px] bg-lime text-[14px] font-bold text-[#1c0900] disabled:opacity-45">{making ? 'Making your testnet account…' : 'Get a testnet judge account'}</button>
             <p className="text-[10.5px] text-faint">The key is made in this browser and stays in localStorage. Only the public key goes to the faucet, which opens the account on NEAR testnet and sends it test tokens. Testnet tokens have no value.</p>
             <details className="text-[12px]">
               <summary className="cursor-pointer text-mute">Already have a testnet account? Use its key</summary>
               <div className="mt-2 grid gap-2">
-                <input value={pick} onChange={(e) => setPick(e.target.value)} autoComplete="off" spellCheck={false} placeholder="account.testnet" className="h-10 rounded-[10px] bg-raised px-2.5 text-[12.5px] outline-none hairline placeholder:text-faint" />
-                <label className="flex h-10 items-center gap-2 rounded-[10px] bg-raised px-2.5 hairline">
+                <input value={pick} onChange={(e) => setPick(e.target.value)} autoComplete="off" spellCheck={false} placeholder="account.testnet" className="h-10 rounded-[13px] bg-raised px-2.5 text-[12.5px] outline-none hairline placeholder:text-faint" />
+                <label className="flex h-10 items-center gap-2 rounded-[13px] bg-raised px-2.5 hairline">
                   <KeyRound size={15} className="shrink-0 text-mute" />
                   <input value={key} onChange={(e) => setKey(e.target.value)} type="password" autoComplete="off" spellCheck={false} placeholder="ed25519:…" className="min-w-0 flex-1 bg-transparent text-[12.5px] outline-none placeholder:text-faint" />
                 </label>
-                <button disabled={!key || !pick || busy} onClick={() => void go()} className="press h-10 rounded-[10px] text-[13px] font-semibold hairline disabled:opacity-45">{busy ? 'Checking key…' : 'Use this account'}</button>
+                <button disabled={!key || !pick || busy} onClick={() => void go()} className="press h-10 rounded-[13px] text-[13px] font-semibold hairline disabled:opacity-45">{busy ? 'Checking key…' : 'Use this account'}</button>
               </div>
             </details>
           </div>
@@ -68,7 +68,7 @@ export default function JudgesPage() {
         </ol>
       </section>
 
-      {FOUNDER_LINE && <p className="mt-3 rounded-[12px] bg-raised px-3 py-2.5 text-[13px] italic">“{FOUNDER_LINE}”</p>}
+      {FOUNDER_LINE && <p className="mt-3 rounded-[16px] bg-raised px-3 py-2.5 text-[13px] italic">“{FOUNDER_LINE}”</p>}
 
       <PayoutSlider className="mt-3" />
       <WhyNow className="mt-4" />
@@ -91,7 +91,7 @@ function Step({ n, t, b, href }: { n: number; t: string; b: string; href: string
   return (
     <li className="border-b border-line last:border-0">
       <Link href={href} className="flex items-start gap-2.5 px-3 py-2.5 hover:bg-raised/50 md:px-4">
-        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-lime mono text-[11px] font-bold text-[#0a1a00]">{n}</span>
+        <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-lime mono text-[11px] font-bold text-[#1c0900]">{n}</span>
         <span className="min-w-0 flex-1"><span className="block font-semibold">{t}</span><span className="block text-[12px] text-mute leading-snug">{b}</span></span>
         <ArrowRight size={15} className="mt-1 shrink-0 text-mute" />
       </Link>

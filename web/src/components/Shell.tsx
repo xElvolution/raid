@@ -28,7 +28,7 @@ const NAV = [
 export function ThemeToggle() {
   const { theme, toggle } = useTheme();
   return (
-    <button onClick={(e) => toggle({ x: e.clientX, y: e.clientY })} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} className="press grid h-9 w-9 place-items-center rounded-[10px] text-mute hover:text-ink hover:bg-raised">
+    <button onClick={(e) => toggle({ x: e.clientX, y: e.clientY })} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} className="press grid h-9 w-9 place-items-center rounded-full text-mute hover:text-ink btn-pearl">
       {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
     </button>
   );
@@ -37,12 +37,12 @@ export function ThemeToggle() {
 export function WalletButton({ compact }: { compact?: boolean }) {
   const acct = useAccount();
   if (acct) return (
-    <Link href={`/u/${acct}`} className="press flex h-9 items-center gap-2 rounded-[10px] pl-1 pr-3 hairline hover:bg-raised max-w-[180px]">
-      <Identicon seed={acct} size={26} className="!rounded-[7px]" /><span className="truncate mono text-[12px]">{shortAddr(acct)}</span>
+    <Link href={`/u/${acct}`} className="press flex h-9 items-center gap-2 rounded-full pl-1 pr-3 btn-pearl max-w-[180px]">
+      <Identicon seed={acct} size={28} className="!rounded-full" /><span className="truncate mono text-[12px]">{shortAddr(acct)}</span>
     </Link>
   );
   return (
-    <button onClick={() => void connect()} className={`press flex h-9 items-center gap-2 rounded-[10px] px-3 text-[13px] font-semibold hairline hover:bg-raised ${compact ? 'w-9 justify-center !px-0' : ''}`} aria-label="Connect NEAR wallet">
+    <button onClick={() => void connect()} className={`press flex h-9 items-center gap-2 rounded-full px-3.5 text-[13px] font-semibold btn-ink ${compact ? 'w-9 justify-center !px-0' : ''}`} aria-label="Connect NEAR wallet">
       <Wallet size={15} />{!compact && 'Connect'}
     </button>
   );
@@ -82,57 +82,57 @@ export function Shell({ children, title, back, actions, rail = true, flush }: { 
     <div className="min-h-dvh bg-bg">
       <div className="mx-auto flex max-w-[1440px]">
         {/* Desktop rail */}
-        <nav aria-label="Main" className="hidden md:flex sticky top-0 h-dvh w-[5.25rem] xl:w-[244px] shrink-0 flex-col border-r border-line px-3 py-5">
+        <nav aria-label="Main" className="hidden md:flex sticky top-3 my-3 ml-3 h-[calc(100dvh-1.5rem)] w-[4.75rem] xl:w-[232px] shrink-0 flex-col rounded-[26px] panel px-2.5 py-4 xl:px-3">
           <Link href="/" className="mb-6 flex h-10 items-center px-2.5" aria-label="RAID home"><span className="xl:hidden"><Mark size={26} /></span><span className="hidden xl:inline"><Wordmark size={24} /></span></Link>
           <div className="flex flex-col gap-1">
             {NAV.map(({ href, label, Icon }) => (
-              <Link key={href} href={href} aria-current={on(href) ? 'page' : undefined} className={`group relative flex h-11 items-center gap-3.5 rounded-[11px] px-3 text-[14.5px] font-semibold transition-colors ${on(href) ? 'text-ink bg-raised' : 'text-mute hover:text-ink hover:bg-raised/60'}`}>
-                {on(href) && <motion.span layoutId="nav-on" className="absolute left-0 top-2.5 bottom-2.5 w-[3px] rounded-full bg-lime" />}
-                <Icon size={20} strokeWidth={on(href) ? 2.4 : 1.9} /><span className="hidden xl:inline">{label}</span>
+              <Link key={href} href={href} aria-current={on(href) ? 'page' : undefined} className={`group relative flex h-11 items-center gap-3.5 rounded-full px-3.5 text-[14.5px] font-medium transition-colors ${on(href) ? 'text-bg' : 'text-mute hover:text-ink hover:bg-raised/70'}`}>
+                {on(href) && <motion.span layoutId="nav-on" className="absolute inset-0 rounded-full bg-ink shadow-[0_10px_20px_-12px_rgb(21_22_26/.7)]" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
+                <Icon size={19} strokeWidth={on(href) ? 2.2 : 1.8} className="relative" /><span className="relative hidden xl:inline">{label}</span>{on(href) && <span className="relative ml-auto hidden h-1.5 w-1.5 rounded-full bg-signal xl:block" />}
               </Link>
             ))}
-            <Link href={acct ? `/u/${acct}` : '/u/me'} className={`flex h-11 items-center gap-3.5 rounded-[11px] px-3 text-[14.5px] font-semibold ${on('/u') ? 'text-ink bg-raised' : 'text-mute hover:text-ink hover:bg-raised/60'}`}><UserRound size={20} /><span className="hidden xl:inline">Caller card</span></Link>
+            <Link href={acct ? `/u/${acct}` : '/u/me'} className={`flex h-11 items-center gap-3.5 rounded-full px-3.5 text-[14.5px] font-medium ${on('/u') ? 'bg-ink text-bg' : 'text-mute hover:text-ink hover:bg-raised/70'}`}><UserRound size={19} /><span className="hidden xl:inline">Caller card</span></Link>
           </div>
-          <button onClick={() => openCall()} className="press mt-5 flex h-12 items-center justify-center gap-2 rounded-[12px] bg-lime text-[#0a1a00] font-bold" aria-label="Call a raid">
-            <Plus size={20} strokeWidth={3} /><span className="hidden xl:inline wide text-[14px]">Call a raid</span>
+          <button onClick={() => openCall()} className="press mt-5 flex h-12 items-center justify-center gap-2 rounded-full btn-signal font-semibold" aria-label="Call a raid">
+            <Plus size={19} strokeWidth={2.6} /><span className="hidden xl:inline text-[14.5px] tracking-[-0.02em]">Call a raid</span>
           </button>
-          <div className="mt-auto hidden xl:block rounded-[12px] p-3 hairline">
+          <div className="mt-auto hidden xl:block rounded-[18px] obsidian p-3.5">
             <p className="eyebrow">War chest</p>
-            <p className="mt-1.5 flex items-center gap-1.5 text-[12.5px]"><span className="live-dot text-lime" />Keyless · {NETWORK === 'testnet' ? 'NEAR testnet' : 'NEAR mainnet'}</p>
-            <p className="mt-1 text-[11.5px] text-mute leading-snug">Trades route through NEAR Intents. No one holds a key that can move funds.</p>
+            <p className="mt-2 flex items-center gap-1.5 text-[12.5px] font-medium"><span className="live-dot text-signal" />Keyless · {NETWORK === 'testnet' ? 'NEAR testnet' : 'NEAR mainnet'}</p>
+            <p className="mt-1 text-[11.5px] text-white/55 leading-snug">Trades route through NEAR Intents. No one holds a key that can move funds.</p>
           </div>
         </nav>
 
         <div className="min-w-0 flex-1">
-          <div className="sticky top-0 z-30 bg-bg/85 backdrop-blur-xl">
-            <header className="flex h-[3.5rem] md:h-[60px] items-center justify-between gap-2 md:gap-3 px-3.5 md:px-6 border-b border-line">
+          <div className="sticky top-0 z-30 bg-bg/75 backdrop-blur-xl backdrop-saturate-150">
+            <header className="flex h-[3.5rem] md:h-[64px] items-center justify-between gap-2 md:gap-3 px-4 md:px-7">
               <div className="flex min-w-0 items-center gap-2.5">
-                {back ? <button onClick={() => (history.length > 1 ? router.back() : router.push(back))} aria-label="Back" className="press -ml-1.5 grid h-9 w-9 place-items-center rounded-[10px] hover:bg-raised"><ChevronLeft size={20} /></button>
+                {back ? <button onClick={() => (history.length > 1 ? router.back() : router.push(back))} aria-label="Back" className="press -ml-1 grid h-9 w-9 place-items-center rounded-full btn-pearl"><ChevronLeft size={20} /></button>
                   : <Link href="/" className="md:hidden" aria-label="RAID home"><Mark size={22} /></Link>}
-                {typeof title === 'string' ? <h1 className="wide text-[1.125rem] md:text-[22px] truncate">{title}</h1> : title}
+                {typeof title === 'string' ? <h1 className="wide text-[1.25rem] md:text-[26px] truncate">{title}</h1> : title}
               </div>
               <div className="flex shrink-0 items-center gap-1.5">{actions}<ThemeToggle /><span className="md:hidden"><WalletButton compact /></span><span className="hidden md:block"><WalletButton /></span></div>
             </header>
             <TickerTape />
           </div>
           <div className="flex justify-center gap-6 px-0 md:px-6">
-            <main className={`min-w-0 flex-1 ${rail ? 'max-w-[760px]' : 'max-w-[1100px]'} ${flush ? '' : 'px-4 md:px-0'} pt-3 md:pt-4 pb-24 md:pb-12`}>{children}</main>
+            <main className={`min-w-0 flex-1 ${rail ? 'max-w-[760px]' : 'max-w-[1100px]'} ${flush ? '' : 'px-4 md:px-0'} pt-3 md:pt-5 pb-28 md:pb-14`}>{children}</main>
             {rail && <RightRail />}
           </div>
         </div>
       </div>
 
       {/* Phone tabs */}
-      <nav aria-label="Tabs" className="md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/92 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]">
-        <div className="grid h-[3.625rem] grid-cols-5 px-1">
+      <nav aria-label="Tabs" className="md:hidden fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 rounded-full glass !border-0 bg-panel/80 shadow-[0_0_0_1px_var(--color-line),0_20px_40px_-18px_rgb(21_22_26/.45)]">
+        <div className="grid h-[3.875rem] grid-cols-5 px-1.5">
           {[NAV[0], NAV[2], null, NAV[4], NAV[3]].map((n) => n === null ? (
             <button key="call" onClick={() => openCall()} aria-label="Call a raid" className="grid place-items-center">
-              <motion.span whileTap={{ scale: 0.9 }} className="grid h-[2.625rem] w-[3.25rem] place-items-center rounded-[12px] bg-lime text-[#0a1a00] shadow-[0_6px_24px_-6px_rgb(198_255_61/.6)]"><Plus size={22} strokeWidth={3} /></motion.span>
+              <motion.span whileTap={{ scale: 0.88 }} className="signal-pulse -mt-5 grid h-[3.375rem] w-[3.375rem] place-items-center rounded-full btn-signal ring-4 ring-bg"><Plus size={24} strokeWidth={2.6} /></motion.span>
             </button>
           ) : (
-            <Link key={n.href} href={n.href} aria-current={on(n.href) ? 'page' : undefined} className={`relative flex flex-col items-center justify-center gap-[3px] text-[9.5px] font-bold uppercase tracking-[.08em] ${on(n.href) ? 'text-ink' : 'text-faint'}`}>
-              {on(n.href) && <motion.span layoutId="tab-on" className="absolute top-0 h-[3px] w-8 rounded-b-full bg-lime" />}
-              <n.Icon size={20} strokeWidth={on(n.href) ? 2.4 : 1.8} />{n.label}
+            <Link key={n.href} href={n.href} aria-current={on(n.href) ? 'page' : undefined} className={`relative flex flex-col items-center justify-center gap-[3px] text-[10px] font-medium tracking-[-0.01em] ${on(n.href) ? 'text-ink' : 'text-faint'}`}>
+              {on(n.href) && <motion.span layoutId="tab-on" className="absolute inset-x-1 inset-y-1.5 rounded-full bg-raised" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />}
+              <n.Icon size={20} strokeWidth={on(n.href) ? 2.2 : 1.7} className="relative" /><span className="relative">{n.label}</span>
             </Link>
           ))}
         </div>
@@ -149,7 +149,7 @@ export function Toaster() {
       <AnimatePresence>
         {list.map((t) => (
           <motion.div key={t.id} layout initial={{ opacity: 0, y: -16, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, x: 40 }} transition={{ type: 'spring', stiffness: 460, damping: 34 }}
-            className="pointer-events-auto w-full max-w-[360px] overflow-hidden rounded-[14px] border border-line bg-panel shadow-[0_18px_50px_-12px_rgb(0_0_0/.6)]">
+            className="pointer-events-auto w-full max-w-[360px] overflow-hidden rounded-[18px] panel">
             <Link href={t.href ?? '#'} className="flex gap-2.5 p-3 md:p-3.5">
               <span className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${t.tone === 'down' ? 'bg-down' : t.tone === 'brand' ? 'bg-brand' : 'bg-lime pulse-live'}`} />
               <span className="min-w-0"><span className="block text-[13px] md:text-[14px] font-semibold">{t.title}</span>{t.body && <span className="mt-0.5 block text-[12px] md:text-[12.5px] text-mute">{t.body}</span>}</span>

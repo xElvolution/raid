@@ -34,9 +34,9 @@ export default function LivePage() {
         </div>
         {trades.error && f !== 'raids' && f !== 'launches' && <div className="p-3"><ErrorState title="Market tape is catching its breath" body="GeckoTerminal didn’t answer. Retrying automatically." retry={() => trades.refetch()} /></div>}
         {loading ? (
-          <div className="divide-y divide-line">{[0, 1, 2, 3, 4].map((i) => <div key={i} className="flex gap-3 p-4"><Skeleton className="h-10 w-10 !rounded-[9px]" /><div className="flex-1"><Skeleton className="h-3.5 w-2/3" /><Skeleton className="mt-3 h-12 w-full" /></div></div>)}</div>
+          <div className="divide-y divide-line">{[0, 1, 2, 3, 4].map((i) => <div key={i} className="flex gap-3 p-4"><Skeleton className="h-10 w-10 !rounded-[12px]" /><div className="flex-1"><Skeleton className="h-3.5 w-2/3" /><Skeleton className="mt-3 h-12 w-full" /></div></div>)}</div>
         ) : items.length ? <FeedList items={items} now={now} /> : (
-          <Empty title={f === 'raids' ? 'No raid activity yet' : 'Quiet for a moment'} body={f === 'raids' ? 'Be the first caller. Pick a coin, set your line, and the crew can back it.' : 'Nothing new from this source in the last few minutes.'} action={<button onClick={() => openCall()} className="press h-11 rounded-[11px] bg-lime px-5 font-bold text-[#0a1a00]">Call a raid</button>} />
+          <Empty title={f === 'raids' ? 'No raid activity yet' : 'Quiet for a moment'} body={f === 'raids' ? 'Be the first caller. Pick a coin, set your line, and the crew can back it.' : 'Nothing new from this source in the last few minutes.'} action={<button onClick={() => openCall()} className="press h-11 rounded-[14px] bg-lime px-5 font-bold text-[#1c0900]">Call a raid</button>} />
         )}
       </div>
       <p className="mt-3 px-1 text-[11.5px] text-faint">The tape shows real on-chain swaps of $250+ on each coin’s deepest pool. Raid events are the war chest’s own transactions on NEAR {raids.data ? 'testnet' : ''}.</p>

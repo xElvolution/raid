@@ -6,13 +6,13 @@ export type Resolved = 'light' | 'dark';
 const KEY = 'raid.theme';
 
 /** Inline, render-blocking script for <head>: sets data-theme before first paint so there is no flash. */
-export const themeBootScript = `(function(){try{var p=localStorage.getItem('${KEY}')||'dark';var d=p==='system'?(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):p;document.documentElement.dataset.theme=d;document.querySelector('meta[name=theme-color]')?.setAttribute('content',d==='light'?'#f4f6ff':'#04061a')}catch(e){}})()`;
+export const themeBootScript = `(function(){try{var p=localStorage.getItem('${KEY}')||'light';var d=p==='system'?(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):p;document.documentElement.dataset.theme=d;document.querySelector('meta[name=theme-color]')?.setAttribute('content',d==='light'?'#f2f1ec':'#0b0b0d')}catch(e){}})()`;
 
 const resolve = (p: ThemePref): Resolved => (p === 'system' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : p);
 
 function apply(d: Resolved) {
   document.documentElement.dataset.theme = d;
-  document.querySelector('meta[name=theme-color]')?.setAttribute('content', d === 'light' ? '#f4f6ff' : '#04061a');
+  document.querySelector('meta[name=theme-color]')?.setAttribute('content', d === 'light' ? '#f2f1ec' : '#0b0b0d');
   window.dispatchEvent(new CustomEvent('raid.theme', { detail: d }));
 }
 
@@ -37,19 +37,19 @@ function switchWithReveal(d: Resolved, origin?: { x: number; y: number }) {
 }
 
 const Ctx = createContext<{ pref: ThemePref; theme: Resolved; setPref: (p: ThemePref, origin?: { x: number; y: number }) => void; toggle: (origin?: { x: number; y: number }) => void }>({
-  pref: 'system', theme: 'dark', setPref: () => {}, toggle: () => {},
+  pref: 'light', theme: 'light', setPref: () => {}, toggle: () => {},
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [pref, setPrefState] = useState<ThemePref>('system');
-  const [theme, setTheme] = useState<Resolved>('dark');
+  const [pref, setPrefState] = useState<ThemePref>('light');
+  const [theme, setTheme] = useState<Resolved>('light');
   useEffect(() => {
-    const p = (localStorage.getItem(KEY) as ThemePref) || 'system';
+    const p = (localStorage.getItem(KEY) as ThemePref) || 'light';
     // Re-assert the saved theme: if React ever re-renders <html> from scratch it drops the boot script's data-theme.
     const d = resolve(p); if (document.documentElement.dataset.theme !== d) apply(d);
     queueMicrotask(() => { setPrefState(p); setTheme(d); });
     const mq = matchMedia('(prefers-color-scheme: light)');
-    const onSys = () => { if ((localStorage.getItem(KEY) || 'dark') === 'system') { const d = resolve('system'); setTheme(d); switchWithReveal(d); } };
+    const onSys = () => { if ((localStorage.getItem(KEY) || 'light') === 'system') { const d = resolve('system'); setTheme(d); switchWithReveal(d); } };
     mq.addEventListener('change', onSys);
     return () => mq.removeEventListener('change', onSys);
   }, []);

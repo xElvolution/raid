@@ -14,7 +14,7 @@ export default function LeaderboardPage() {
   const podium = rows.slice(0, 3);
   return (
     <Shell title="Ranks">
-      <section className="cobalt-field relative overflow-hidden rounded-[14px] md:rounded-[18px] p-3.5 md:p-7">
+      <section className="cobalt-field relative overflow-hidden rounded-[18px] md:rounded-[18px] p-3.5 md:p-7">
         <div className="dots absolute inset-0 opacity-50" />
         <div className="relative">
           <p className="eyebrow">Caller leaderboard · all time</p>
@@ -30,10 +30,10 @@ export default function LeaderboardPage() {
         <div className="mt-3 md:mt-4 grid gap-2 sm:grid-cols-3">
           {podium.map((p, i) => (
             <motion.div key={p.account} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
-              <Link href={`/u/${p.account}`} className={`lift block rounded-[16px] p-3 md:p-4 ${i === 0 ? 'bg-lime text-[#0a1a00]' : 'panel'}`}>
+              <Link href={`/u/${p.account}`} className={`lift block rounded-[20px] p-3 md:p-4 ${i === 0 ? 'bg-lime text-[#1c0900]' : 'panel'}`}>
                 <div className="flex items-center justify-between"><span className="wide-black text-[1.5rem] leading-none md:text-[34px]">#{i + 1}</span><Identicon seed={p.account} size={36} /></div>
                 <p className="mt-2.5 md:mt-4 text-[13.5px] md:text-[16px] font-semibold truncate">{shortAddr(p.account)}</p>
-                <p className={`mono mt-1 text-[12px] ${i === 0 ? 'text-[#0a1a00]/70' : 'text-mute'}`}>{p.hits} hit · {p.called} called · {p.rallied.toFixed(2)} USDC rallied</p>
+                <p className={`mono mt-1 text-[12px] ${i === 0 ? 'text-[#1c0900]/70' : 'text-mute'}`}>{p.hits} hit · {p.called} called · {p.rallied.toFixed(2)} USDC rallied</p>
               </Link>
             </motion.div>
           ))}
@@ -55,7 +55,7 @@ export default function LeaderboardPage() {
         </div>
       )}
       {!raids.isLoading && !raids.error && rows.length < 4 && (
-        <Empty title={rows.length ? 'The board is wide open' : 'No callers yet'} body={`${rows.length ? 'Only ' + rows.length + ' caller has' : 'Nobody has'} called a raid on this chest so far. Call one and take a podium spot.`} action={<button onClick={() => openCall()} className="press h-11 rounded-[11px] bg-lime px-5 font-bold text-[#0a1a00]">Call a raid</button>} />
+        <Empty title={rows.length ? 'The board is wide open' : 'No callers yet'} body={`${rows.length ? 'Only ' + rows.length + ' caller has' : 'Nobody has'} called a raid on this chest so far. Call one and take a podium spot.`} action={<button onClick={() => openCall()} className="press h-11 rounded-[14px] bg-lime px-5 font-bold text-[#1c0900]">Call a raid</button>} />
       )}
     </Shell>
   );

@@ -46,7 +46,7 @@ export default function LaunchPage() {
   return (
     <Shell title="Launch">
       <section className="grid gap-3 md:gap-4 md:grid-cols-[1.1fr_1fr]">
-        <div className="cobalt-field relative overflow-hidden rounded-[14px] md:rounded-[18px] p-3.5 md:p-6">
+        <div className="cobalt-field relative overflow-hidden rounded-[18px] md:rounded-[18px] p-3.5 md:p-6">
           <div className="dots absolute inset-0 opacity-50" />
           <div className="relative">
             <span className="chip chip-lime"><span className="live-dot" />Live on NEAR {NETWORK}</span>
@@ -61,25 +61,25 @@ export default function LaunchPage() {
         </div>
         <form className="panel p-3 md:p-4" onSubmit={(e) => { e.preventDefault(); void launch(); }} aria-describedby="lp-note">
           <button type="button" onClick={() => setCreate((v) => !v)} aria-expanded={create} className="flex w-full items-center gap-2.5 text-left md:hidden">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[9px] bg-lime text-[#0a1a00]"><Plus size={17} strokeWidth={3} /></span>
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-[12px] bg-lime text-[#1c0900]"><Plus size={17} strokeWidth={3} /></span>
             <span className="min-w-0 flex-1"><span className="block text-[13.5px] font-semibold">Create a coin</span><span className="block truncate text-[11.5px] text-mute">Name, ticker, meme. Live on the curve in one tx.</span></span>
             <ChevronDown size={17} className={`shrink-0 text-mute transition-transform ${create ? 'rotate-180' : ''}`} />
           </button>
           <div className={create ? 'mt-3 md:mt-0' : 'hidden md:block'}>
           <p className="eyebrow hidden md:block">Create a coin</p>
           <div className="mt-0 md:mt-3 flex gap-3">
-            <div className="grid h-[5.375rem] w-[5.375rem] shrink-0 max-md:h-[4.75rem] max-md:w-[4.75rem] place-items-center overflow-hidden rounded-[14px] bg-raised text-mute" aria-hidden>{image && imgOk ? <img src={image} alt="" className="h-full w-full object-cover" /> : <ImagePlus size={22} />}</div>
+            <div className="grid h-[5.375rem] w-[5.375rem] shrink-0 max-md:h-[4.75rem] max-md:w-[4.75rem] place-items-center overflow-hidden rounded-[18px] bg-raised text-mute" aria-hidden>{image && imgOk ? <img src={image} alt="" className="h-full w-full object-cover" /> : <ImagePlus size={22} />}</div>
             <div className="min-w-0 flex-1 space-y-2">
-              <input value={name} onChange={(e) => setName(e.target.value.slice(0, 32))} placeholder="Coin name" aria-label="Coin name" className="h-10 w-full rounded-[10px] bg-raised px-3 text-[14px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)]" />
-              <input value={ticker} onChange={(e) => setTicker(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10))} placeholder="TICKER" aria-label="Ticker" className="h-10 w-full rounded-[10px] bg-raised px-3 mono text-[14px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)]" />
+              <input value={name} onChange={(e) => setName(e.target.value.slice(0, 32))} placeholder="Coin name" aria-label="Coin name" className="h-10 w-full rounded-[13px] bg-raised px-3 text-[14px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)]" />
+              <input value={ticker} onChange={(e) => setTicker(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10))} placeholder="TICKER" aria-label="Ticker" className="h-10 w-full rounded-[13px] bg-raised px-3 mono text-[14px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)]" />
             </div>
           </div>
           {taken && <p className="mt-1.5 text-[12px] text-down">${ticker} is taken on the RAID launchpad.</p>}
-          <textarea value={desc} onChange={(e) => setDesc(e.target.value.slice(0, 280))} placeholder="What’s the meme?" aria-label="Description" rows={2} className="mt-2 w-full resize-none rounded-[10px] bg-raised px-3 py-2.5 text-[14px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)]" />
-          <input value={image} onChange={(e) => setImage(e.target.value.trim())} placeholder="Image URL (https:// or ipfs://, optional)" aria-label="Image URL" aria-invalid={!imgOk} className={`mt-2 h-10 w-full rounded-[10px] bg-raised px-3 text-[13px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)] ${imgOk ? '' : 'shadow-[inset_0_0_0_1.5px_var(--color-down)]'}`} />
-          <div className="mt-3 rounded-[12px] hairline p-3">
+          <textarea value={desc} onChange={(e) => setDesc(e.target.value.slice(0, 280))} placeholder="What’s the meme?" aria-label="Description" rows={2} className="mt-2 w-full resize-none rounded-[13px] bg-raised px-3 py-2.5 text-[14px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)]" />
+          <input value={image} onChange={(e) => setImage(e.target.value.trim())} placeholder="Image URL (https:// or ipfs://, optional)" aria-label="Image URL" aria-invalid={!imgOk} className={`mt-2 h-10 w-full rounded-[13px] bg-raised px-3 text-[13px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)] ${imgOk ? '' : 'shadow-[inset_0_0_0_1.5px_var(--color-down)]'}`} />
+          <div className="mt-3 rounded-[16px] hairline p-3">
             <div className="flex items-center justify-between text-[12px]"><span className="text-mute">Bonding curve</span><span className="mono text-faint">price rises as supply sells</span></div>
-            <svg viewBox="0 0 200 60" className="mt-2 h-14 w-full" aria-hidden><path d="M0,58 C60,56 110,46 150,26 S190,4 200,2" fill="none" stroke="var(--color-brand)" strokeWidth="2" /><line x1="150" x2="150" y1="0" y2="60" stroke="#c6ff3d" strokeDasharray="3 3" /><text x="146" y="58" textAnchor="end" fontSize="7" fill="var(--color-mute)" fontFamily="monospace">graduates to Rhea</text></svg>
+            <svg viewBox="0 0 200 60" className="mt-2 h-14 w-full" aria-hidden><path d="M0,58 C60,56 110,46 150,26 S190,4 200,2" fill="none" stroke="var(--color-brand)" strokeWidth="2" /><line x1="150" x2="150" y1="0" y2="60" stroke="#ff5a1f" strokeDasharray="3 3" /><text x="146" y="58" textAnchor="end" fontSize="7" fill="var(--color-mute)" fontFamily="monospace">graduates to Rhea</text></svg>
           </div>
           <Button type="submit" size="lg" tone="lime" className="mt-3 w-full" disabled={acct ? !canLaunch : false}>{busy ? 'Waiting for wallet…' : !acct ? 'Connect wallet to launch' : `Launch ${ticker ? `$${ticker}` : 'coin'}`}</Button>
           <p id="lp-note" className="mt-2 text-[11.5px] text-faint">0.05 NEAR storage deposit. {NETWORK === 'testnet' ? 'Testnet: coins and tUSDC have no value. ' : ''}Contract <a className="underline hover:text-ink" href={explorerAccount(LAUNCHPAD_ID, NETWORK)} target="_blank" rel="noreferrer">{shortAddr(LAUNCHPAD_ID)}</a>. Graduation to a Rhea pool isn’t built yet.</p>
@@ -176,11 +176,11 @@ function BuySheet({ coin, onClose }: { coin: LaunchCoin | null; onClose: () => v
       {coin && (
         <div className="p-4 md:p-5">
           <div className="flex items-center gap-3 pr-10"><CoinAvatar symbol={coin.ticker} image={coin.image} size={44} /><div><p className="eyebrow">Buy on the curve</p><p className="wide text-[1.375rem]">${coin.ticker}</p></div></div>
-          <label className="mt-4 flex h-12 md:h-14 items-center gap-2 rounded-[11px] md:rounded-[12px] bg-raised px-3.5 md:px-4 focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]">
+          <label className="mt-4 flex h-12 md:h-14 items-center gap-2 rounded-[14px] md:rounded-[16px] bg-raised px-3.5 md:px-4 focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]">
             <input inputMode="decimal" value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9.]/g, ''))} aria-label={`Amount in ${unit}`} className="w-full bg-transparent mono text-[1.5rem] font-bold outline-none" />
             <span className="mono text-[12px] text-mute">{unit}</span>
           </label>
-          <div className="mt-3 rounded-[12px] hairline p-3 mono text-[12.5px]">
+          <div className="mt-3 rounded-[16px] hairline p-3 mono text-[12.5px]">
             <div className="flex justify-between"><span className="text-mute">You get</span><span className="font-bold">{q.data ? (Number(q.data) / 1e6).toLocaleString('en-US', { maximumFractionDigits: 0 }) : '…'} {coin.ticker}</span></div>
             <div className="mt-1 flex justify-between"><span className="text-mute">Fee to creator</span><span>{((Number(amt) || 0) * 0.01).toFixed(2)} {unit}</span></div>
             <div className="mt-1 flex justify-between"><span className="text-mute">Slippage guard</span><span>2%</span></div>

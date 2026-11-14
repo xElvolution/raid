@@ -33,7 +33,7 @@ export default function CoinPage({ params }: { params: Promise<{ symbol: string 
       <div className="mt-3 md:mt-4"><ChartPanel symbol={coin.symbol} /></div>
       <div className="mt-3 md:mt-4 flex flex-wrap items-center gap-2">
         <Button tone="lime" size="lg" className="flex-1 min-w-[12.5rem]" onClick={() => openCall(coin.symbol)}>Call a raid on ${coin.symbol}</Button>
-        {q.data?.url && <a href={q.data.url} target="_blank" rel="noreferrer" className="press inline-flex h-[2.875rem] md:h-[52px] items-center gap-1.5 rounded-[11px] md:rounded-[13px] px-4 md:px-5 text-[14px] font-semibold hairline">{q.data.source === 'coingecko' ? 'CoinGecko' : 'DexScreener'}<ArrowUpRight size={15} /></a>}
+        {q.data?.url && <a href={q.data.url} target="_blank" rel="noreferrer" className="press inline-flex h-[2.875rem] md:h-[52px] items-center gap-1.5 rounded-[14px] md:rounded-[16px] px-4 md:px-5 text-[14px] font-semibold hairline">{q.data.source === 'coingecko' ? 'CoinGecko' : 'DexScreener'}<ArrowUpRight size={15} /></a>}
       </div>
       <h3 className="wide mt-5 md:mt-8 text-[0.9375rem]">Raids on ${coin.symbol}</h3>
       <div className="mt-3 grid gap-3 md:grid-cols-2">{mine.map((r, i) => <RaidCard key={r.id} r={r} i={i} />)}</div>

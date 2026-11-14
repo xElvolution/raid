@@ -7,17 +7,17 @@ import { AlertTriangle, X } from 'lucide-react';
 
 type Tone = 'brand' | 'lime' | 'ghost' | 'ink' | 'danger';
 const TONES: Record<Tone, string> = {
-  brand: 'bg-brand text-white hover:brightness-110',
-  lime: 'bg-lime text-[#0a1a00] hover:brightness-105',
-  ghost: 'text-ink hairline hover:bg-raised',
-  ink: 'bg-ink text-bg hover:opacity-90',
+  brand: 'btn-ink hover:opacity-90',
+  lime: 'btn-signal hover:brightness-105',
+  ghost: 'btn-pearl text-ink hover:brightness-[.98]',
+  ink: 'btn-ink hover:opacity-90',
   danger: 'bg-down text-white',
 };
-const SIZES = { sm: 'h-[2.375rem] md:h-9 px-3 md:px-3.5 text-[12.5px] md:text-[13px] rounded-[9px]', md: 'h-11 px-4 md:px-5 text-[14px] md:text-[14.5px] rounded-[10px] md:rounded-[11px]', lg: 'h-[2.875rem] md:h-[52px] px-5 md:px-6 text-[14px] md:text-[15.5px] rounded-[11px] md:rounded-[13px]' };
+const SIZES = { sm: 'h-[2.375rem] md:h-9 px-3 md:px-3.5 text-[12.5px] md:text-[13px] rounded-full', md: 'h-11 px-4 md:px-5 text-[14px] md:text-[14.5px] rounded-full', lg: 'h-[2.875rem] md:h-[52px] px-5 md:px-6 text-[14px] md:text-[15.5px] rounded-full' };
 
 export function Button({ tone = 'brand', size = 'md', className = '', children, ...rest }: HTMLMotionProps<'button'> & { tone?: Tone; size?: keyof typeof SIZES }) {
   return (
-    <motion.button whileTap={{ scale: 0.97 }} className={`inline-flex items-center justify-center gap-2 font-semibold transition-[filter,background-color,opacity] disabled:opacity-45 disabled:pointer-events-none ${TONES[tone]} ${SIZES[size]} ${className}`} {...rest}>
+    <motion.button whileTap={{ scale: 0.97 }} className={`inline-flex items-center justify-center gap-2 font-semibold tracking-[-0.015em] transition-[filter,background-color,opacity] disabled:opacity-45 disabled:pointer-events-none ${TONES[tone]} ${SIZES[size]} ${className}`} {...rest}>
       {children}
     </motion.button>
   );
@@ -61,7 +61,7 @@ export function PixelFlag({ size = 64 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" aria-hidden>
       <rect x="3" y="2" width="1" height="13" fill="var(--color-faint)" />
-      {cells.map(([x, y], i) => <motion.rect key={i} x={4 + x!} y={2 + y!} width="1" height="1" fill={i % 4 === 3 ? '#c6ff3d' : 'var(--color-brand)'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }} />)}
+      {cells.map(([x, y], i) => <motion.rect key={i} x={4 + x!} y={2 + y!} width="1" height="1" fill={i % 4 === 3 ? '#ff5a1f' : 'var(--color-brand)'} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }} />)}
       <rect x="1" y="15" width="6" height="1" fill="var(--color-faint)" />
     </svg>
   );
@@ -74,12 +74,12 @@ export const av = (px: number) => `calc(${px}px * var(--av, 1))`;
 export function Identicon({ seed, size = 36, className = '' }: { seed: string; size?: number; className?: string }) {
   let h = 2166136261;
   for (let i = 0; i < seed.length; i++) { h ^= seed.charCodeAt(i); h = Math.imul(h, 16777619); }
-  const hues = ['#3355ff', '#c6ff3d', '#ff5c7a', '#ffc23d', '#7ae0ff', '#b48cff'];
+  const hues = ['#15161a', '#ff5a1f', '#8d8c86', '#ffb020', '#3b82f6', '#0d8f50'];
   const fg = hues[Math.abs(h) % hues.length]!;
   const cells: [number, number][] = [];
   for (let y = 0; y < 5; y++) for (let x = 0; x < 3; x++) if ((h >>> (y * 3 + x)) & 1) { cells.push([x, y]); if (x < 2) cells.push([4 - x, y]); }
   return (
-    <svg width={size} height={size} style={{ width: av(size), height: av(size) }} viewBox="-1 -1 7 7" className={`shrink-0 rounded-[9px] bg-raised ${className}`} aria-hidden>
+    <svg width={size} height={size} style={{ width: av(size), height: av(size) }} viewBox="-1 -1 7 7" className={`shrink-0 rounded-full bg-raised ${className}`} aria-hidden>
       {cells.map(([x, y], i) => <rect key={i} x={x} y={y} width="1.02" height="1.02" fill={fg} />)}
     </svg>
   );
@@ -137,7 +137,7 @@ export function Cells({ value, n = 10, mark, className = '' }: { value: number; 
   return (
     <div className={`flex gap-[3px] ${className}`} role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(value * 100)}>
       {Array.from({ length: n }, (_, i) => (
-        <motion.span key={i} className={`h-[10px] flex-1 rounded-[2px] ${i < filled ? (i === filled - 1 && value >= 1 ? 'bg-lime' : 'bg-ink') : mark !== undefined && i === mark ? 'bg-lime/25 shadow-[inset_0_0_0_1px_#c6ff3d]' : 'shadow-[inset_0_0_0_1px_var(--color-line)]'}`}
+        <motion.span key={i} className={`h-[8px] flex-1 rounded-full ${i < filled ? (i === filled - 1 && value >= 1 ? 'bg-signal' : 'bg-ink') : mark !== undefined && i === mark ? 'bg-signal/20 shadow-[inset_0_0_0_1.5px_var(--color-signal)]' : 'bg-raised'}`}
           initial={{ scaleY: 0.2, opacity: 0 }} animate={{ scaleY: 1, opacity: 1 }} transition={{ delay: 0.15 + i * 0.035, type: 'spring', stiffness: 500, damping: 26 }} />
       ))}
     </div>
@@ -154,11 +154,11 @@ export function Bar({ value, className = '', tone = 'brand' }: { value: number; 
 
 export function Segmented<T extends string>({ value, options, onChange, id, className = '' }: { value: T; options: { value: T; label: string }[]; onChange: (v: T) => void; id: string; className?: string }) {
   return (
-    <div role="tablist" className={`inline-flex rounded-[10px] bg-raised p-[3px] ${className}`}>
+    <div role="tablist" className={`inline-flex rounded-full bg-raised p-[3px] ${className}`}>
       {options.map((o) => (
-        <button key={o.value} role="tab" aria-selected={value === o.value} onClick={() => onChange(o.value)} className={`relative h-[2.125rem] md:h-8 px-2.5 md:px-3 text-[11.5px] md:text-[12.5px] font-semibold rounded-[8px] transition-colors ${value === o.value ? 'text-ink' : 'text-mute hover:text-ink'}`}>
-          {value === o.value && <motion.span layoutId={`seg-${id}`} className="absolute inset-0 rounded-[8px] bg-panel shadow-[0_1px_0_rgb(0_0_0/.2),inset_0_0_0_1px_var(--color-line)]" transition={{ type: 'spring', stiffness: 500, damping: 38 }} />}
-          <span className="relative mono uppercase tracking-wide">{o.label}</span>
+        <button key={o.value} role="tab" aria-selected={value === o.value} onClick={() => onChange(o.value)} className={`relative h-[2.125rem] md:h-8 px-2.5 md:px-3 text-[11.5px] md:text-[12.5px] font-medium rounded-full transition-colors ${value === o.value ? 'text-ink' : 'text-mute hover:text-ink'}`}>
+          {value === o.value && <motion.span layoutId={`seg-${id}`} className="absolute inset-0 rounded-full bg-panel shadow-[0_1px_2px_rgb(21_22_26/.12),0_0_0_1px_var(--color-line)]" transition={{ type: 'spring', stiffness: 500, damping: 38 }} />}
+          <span className="relative">{o.label}</span>
         </button>
       ))}
     </div>
@@ -177,9 +177,9 @@ export function Modal({ open, onClose, children, label, wide }: { open: boolean;
     <AnimatePresence>
       {open && (
         <motion.div className="fixed inset-0 z-[70] flex items-end md:items-center justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <div className="absolute inset-0 bg-[#02030d]/70 backdrop-blur-sm" onClick={onClose} />
+          <div className="absolute inset-0 bg-[#15161a]/45 backdrop-blur-md" onClick={onClose} />
           <motion.div role="dialog" aria-modal="true" aria-label={label}
-            className={`relative w-full ${wide ? 'md:max-w-[620px]' : 'md:max-w-[480px]'} max-h-[92dvh] overflow-y-auto no-scrollbar bg-panel border border-line rounded-t-[18px] md:rounded-[20px] pb-[env(safe-area-inset-bottom)]`}
+            className={`relative w-full ${wide ? 'md:max-w-[620px]' : 'md:max-w-[480px]'} max-h-[92dvh] overflow-y-auto no-scrollbar bg-panel border border-line rounded-t-[26px] md:rounded-[26px] shadow-[0_40px_80px_-30px_rgb(0_0_0/.5)] pb-[env(safe-area-inset-bottom)]`}
             initial={{ y: 60, opacity: 0.6 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 60, opacity: 0 }} transition={{ type: 'spring', stiffness: 420, damping: 38 }}>
             <button onClick={onClose} aria-label="Close" className="press absolute right-2.5 top-2.5 z-10 grid h-8 w-8 md:h-9 md:w-9 place-items-center rounded-full bg-raised text-mute hover:text-ink"><X size={16} /></button>
             {children}
@@ -193,7 +193,7 @@ export function Modal({ open, onClose, children, label, wide }: { open: boolean;
 export function SectionHead({ title, meta, action }: { title: ReactNode; meta?: ReactNode; action?: ReactNode }) {
   return (
     <div className="flex items-end justify-between gap-3 mb-3">
-      <div className="min-w-0"><h2 className="wide text-[0.9375rem] tracking-tight">{title}</h2>{meta && <p className="eyebrow mt-1.5">{meta}</p>}</div>
+      <div className="min-w-0"><h2 className="wide text-[1.125rem] md:text-[1.25rem]">{title}</h2>{meta && <p className="eyebrow mt-1.5">{meta}</p>}</div>
       {action}
     </div>
   );
