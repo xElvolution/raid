@@ -49,24 +49,6 @@ export function LifecycleReceipts({ id, className = '' }: { id: number; classNam
   );
 }
 
-/** "Judges: try a raid in 2 minutes" box. */
-export function JudgeBox({ className = '' }: { className?: string }) {
-  return (
-    <section className={`min-w-0 overflow-hidden rounded-[18px] border border-lime/40 bg-lime/[.06] ${className}`}>
-      <div className="flex items-center gap-2 px-3 pt-2.5 md:px-4 md:pt-3.5">
-        <Gavel size={15} className="text-lime" />
-        <p className="wide text-[0.875rem] md:text-[16px]">Judges: try a raid in 2 minutes</p>
-        <span className="ml-auto chip chip-ghost">Testnet · free</span>
-      </div>
-      <ol className="mt-2 grid gap-1.5 px-3 pb-2.5 text-[12.5px] md:text-[13px] leading-snug md:px-4 md:pb-3.5">
-        <li><b>1.</b> Open <Link href="/judges" className="font-semibold text-lime underline">/judges</Link> and press Get a testnet judge account. It comes with testnet NEAR and 500 tUSDC.</li>
-        <li><b>2.</b> Open raid #1: a crew DAO called it, the chest bought, sold at the line and paid every backer.</li>
-        <li><b>3.</b> Call or back your own raid. Every step links its testnet transaction.</li>
-      </ol>
-    </section>
-  );
-}
-
 /** Drag a stake, pick a line: what a backer nets on a hit, and the miss case. Uses the chest's live fee config. */
 export function PayoutSlider({ className = '' }: { className?: string }) {
   const cfg = useChestConfig();
@@ -128,15 +110,5 @@ export function WhyNow({ className = '' }: { className?: string }) {
       </div>
       {q.error && <p className="mt-1 text-[11.5px] text-mute">CoinGecko didn’t answer; numbers hidden rather than guessed.</p>}
     </section>
-  );
-}
-
-export function HonestNotes({ className = '' }: { className?: string }) {
-  return (
-    <ul className={`grid gap-3 text-[14.5px] text-mute leading-relaxed ${className}`}>
-      <li>• <b className="text-ink">Testnet.</b> Raids, backs, crew DAOs and votes are real NEAR testnet transactions. tUSDC is a testnet faucet token with no value.</li>
-      <li>• <b className="text-ink">No swaps on testnet.</b> NEAR Intents only runs on mainnet, so testnet backs show a failed forward to Intents; the stake is still recorded.</li>
-      <li>• <b className="text-ink">Not audited.</b> The chest has unit tests, not an audit. Tiny amounts only if it ever goes to mainnet.</li>
-    </ul>
   );
 }

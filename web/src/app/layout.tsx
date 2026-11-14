@@ -8,6 +8,9 @@ import { MotionRoot } from "@/lib/transition";
 import { ThemeProvider, themeBootScript } from "@/lib/theme";
 import { CallRaidSheet } from "@/components/CallRaid";
 import { RaidHitOverlay } from "@/components/Overlays";
+import { ComposerSheet } from "@/components/app/Composer";
+import { Onboarding, SignInSheet } from "@/components/app/SignIn";
+import { JoinSheet, ClaimSheet } from "@/components/app/Flow";
 import { Toaster } from "@/components/Shell";
 
 const geist = Geist({ variable: "--font-geist", subsets: ["latin"] });
@@ -25,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning data-theme="light" className={`${geist.variable} ${geistMono.variable} antialiased`}>
       <head><script dangerouslySetInnerHTML={{ __html: themeBootScript }} /></head>
-      <body><ThemeProvider><Providers><MotionRoot>{children}<CallRaidSheet /><RaidHitOverlay /><Toaster /></MotionRoot></Providers></ThemeProvider></body>
+      <body><ThemeProvider><Providers><MotionRoot>{children}<CallRaidSheet /><ComposerSheet /><SignInSheet /><JoinSheet /><ClaimSheet /><Onboarding /><RaidHitOverlay /><Toaster /></MotionRoot></Providers></ThemeProvider></body>
     </html>
   );
 }

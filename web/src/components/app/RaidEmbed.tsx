@@ -34,20 +34,20 @@ export function RaidEmbedView({ r, className = '' }: { r: Raid; className?: stri
   const ph = now ? phase(r, now) : null;
   const x = outcome(r);
   return (
-    <Link href={`/raids/${r.id}`} className={`press block rounded-[22px] border border-line bg-panel p-4 transition hover:border-faint ${className}`}>
+    <Link href={`/raids/${r.id}`} className={`press block rounded-[18px] border border-line bg-panel p-3 transition hover:border-faint ${className}`}>
       <div className="flex items-center gap-3">
         <CoinAvatar symbol={t.symbol} size={40} />
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[16px] font-semibold tracking-[-0.02em]">${t.symbol} to {xLabel(r.target_x_bps)}</p>
-          <p className="truncate text-[13px] text-mute">Raid #{r.id} · {ph?.label ?? ' '}</p>
+          <p className="truncate text-[14.5px] font-semibold tracking-[-0.02em]">${t.symbol} to {xLabel(r.target_x_bps)}</p>
+          <p className="truncate text-[12.5px] text-mute">Raid #{r.id} · {ph?.label ?? ' '}</p>
         </div>
         <div className="text-right">
-          <p className={`mono text-[15px] font-semibold ${r.status === 'Closed' ? (r.hit ? 'text-lime' : 'text-mute') : 'text-ink'}`}>{x ? `${x.toFixed(2)}x` : raidClock(r, now) || ' '}</p>
+          <p className={`mono text-[14px] font-semibold ${r.status === 'Closed' ? (r.hit ? 'text-lime' : 'text-mute') : 'text-ink'}`}>{x ? `${x.toFixed(2)}x` : raidClock(r, now) || ' '}</p>
           <p className="text-[11.5px] text-faint">{x ? 'paid to crew' : r.status === 'Open' && now && now < r.opens_until_ms ? 'crew closes' : r.status === 'Open' ? 'buy in' : ''}</p>
         </div>
       </div>
       <Loop r={r} className="mt-4" />
-      <div className="mt-3.5 flex items-center gap-4 text-[13px] text-mute">
+      <div className="mt-3.5 flex items-center gap-4 text-[12.5px] text-mute">
         <span><b className="mono font-semibold text-ink">{usdcOf(r.pot).toFixed(0)}</b> tUSDC pot</span>
         <span className="flex items-center gap-1"><Users size={14} /><b className="mono font-semibold text-ink">{crew.data?.length ?? '–'}</b> crew</span>
       </div>

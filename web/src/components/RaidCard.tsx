@@ -9,7 +9,7 @@ import { CHAINS } from '@/lib/coins';
 import { useNow } from '@/lib/hooks';
 import { Cells, Chip, CoinAvatar, Delta, Flash, Identicon } from './ui';
 import { Spark } from './Spark';
-import { Receipt } from './JudgeKit';
+import { Receipt } from './Proof';
 
 export function PhaseChip({ r, now }: { r: Raid; now: number }) {
   if (!now) return <Chip tone="ghost">#{r.id}</Chip>;

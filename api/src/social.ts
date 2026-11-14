@@ -30,8 +30,8 @@ const TAG = /#([A-Za-z0-9_]{2,30})/g;
 
 /** Post projection with counts, quoted post and viewer flags. `$v` is the viewer id param index. */
 const postSelect = (v: number) => `
-  SELECT p.id, p.body, p.created_at, p.position, p.reply_to, p.quote_of, p.media_url, p.channel,
-    u.handle, u.display_name, u.avatar_url, u.verified,
+  SELECT p.id, p.body, p.created_at, p.position, p.reply_to, p.quote_of, p.media_url, p.channel, p.raid_id, p.coin,
+    u.handle, u.display_name, u.avatar_url, u.verified, u.near_account,
     m.id AS market_id, m.question, m.price_yes, m.status, m.venue, m.close_ts, m.image_url AS market_image, m.category AS market_category, m.volume AS market_volume,
     (SELECT count(*) FROM post_likes l WHERE l.post_id=p.id)::int AS likes,
     (SELECT count(*) FROM post_recasts r WHERE r.post_id=p.id)::int AS recasts,
@@ -39,7 +39,7 @@ const postSelect = (v: number) => `
     (SELECT count(*) FROM posts q WHERE q.quote_of=p.id)::int AS quotes,
     (SELECT COALESCE(sum(t.amount_yocto),0)::text FROM tips t WHERE t.post_id=p.id AND t.status IN ('verified','demo')) AS tips_yocto,
     (SELECT pu.handle FROM posts pp JOIN users pu ON pu.id=pp.author_id WHERE pp.id=p.reply_to) AS reply_to_handle,
-    (SELECT json_build_object('id', q.id::text, 'body', q.body, 'created_at', q.created_at, 'handle', qu.handle, 'display_name', qu.display_name, 'avatar_url', qu.avatar_url, 'media_url', q.media_url)
+    (SELECT json_build_object('id', q.id::text, 'body', q.body, 'created_at', q.created_at, 'handle', qu.handle, 'display_name', qu.display_name, 'avatar_url', qu.avatar_url, 'media_url', q.media_url, 'raid_id', q.raid_id, 'near_account', qu.near_account)
        FROM posts q JOIN users qu ON qu.id=q.author_id WHERE q.id=p.quote_of) AS quoted,
     COALESCE(EXISTS(SELECT 1 FROM post_likes l WHERE l.post_id=p.id AND l.user_id=$${v}), false) AS liked,
     COALESCE(EXISTS(SELECT 1 FROM post_recasts r WHERE r.post_id=p.id AND r.user_id=$${v}), false) AS recasted,
@@ -85,6 +85,9 @@ export function registerSocial(app: FastifyInstance, deps: SocialDeps) {
     replyTo: Id.optional(), quoteOf: Id.optional(),
     mediaUrl: z.string().url().max(500).refine((u) => /^https:\/\//.test(u) || u.startsWith('/'), 'https only').optional(),
     channel: z.string().regex(/^[a-z0-9-]{2,24}$/).optional(),
+    /** RAID: the raid this post is about, and the token it tags. */
+    raidId: z.number().int().min(0).optional(),
+    coin: z.string().regex(/^[A-Z0-9]{2,12}$/).optional(),
     /** Call it: creator's opening play-money call, placed when the market goes live. */
     opening: z.object({ outcome: z.union([z.literal(0), z.literal(1)]), amount: z.number().positive().max(1000) }).optional(),
   }).refine((d) => !d.opening || d.makeMarket, 'opening needs makeMarket');
@@ -95,8 +98,8 @@ export function registerSocial(app: FastifyInstance, deps: SocialDeps) {
     const d = b.data, me = String(req.userId);
     if (d.channel && !(await db.replica.query('SELECT 1 FROM channels WHERE slug=$1', [d.channel])).length) return reply.code(404).send({ error: 'channel_not_found' });
     const [p] = await db.primary.query<{ id: string; created_at: string }>(
-      'INSERT INTO posts (author_id, body, market_id, reply_to, quote_of, media_url, channel) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id, created_at',
-      [me, d.body, d.marketId ?? null, d.replyTo ?? null, d.quoteOf ?? null, d.mediaUrl ?? null, d.channel ?? null]);
+      'INSERT INTO posts (author_id, body, market_id, reply_to, quote_of, media_url, channel, raid_id, coin) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id, created_at',
+      [me, d.body, d.marketId ?? null, d.replyTo ?? null, d.quoteOf ?? null, d.mediaUrl ?? null, d.channel ?? null, d.raidId ?? null, d.coin ?? (d.body.match(/\$([A-Z][A-Z0-9]{1,11})\b/)?.[1] ?? null)]);
     if (!p) return reply.code(500).send({ error: 'insert_failed' });
     await deps.awardXp(me, d.replyTo ? 'reply' : 'post', d.replyTo ? 2 : 5);
     if (d.opening) await saveOpening(db.primary, p.id, me, d.opening);
@@ -116,13 +119,14 @@ export function registerSocial(app: FastifyInstance, deps: SocialDeps) {
     return reply.code(201).send({ id: p.id, createdAt: p.created_at });
   });
 
-  const FeedQ = z.object({ tab: z.enum(['foryou', 'following']).default('foryou'), cursor: z.string().optional(), author: Handle.optional(), channel: z.string().regex(/^[a-z0-9-]{2,24}$/).optional() });
+  const FeedQ = z.object({ tab: z.enum(['foryou', 'following', 'tokens']).default('foryou'), cursor: z.string().optional(), author: Handle.optional(), channel: z.string().regex(/^[a-z0-9-]{2,24}$/).optional() });
   app.get('/v1/feed', async (req, reply) => {
     const q = FeedQ.safeParse(req.query);
     if (!q.success) return reply.code(400).send({ error: 'bad_request' });
     if (q.data.tab === 'following' && !req.userId) return reply.code(401).send({ error: 'auth_required' });
     const params: unknown[] = []; let where = 'p.reply_to IS NULL';
     if (q.data.tab === 'following') { params.push(req.userId); where += ` AND p.author_id IN (SELECT followee_id FROM follows WHERE follower_id=$${params.length})`; }
+    if (q.data.tab === 'tokens') where += ` AND p.coin IS NOT NULL`;
     if (q.data.author) { params.push(q.data.author); where += ` AND u.handle=$${params.length}`; }
     if (q.data.channel) { params.push(q.data.channel); where += ` AND p.channel=$${params.length}`; }
     return listPosts(where, params, viewer(req), q.data.cursor);

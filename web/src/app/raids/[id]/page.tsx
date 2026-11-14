@@ -17,12 +17,13 @@ import { Composer, Feed } from '@/components/Social';
 import { useBackers, useChestConfig, useNow, useRaid, useRaids } from '@/lib/hooks';
 import { useQuote, fmtPrice, countdown, shortAddr } from '@/lib/market';
 import { coinByAsset, explorerAccount, explorerTx } from '@/lib/coins';
-import { LifecycleReceipts, raidReceipt } from '@/components/JudgeKit';
+import { LifecycleReceipts, raidReceipt } from '@/components/Proof';
 import { crewName } from '@/lib/crews';
 import { attributeReel, rememberReel } from '@/lib/reels';
 import { CHEST_ID, NETWORK, raidApi, target, tx, usdcOf, xLabel, liveMultiple } from '@/lib/raid';
 import { send, useAccount, connect } from '@/lib/wallet';
 import { toast } from '@/lib/bus';
+import { openJoin } from '@/components/app/Flow';
 import type { ChartLine } from '@/components/chart/CoinChart';
 
 export default function RaidPage({ params }: { params: Promise<{ id: string }> }) {
@@ -33,7 +34,7 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
   const [tab, setTab] = useState<'room' | 'crew' | 'chart' | 'rules'>('room');
   const [backSeen, setBackSeen] = useState(false);
   const io = useRef<IntersectionObserver | null>(null);
-  const backRef = useCallback((el: HTMLDivElement | null) => {
+  const backRef = useCallback((el: HTMLElement | null) => {
     io.current?.disconnect();
     if (!el) return;
     io.current = new IntersectionObserver(([e]) => setBackSeen(!!e?.isIntersecting), { rootMargin: '0px 0px -120px 0px' });
@@ -72,20 +73,20 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
       <header className="pt-3">
         <Link href={profileHref(r.caller)} className="flex items-center gap-2.5">
           <Avatar id={r.caller} size={36} />
-          <span className="min-w-0"><span className="block truncate text-[15px] font-semibold leading-tight">{crew ? crew.name : displayName(r.caller)}</span><span className="block text-[13px] text-mute">{crew ? 'Crew DAO · passed by vote' : `${callerRaids.length} called · ${callerRaids.filter((x) => x.hit).length} hit`}</span></span>
+          <span className="min-w-0"><span className="block truncate text-[14px] font-semibold leading-tight">{crew ? crew.name : displayName(r.caller)}</span><span className="block text-[12.5px] text-mute">{crew ? 'Crew DAO · passed by vote' : `${callerRaids.length} called · ${callerRaids.filter((x) => x.hit).length} hit`}</span></span>
           {personByAccount(r.caller) && <TestnetChip className="ml-auto" />}
         </Link>
         <div className="mt-5 flex items-center gap-3">
           <CoinAvatar symbol={t.symbol} image={q.data?.image} size={48} />
-          <h2 className="text-[36px] font-semibold leading-none tracking-[-0.05em] md:text-[48px]">${t.symbol} <span className="text-signal">{xLabel(r.target_x_bps)}</span></h2>
-          <ChromeChest size={84} open={r.hit} fill={cfg.data?.max_pot ? usdcOf(r.pot) / usdcOf(cfg.data.max_pot) : 0.4} className="pointer-events-none -my-4 ml-auto" />
+          <h2 className="text-[26px] font-semibold leading-none tracking-[-0.05em] md:text-[48px]">${t.symbol} <span className="text-signal">{xLabel(r.target_x_bps)}</span></h2>
+          <ChromeChest size={72} open={r.hit} fill={cfg.data?.max_pot ? usdcOf(r.pot) / usdcOf(cfg.data.max_pot) : 0.4} className="pointer-events-none -my-4 ml-auto" />
         </div>
-        <p className="mt-3 text-[17px] leading-snug">{r.title}</p>
+        <p className="mt-3 text-[15px] leading-snug">{r.title}</p>
       </header>
 
-      <section className="panel relative mt-5 overflow-hidden rounded-[28px] p-5">
+      <section className="panel relative mt-5 overflow-hidden rounded-[22px] p-3.5">
         <p className="eyebrow">{mult ? 'Now at' : open ? 'Crew closes in' : inCountdown ? 'Chest may buy in' : r.status === 'Closed' ? 'Settled' : r.status === 'Open' ? 'Waiting for the buy' : 'Retreat in'}</p>
-        <div className="mt-3 text-[40px] leading-none">
+        <div className="mt-3 text-[30px] leading-none">
           {mult ? <span className="mono font-semibold">{mult.toFixed(2)}x</span>
             : r.status === 'Closed' ? <span className={`font-semibold tracking-[-0.04em] ${r.hit ? 'text-lime' : ''}`}>{r.hit ? 'Line hit' : 'Retreated'}</span>
             : r.status === 'Open' && !open && !inCountdown ? <span className="font-semibold tracking-[-0.04em]">Ready</span>
@@ -98,14 +99,14 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
           <Stat k={r.status === 'Closed' ? 'To crew' : 'Price'} v={r.status === 'Closed' ? usdcOf(r.for_backers ?? '0').toFixed(0) : fmtPrice(q.data?.priceUsd)} u={r.status === 'Closed' ? 'tUSDC' : ''} />
         </div>
         <Loop r={r} className="mt-6" />
-        {open && r.buy_after_ms && <p className="mt-4 text-[14px] leading-relaxed text-mute">Then a public countdown runs until <b className="mono text-ink">{new Date(r.buy_after_ms).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</b> before the chest may buy.</p>}
-        {inCountdown && <p className="mt-4 text-[14px] leading-relaxed text-mute">Everyone sees the target and the buy time. No surprise buys.</p>}
-        {r.status === 'Open' && !open && !inCountdown && <p className="mt-4 text-[14px] leading-relaxed text-mute">Countdown over. A keeper hands the chest a signed 1Click quote, and the chest checks it before buying.</p>}
+        {open && r.buy_after_ms && <p className="mt-4 text-[13px] leading-relaxed text-mute">Then a public countdown runs until <b className="mono text-ink">{new Date(r.buy_after_ms).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</b> before the chest may buy.</p>}
+        {inCountdown && <p className="mt-4 text-[13px] leading-relaxed text-mute">Everyone sees the target and the buy time. No surprise buys.</p>}
+        {r.status === 'Open' && !open && !inCountdown && <p className="mt-4 text-[13px] leading-relaxed text-mute">Countdown over. A keeper hands the chest a signed 1Click quote, and the chest checks it before buying.</p>}
       </section>
 
-      {open && <div id="back" ref={backRef} className="mt-5 scroll-mt-20"><BackPanel id={r.id} open={open} bps={r.target_x_bps} pot={usdcOf(r.pot)} /></div>}
+      {open && <button ref={backRef} onClick={() => openJoin(r.id)} className="press mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-full btn-signal text-[14.5px] font-semibold">Join this raid<span className="mono text-[12.5px] opacity-70">{countdown(r.opens_until_ms - now)} left</span></button>}
 
-      <div className="sticky top-14 z-30 -mx-4 mt-6 bg-bg/85 px-4 backdrop-blur-xl md:top-16 md:mx-0 md:px-0">
+      <div className="sticky top-12 z-30 -mx-4 mt-6 bg-bg/85 px-4 backdrop-blur-xl md:top-16 md:mx-0 md:px-0">
         <Tabs id="room" value={tab} onChange={setTab} items={tabs.map((x) => ({ ...x }))} />
       </div>
 
@@ -118,19 +119,18 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
       {tab === 'crew' && (
         <section id="crew" className="pt-2">
           <CrewList id={r.id} />
-          <div className="mt-4 flex gap-3 rounded-[20px] bg-raised/70 p-4 text-[14px] leading-relaxed text-mute"><Lock size={16} className="mt-0.5 shrink-0 text-lime" />The caller’s fee is locked until this raid hits {xLabel(r.target_x_bps)}. If it retreats, the fee is gone.</div>
-          {!open && <div className="mt-5"><BackPanel id={r.id} open={open} bps={r.target_x_bps} pot={usdcOf(r.pot)} /></div>}
+          <div className="mt-4 flex gap-3 rounded-[20px] bg-raised/70 p-4 text-[13px] leading-relaxed text-mute"><Lock size={16} className="mt-0.5 shrink-0 text-lime" />The caller’s fee is locked until this raid hits {xLabel(r.target_x_bps)}. If it retreats, the fee is gone.</div>
         </section>
       )}
       {tab === 'chart' && (
         <section className="pt-4">
           <ChartPanel symbol={t.symbol} lines={lines} />
-          {!entryPrice && <p className="mt-3 text-[13px] leading-relaxed text-faint">Not bought yet, so the line shows where {xLabel(r.target_x_bps)} would sit at today’s price. Once the chest buys, it moves to the real entry × {xLabel(r.target_x_bps)}.</p>}
+          {!entryPrice && <p className="mt-3 text-[12.5px] leading-relaxed text-faint">Not bought yet, so the line shows where {xLabel(r.target_x_bps)} would sit at today’s price. Once the chest buys, it moves to the real entry × {xLabel(r.target_x_bps)}.</p>}
         </section>
       )}
       {tab === 'rules' && (
         <section className="pt-4">
-          <ul className="grid gap-4 text-[14.5px]">
+          <ul className="grid gap-4 text-[13.5px]">
           <Rule icon={<ShieldCheck size={15} />} t="Keyless buys and sells">The chest only moves funds against a 1Click quote whose signature and min-out it checks on-chain.</Rule>
           <Rule icon={<Lock size={15} />} t="Anti-dump caller fee">{cfg.data ? `${cfg.data.caller_fee_bps / 100}%` : 'A small share'} of profit, paid only on a hit.</Rule>
           <Rule icon={<Timer size={15} />} t="Public countdown">After the crew window, the chest waits {cfg.data?.buy_delay_minutes ?? 10} minutes before it may buy, so the buy time is known to everyone.</Rule>
@@ -146,13 +146,13 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
           <dt className="text-faint">Buy quote</dt><dd className="truncate text-right text-mute">{r.buy_quote_hash ?? 'not yet'}</dd>
           <dt className="text-faint">Sell quote</dt><dd className="truncate text-right text-mute">{r.sell_quote_hash ?? 'not yet'}</dd>
           </dl>
+          <LifecycleReceipts id={r.id} className="mt-6" />
         </section>
       )}
-      <LifecycleReceipts id={r.id} className="mt-8" />
 
       {open && !backSeen && (
         <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 px-4 pb-3 md:hidden">
-          <a href="#back" className="press flex h-14 items-center justify-center gap-2 rounded-full btn-signal text-[16px] font-semibold shadow-[0_18px_40px_-12px_rgb(255_90_31/.6)]">Back this raid <span className="mono text-[13px] opacity-70">{countdown(r.opens_until_ms - now)}</span></a>
+          <button onClick={() => openJoin(r.id)} className="press flex h-12 w-full items-center justify-center gap-2 rounded-full btn-signal text-[14.5px] font-semibold shadow-[0_18px_40px_-12px_rgb(255_90_31/.6)]">Join this raid <span className="mono text-[12.5px] opacity-70">{countdown(r.opens_until_ms - now)}</span></button>
         </div>
       )}
     </Shell>
@@ -160,64 +160,18 @@ export default function RaidPage({ params }: { params: Promise<{ id: string }> }
 }
 
 function Stat({ k, v, u }: { k: string; v: string; u: string }) {
-  return <div className="min-w-0"><p className="text-[12.5px] text-mute">{k}</p><p className="mono mt-1 truncate text-[20px] font-semibold tracking-[-0.03em]">{v}</p><p className="truncate text-[11.5px] text-faint">{u}</p></div>;
+  return <div className="min-w-0"><p className="text-[12.5px] text-mute">{k}</p><p className="mono mt-1 truncate text-[17px] font-semibold tracking-[-0.03em]">{v}</p><p className="truncate text-[11.5px] text-faint">{u}</p></div>;
 }
 
 function Rule({ icon, t, children }: { icon: React.ReactNode; t: string; children: React.ReactNode }) {
   return <li className="flex gap-2.5"><span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-raised text-lime">{icon}</span><span><span className="block font-semibold">{t}</span><span className="text-mute leading-snug">{children}</span></span></li>;
 }
 
-function BackPanel({ id, open, bps, pot }: { id: number; open: boolean; bps: number; pot: number }) {
-  const [amt, setAmt] = useState('5');
-  const [busy, setBusy] = useState(false);
-  const [via, setVia] = useState<'near' | 'any'>('near');
-  const acct = useAccount();
-  const cfg = useChestConfig();
-  const stake = useQuery({ queryKey: ['stake', id, acct], enabled: !!acct, queryFn: () => raidApi.stake(id, acct!) });
-  const unit = NETWORK === 'testnet' ? 'tUSDC' : 'USDC';
-  const min = cfg.data ? usdcOf(cfg.data.min_back) : 0.1;
-  const maxBack = cfg.data?.max_back ? usdcOf(cfg.data.max_back) : Infinity;
-  const maxPot = cfg.data?.max_pot ? usdcOf(cfg.data.max_pot) : Infinity;
-  const mine = stake.data ? usdcOf(stake.data) : 0;
-  const room = Math.max(0, Math.min(maxPot - pot, maxBack - mine));
-  const n = Number(amt);
-  const valid = n >= min && isFinite(n);
-  const fits = Math.min(n || 0, room);
-  async function back() {
-    if (!acct) return void connect();
-    if (!cfg.data) return;
-    setBusy(true);
-    try { const h = await send(tx.back(cfg.data.usdc, id, String(Math.round(n * 1e6)))); void attributeReel(h, acct); toast({ title: `You’re in the crew`, body: `Backed raid #${id} with ${fits} ${unit}${n > fits ? `; ${(n - fits).toFixed(2)} over the cap is refunded` : ''}.`, tone: 'lime' }); }
-    catch (e) { if ((e as Error).message !== 'connect_wallet') toast({ title: 'Wallet didn’t sign', body: (e as Error).message.slice(0, 120), tone: 'down' }); }
-    finally { setBusy(false); }
-  }
-  return (
-    <section className="panel min-w-0 rounded-[28px] p-5">
-      <div className="flex items-center justify-between gap-2"><h3 className="text-[20px] font-semibold tracking-[-0.03em]">Back this raid</h3>{acct && <span className="mono text-[11px] text-mute">your stake {mine.toFixed(2)}</span>}</div>
-      <Segmented id={`via-${id}`} className="mt-3 w-full [&>button]:flex-1" value={via} onChange={setVia} options={[{ value: 'near', label: 'NEAR wallet' }, { value: 'any', label: 'Phantom · MetaMask' }]} />
-      {via === 'any' ? <AnyChainBack raidId={id} bps={bps} open={open} /> : (
-        <>
-          <label className={`mt-3 flex h-12 md:h-14 items-center gap-2 rounded-[14px] md:rounded-[16px] bg-raised px-3.5 md:px-4 ${open ? 'focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]' : 'opacity-60'}`}>
-            <input inputMode="decimal" value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9.]/g, ''))} disabled={!open} aria-label={`Amount in ${unit}`} className="w-full bg-transparent mono text-[1.5rem] font-bold outline-none" />
-            <span className="mono text-[12px] text-mute">{unit}</span>
-          </label>
-          <div className="mt-2 grid grid-cols-4 gap-1.5">{['1', '5', '25', '100'].map((v) => <button key={v} disabled={!open} onClick={() => setAmt(v)} className={`press h-9 rounded-[12px] mono text-[12px] font-bold ${amt === v ? 'bg-ink text-bg' : 'hairline text-mute'} disabled:opacity-50`}>{v}</button>)}</div>
-          {open && isFinite(room) && <p className="mt-2 mono text-[11px] text-mute">Room for you: {room.toFixed(2)} {unit} (cap {maxBack} per backer, {maxPot} per raid){n > room ? ` · ${(n - room).toFixed(2)} would be refunded` : ''}</p>}
-          <PayoutBox stake={fits || 0} bps={bps} cfg={cfg.data} unit={unit} className="mt-3" />
-          <RiskNote className="mt-3" />
-          <Button tone={open ? 'lime' : 'ghost'} size="lg" className="mt-3 w-full" disabled={!open || !valid || busy || room <= 0} onClick={back}>{!open ? 'Crew window closed' : room <= 0 ? 'Raid is full' : busy ? 'Waiting for wallet…' : acct ? `Back with ${fits || 0} ${unit}` : 'Connect wallet to back'}</Button>
-          <p className="mt-2 text-[11.5px] text-faint">Min {min} · {NETWORK === 'testnet' ? 'testnet tokens, no real money' : 'mainnet'}</p>
-        </>
-      )}
-    </section>
-  );
-}
-
 /** Who is in: get_backers on the chest. NEAR accounts, plus MetaMask (0x…) and Phantom (64-hex Ed25519) intents accounts. */
 function CrewList({ id }: { id: number }) {
   const b = useBackers(id);
   const rows = b.data ?? [];
-  if (!rows.length) return <p className="py-6 text-[15px] text-mute">No one has backed this raid yet.</p>;
+  if (!rows.length) return <p className="py-6 text-[14px] text-mute">No one has backed this raid yet.</p>;
   const kind = (a: string) => (/^0x[0-9a-f]{40}$/.test(a) ? 'MetaMask · no NEAR account' : /^[0-9a-f]{64}$/.test(a) ? 'Phantom · no NEAR account' : 'NEAR wallet');
   return (
     <div>
@@ -226,8 +180,8 @@ function CrewList({ id }: { id: number }) {
         {rows.map(([a, s]) => (
           <li key={a}><Link href={profileHref(a)} className="flex items-center gap-3 py-3">
             <Avatar id={a} size={40} />
-            <span className="min-w-0 flex-1"><span className="block truncate text-[15px] font-semibold">{/^(0x[0-9a-f]{40}|[0-9a-f]{64})$/.test(a) ? `${a.slice(0, 10)}…${a.slice(-6)}` : displayName(a)}</span><span className="block text-[13px] text-mute">{personByAccount(a) ? 'testnet account' : kind(a)}</span></span>
-            <span className="mono text-[15px] font-semibold">{usdcOf(s).toFixed(2)}</span>
+            <span className="min-w-0 flex-1"><span className="block truncate text-[14px] font-semibold">{/^(0x[0-9a-f]{40}|[0-9a-f]{64})$/.test(a) ? `${a.slice(0, 10)}…${a.slice(-6)}` : displayName(a)}</span><span className="block text-[12.5px] text-mute">{personByAccount(a) ? 'testnet account' : kind(a)}</span></span>
+            <span className="mono text-[14px] font-semibold">{usdcOf(s).toFixed(2)}</span>
           </Link></li>
         ))}
       </ul>

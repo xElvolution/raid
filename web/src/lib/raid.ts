@@ -1,9 +1,13 @@
 /** RAID war chest client: reads the chest contract over NEAR JSON-RPC (no backend in between). */
 import { coinByAsset } from './coins';
 
-export const NETWORK = (process.env.NEXT_PUBLIC_NEAR_NETWORK ?? 'testnet') as 'testnet' | 'mainnet';
-export const CHEST_ID = process.env.NEXT_PUBLIC_RAID_CHEST ?? 'raid-chest-mwab3vnk.testnet';
-export const RPC = process.env.NEXT_PUBLIC_RAID_RPC ?? (NETWORK === 'mainnet' ? 'https://rpc.mainnet.fastnear.com' : 'https://rpc.testnet.fastnear.com');
+import { NET } from './net';
+
+export const NETWORK = NET.net;
+/** The chest on the active network. Empty string when it isn't deployed there yet (reads return nothing). */
+export const CHEST_ID = NET.chest ?? '';
+export const CHAIN_LIVE = NET.live;
+export const RPC = NET.rpc;
 
 export type RaidStatus = 'Open' | 'Buying' | 'Held' | 'Selling' | 'Closed';
 export interface Raid {
@@ -42,13 +46,13 @@ export async function view<T>(method: string, args: object = {}, contract = CHES
 }
 
 export const raidApi = {
-  list: (from = 0, limit = 100) => view<Raid[]>('list_raids', { from, limit }),
-  get: (id: number) => view<Raid | null>('get_raid', { id }),
+  list: (from = 0, limit = 100) => (CHEST_ID ? view<Raid[]>('list_raids', { from, limit }) : Promise.resolve([] as Raid[])),
+  get: (id: number) => (CHEST_ID ? view<Raid | null>('get_raid', { id }) : Promise.resolve(null)),
   config: () => view<ChestConfig>('get_config'),
   mpc: () => view<{ public_key: string | null; registered: boolean }>('get_mpc'),
   stake: (id: number, account_id: string) => view<string>('get_stake', { id, account_id }),
   buyback: () => view<string>('get_buyback_bucket'),
-  backers: (id: number) => view<[string, string][]>('get_backers', { id, from: 0, limit: 100 }),
+  backers: (id: number) => (CHEST_ID ? view<[string, string][]>('get_backers', { id, from: 0, limit: 100 }) : Promise.resolve([] as [string, string][])),
 };
 
 export const USDC_DECIMALS = 6;

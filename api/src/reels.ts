@@ -2,10 +2,10 @@
  * RAID reels: a vertical swipe feed of short videos (mp4 up to 60 s, stored on local disk) or X / Instagram / TikTok links,
  * each tied to a coin, a chest raid or a launchpad coin.
  *
- * Reel attribution is OFF-CHAIN and labelled demo: when someone backs a raid from a reel, the app reports the back tx here.
+ * Reel attribution is tracked OFF-CHAIN by the RAID API: when someone backs a raid from a reel, the app reports the back tx here.
  * The API checks the tx on NEAR RPC (a `raid_backed` event from the chest for that backer) before counting it. If the raid
  * hits, the reel's creator is credited 20% of the caller's 2.5% fee (0.5% of profit; the caller would keep 2.0%) pro rata to
- * the stake that came through the reel. The chest contract does not pay this; it is shown as "off-chain attribution, demo".
+ * the stake that came through the reel. The chest contract does not pay this; the app labels it "tracked by RAID, paid off-chain".
  */
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fs from 'node:fs';
@@ -54,7 +54,8 @@ const SELECT = `
   SELECT r.id::text, r.kind, r.embed_url, r.provider, r.caption, r.coin, r.raid_id::int AS raid_id, r.launch_id::int AS launch_id,
     r.duration_s, r.demo, r.created_at, u.handle, u.display_name, u.near_account, u.demo AS author_demo,
     (SELECT count(*) FROM reel_backs b WHERE b.reel_id = r.id)::int AS backs,
-    (SELECT COALESCE(sum(b.amount), 0) FROM reel_backs b WHERE b.reel_id = r.id)::text AS backed_raw
+    (SELECT COALESCE(sum(b.amount), 0) FROM reel_backs b WHERE b.reel_id = r.id)::text AS backed_raw,
+    (SELECT count(*) FROM reel_likes l WHERE l.reel_id = r.id)::int AS likes
   FROM reels r JOIN users u ON u.id = r.author_id`;
 
 export function registerReels(app: FastifyInstance, d: ReelsDeps) {
@@ -70,8 +71,18 @@ export function registerReels(app: FastifyInstance, d: ReelsDeps) {
     if (!q.success) return reply.code(400).send({ error: 'bad_request' });
     const items = await db.replica.query(`${SELECT} WHERE ($1::text IS NULL OR r.coin = $1) AND ($2::bigint IS NULL OR r.raid_id = $2) AND ($3::bigint IS NULL OR r.id < $3)
       ORDER BY r.id DESC LIMIT 20`, [q.data.coin ?? null, q.data.raid ?? null, q.data.before ?? null]);
-    return { items, attribution: 'off-chain attribution, demo' };
+    return { items, attribution: 'tracked by RAID, paid off-chain' };
   });
+
+  for (const m of ['post', 'delete'] as const) {
+    app[m]<{ Params: { id: string } }>('/v1/raid/reels/:id/like', { preHandler: requireUser }, async (req, reply) => {
+      if (!/^\d+$/.test(req.params.id)) return reply.code(400).send({ error: 'bad_request' });
+      if (m === 'post') await db.primary.query('INSERT INTO reel_likes (reel_id, user_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [req.params.id, req.userId]);
+      else await db.primary.query('DELETE FROM reel_likes WHERE reel_id = $1 AND user_id = $2', [req.params.id, req.userId]);
+      const [c] = await db.primary.query<{ n: number }>('SELECT count(*)::int AS n FROM reel_likes WHERE reel_id = $1', [req.params.id]);
+      return { on: m === 'post', count: c?.n ?? 0 };
+    });
+  }
 
   /** Paste an X / Instagram / TikTok link. */
   app.post('/v1/raid/reels', { preHandler: requireUser }, async (req, reply) => {
@@ -131,7 +142,7 @@ export function registerReels(app: FastifyInstance, d: ReelsDeps) {
     if (!v) return reply.code(422).send({ error: 'not_a_back', message: 'That tx is not a RAID back by this account' });
     if (reel.raid_id !== null && Number(reel.raid_id) !== v.raidId) return reply.code(422).send({ error: 'wrong_raid' });
     await db.primary.query('INSERT INTO reel_backs (tx, reel_id, raid_id, backer, amount) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (tx) DO NOTHING', [b.data.tx, req.params.id, v.raidId, b.data.backer, v.amount]);
-    return reply.code(201).send({ ok: true, raidId: v.raidId, amount: v.amount, attribution: 'off-chain attribution, demo' });
+    return reply.code(201).send({ ok: true, raidId: v.raidId, amount: v.amount, attribution: 'tracked by RAID, paid off-chain' });
   });
 
   /** Top reel creators by hits (raids that hit with stake that came through their reels). */
@@ -154,7 +165,7 @@ export function registerReels(app: FastifyInstance, d: ReelsDeps) {
       by.set(r.handle, e);
     }
     const items = [...by.values()].sort((a, b) => b.hits - a.hits || b.backed_raw - a.backed_raw || b.reels - a.reels);
-    return { items, attribution: 'off-chain attribution, demo', share: 'reel creator: 20% of the caller fee (0.5% of profit) on a hit' };
+    return { items, attribution: 'tracked by RAID, paid off-chain', share: 'reel creator: 20% of the caller fee (0.5% of profit) on a hit' };
   });
 }
 

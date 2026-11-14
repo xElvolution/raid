@@ -17,6 +17,7 @@ import { courtResolve } from './resolution.js';
 import { registerOpening } from './opening.js';
 import { registerSocial } from './social.js';
 import { registerRaidSocial } from './raid-social.js';
+import { registerStories } from './stories.js';
 import { registerReels, type ReelChain } from './reels.js';
 import { DraftResponse, isExcludedMarket, POLICY_MESSAGE } from './workers.js';
 
@@ -292,6 +293,7 @@ export function buildApp(deps: Deps) {
   registerGrowth(app, { db: db.primary, requireUser, awardXp, nearTransfer: deps.nearTransfer, treasury: deps.nearTreasury, rate: deps.nearPlayRate ?? 5, demo: !!deps.config.demo });
   registerSocial(app, { db, bus, kv, jobs, requireUser, notify, awardXp, verifyTip: deps.verifyTip, demo: deps.config.demo });
   registerRaidSocial(app, { db, kv, bus, requireUser, notify });
+  registerStories(app, { db, kv, requireUser, mediaDir: process.env.MEDIA_DIR ?? new URL('../.data/media/', import.meta.url).pathname });
   if (deps.reels) registerReels(app, { db, kv, requireUser, ...deps.reels });
 
   // Live AI preview for the create screen. Nothing is stored; the real draft is made when the post is published.

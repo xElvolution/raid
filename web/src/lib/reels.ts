@@ -1,12 +1,12 @@
 'use client';
-/** Client for RAID reels (api/src/reels.ts). Attribution of backs to reels is off-chain and labelled demo. */
+/** Client for RAID reels (api/src/reels.ts). Attribution of backs to reels is off-chain and tracked by the RAID API. */
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { API, useSession } from './social';
 
 export interface Reel {
   id: string; kind: 'video' | 'embed'; embed_url: string | null; provider: 'x' | 'instagram' | 'tiktok' | null; caption: string; coin: string | null;
   raid_id: number | null; launch_id: number | null; duration_s: number | null; demo: boolean; created_at: string;
-  handle: string; display_name: string; near_account: string | null; author_demo: boolean; backs: number; backed_raw: string;
+  handle: string; display_name: string; near_account: string | null; author_demo: boolean; backs: number; backed_raw: string; likes?: number;
 }
 export interface ReelCreator { handle: string; display_name: string; demo: boolean; reels: number; backs: number; backed_raw: number; hits: number; earned_raw: number }
 export const videoUrl = (r: Reel) => `${API}/v1/raid/reels/${r.id}/video`;
@@ -26,6 +26,7 @@ export const useReels = () => useInfiniteQuery({
 export const useReelBoard = () => useQuery({ queryKey: ['reel-board'], queryFn: () => req<{ items: ReelCreator[]; share: string }>('/v1/raid/reels/leaderboard'), refetchInterval: 30_000 });
 export const reelsApi = {
   link: (b: { embedUrl: string; caption: string; coin?: string; raidId?: number }) => req<Reel>('/v1/raid/reels', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) }),
+  like: (id: string, on: boolean) => req<{ on: boolean; count: number }>(`/v1/raid/reels/${id}/like`, { method: on ? 'POST' : 'DELETE' }),
   upload: (file: Blob, m: { caption: string; coin?: string; raidId?: number }) => {
     const q = new URLSearchParams(Object.entries(m).filter(([, v]) => v !== undefined && v !== '').map(([k, v]) => [k, String(v)]));
     return req<Reel>(`/v1/raid/reels/upload?${q}`, { method: 'POST', headers: { 'content-type': 'video/mp4' }, body: file });
@@ -36,7 +37,7 @@ export { useSession };
 const REEL_REF = 'raid.reelRef';
 /** Remember which reel sent this visitor to a raid (?reel=ID on the raid link), for 1 hour. */
 export function rememberReel(raidId: number, reelId: string) { sessionStorage.setItem(REEL_REF, JSON.stringify({ raidId, reelId, at: Date.now() })); }
-/** After a successful back: report the tx so the reel gets (off-chain, demo) credit. The API checks the tx on chain. */
+/** After a successful back: report the tx so the reel gets off-chain credit. The API checks the tx on chain. */
 export async function attributeReel(tx: string | undefined, backer: string | null) {
   if (!tx || !backer || typeof sessionStorage === 'undefined') return;
   const ref = (() => { try { return JSON.parse(sessionStorage.getItem(REEL_REF) ?? 'null') as { raidId: number; reelId: string; at: number } | null; } catch { return null; } })();

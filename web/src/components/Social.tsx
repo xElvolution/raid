@@ -66,13 +66,13 @@ export function Composer({ raidId, coin, replyTo, placeholder = 'What are you ra
     finally { setSending(false); }
   }
   return (
-    <div className={`flex gap-3 ${compact ? 'py-2' : 'py-4'}`}>
+    <div className={`flex gap-3 ${compact ? 'py-2' : 'py-3'}`}>
       <Avatar id={sess?.account ?? acct ?? 'guest'} size={compact ? 32 : 44} />
       <div className="min-w-0 flex-1">
         <textarea value={text} onChange={(e) => setText(e.target.value.slice(0, 500))} placeholder={placeholder} rows={compact ? 1 : 2} aria-label={placeholder}
-          className="w-full resize-none bg-transparent pt-2 text-[17px] leading-snug outline-none placeholder:text-faint" />
+          className="w-full resize-none bg-transparent pt-2 text-[15px] leading-snug outline-none placeholder:text-faint" />
         <div className="mt-2 flex items-center gap-2">
-          {raidId !== undefined && !replyTo && <span className="text-[13px] text-mute">Posting to raid #{raidId}</span>}
+          {raidId !== undefined && !replyTo && <span className="text-[12.5px] text-mute">Posting to raid #{raidId}</span>}
           <span className={`ml-auto mono text-[12px] ${left < 40 ? 'text-down' : 'text-faint'}`}>{text ? left : ''}</span>
           {sess || !acct ? (
             <Button size="sm" tone="ink" disabled={(!!sess && !text.trim()) || sending || busy} onClick={post}>{!acct ? 'Connect to post' : sending ? 'Posting…' : <><Send size={14} />{replyTo ? 'Reply' : 'Post'}</>}</Button>
@@ -99,18 +99,18 @@ export function PostCard({ p, i = 0, now, threaded = true, embed = true }: { p: 
   }
   const href = profileOf(p);
   return (
-    <motion.article initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }} className="flex gap-3 py-4">
-      <Link href={href} className="shrink-0"><Avatar id={p.near_account} handle={p.handle} size={44} /></Link>
+    <motion.article initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }} className="flex gap-3 py-3">
+      <Link href={href} className="shrink-0"><Avatar id={p.near_account} handle={p.handle} size={38} /></Link>
       <div className="min-w-0 flex-1">
-        <div className="flex min-w-0 items-center gap-1.5 text-[15px] leading-tight">
+        <div className="flex min-w-0 items-center gap-1.5 text-[14px] leading-tight">
           <Link href={href} className="truncate font-semibold hover:underline">{person?.name ?? (p.display_name || p.handle)}</Link>
           <span className="truncate text-mute">@{p.handle}</span>
           <span className="shrink-0 text-faint">· {now ? ago(new Date(p.created_at).getTime(), now) : ''}</span>
           {person && <TestnetChip className="ml-auto" />}
         </div>
-        <p className="mt-1 whitespace-pre-wrap break-words text-[15.5px] leading-[1.45]"><Body text={p.body} /></p>
+        <p className="mt-1 whitespace-pre-wrap break-words text-[14.5px] leading-[1.45]"><Body text={p.body} /></p>
         {embed && p.raid_id !== null && !p.reply_to && <RaidEmbed id={p.raid_id} className="mt-3" />}
-        <div className="mt-3 flex items-center gap-7 text-[13.5px] text-mute">
+        <div className="mt-3 flex items-center gap-7 text-[12.5px] text-mute">
           {threaded && <button onClick={() => setOpen((o) => !o)} aria-expanded={open} className="press -ml-2 flex items-center gap-1.5 rounded-full px-2 py-1 hover:bg-raised hover:text-ink"><MessageCircle size={18} />{p.replies || ''}<span className="sr-only">replies</span></button>}
           <button onClick={like} aria-pressed={liked} aria-label={liked ? 'Unlike' : 'Like'} className={`press flex items-center gap-1.5 rounded-full px-2 py-1 hover:bg-raised ${liked ? 'text-down' : 'hover:text-ink'}`}>
             <motion.span key={String(liked)} initial={{ scale: liked ? 0.5 : 1 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 600, damping: 15 }}><Heart size={18} fill={liked ? 'currentColor' : 'none'} /></motion.span>{likes || ''}
@@ -129,7 +129,7 @@ function Thread({ id, now }: { id: string; now: number }) {
     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="mt-2 overflow-hidden border-l-2 border-line pl-3">
       {t.isLoading && <Skeleton className="h-12" />}
       {t.data?.replies.map((r) => <PostCard key={r.id} p={r} now={now} threaded={false} />)}
-      {t.data && !t.data.replies.length && <p className="py-2 text-[14px] text-faint">No replies yet.</p>}
+      {t.data && !t.data.replies.length && <p className="py-2 text-[13px] text-faint">No replies yet.</p>}
       <Composer replyTo={id} compact placeholder="Reply…" />
     </motion.div>
   );
@@ -152,7 +152,7 @@ export function Feed({ raidId, author, tab = 'all', emptyTitle = 'Nothing posted
   return (
     <section>
       <div className="divide-y divide-line">
-        {q.isLoading && [0, 1, 2].map((i) => <div key={i} className="flex gap-3 py-4"><Skeleton className="h-11 w-11 !rounded-full" /><div className="flex-1 space-y-2"><Skeleton className="h-4 w-40" /><Skeleton className="h-4 w-full" /></div></div>)}
+        {q.isLoading && [0, 1, 2].map((i) => <div key={i} className="flex gap-3 py-3"><Skeleton className="h-11 w-11 !rounded-full" /><div className="flex-1 space-y-2"><Skeleton className="h-4 w-40" /><Skeleton className="h-4 w-full" /></div></div>)}
         {q.error && <Empty art={<WifiOff size={36} className="text-faint" />} title="Social feed is offline" body="Can’t reach the RAID social API. Raids and the chest still work." action={<button onClick={() => q.refetch()} className="font-semibold">Retry</button>} />}
         {!q.isLoading && !q.error && !q.items.length && <Empty title={emptyTitle} body={emptyBody} />}
         {q.items.map((p, i) => <PostCard key={p.id} p={p} i={i} now={now} embed={embed} />)}

@@ -415,3 +415,23 @@ CREATE TABLE IF NOT EXISTS reel_backs (
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS reel_backs_reel ON reel_backs (reel_id);
+
+-- ===== RAID stories (24 h) and uploaded media =====
+CREATE TABLE IF NOT EXISTS stories (
+  id         BIGSERIAL PRIMARY KEY,
+  author_id  BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  body       TEXT NOT NULL DEFAULT '' CHECK (length(body) <= 280),
+  media_url  TEXT,
+  coin       TEXT CHECK (coin IS NULL OR coin ~ '^[A-Z0-9]{2,12}$'),
+  bg         SMALLINT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS stories_recent ON stories (created_at DESC);
+
+-- Reel likes
+CREATE TABLE IF NOT EXISTS reel_likes (
+  reel_id    BIGINT NOT NULL REFERENCES reels(id) ON DELETE CASCADE,
+  user_id    BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (reel_id, user_id)
+);

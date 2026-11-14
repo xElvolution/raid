@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useInView, useReducedMotion } from 'motion/react';
-import { ArrowRight, ArrowUpRight, Megaphone, Users, Timer, ArrowLeftRight, Crosshair, Coins, Vote, KeyRound, Network } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Clapperboard, Radio, ShieldCheck, MessageCircle, BadgeCheck, Trophy, Megaphone, Users, Timer, ArrowLeftRight, Crosshair, Coins, Vote, KeyRound, Network } from 'lucide-react';
 import { Wordmark } from '@/components/Brand';
 import { TickerTape } from '@/components/Ticker';
 import { ThemeToggle } from '@/components/Shell';
@@ -16,7 +16,16 @@ import { RaidCard, RaidCardSkeleton } from '@/components/RaidCard';
 import { ChromeChest, ChromePuck, TwoTone } from '@/components/Chrome';
 import { RaidScene } from '@/components/landing/Scene';
 import { CHAINS, COINS } from '@/lib/coins';
-import { PayoutSlider, WhyNow } from '@/components/JudgeKit';
+import { PayoutSlider, WhyNow } from '@/components/Proof';
+
+const PILLARS = [
+  { t: 'Reels that sell coins', b: 'Short videos that tag a coin with its live price. Buy it or join the raid right from the reel. Creators earn when a raid from their reel hits.', I: Clapperboard, href: '/reels' },
+  { t: 'Live raid rooms', b: 'Watch a raid form in real time: the pot, the price and the chat. Jump in before the timer ends.', I: Radio, href: '/live' },
+  { t: 'Raids nobody can rug', b: 'The pooled money sits in a contract with no withdraw button. It only sells at the target or returns what’s left.', I: ShieldCheck, href: '/how' },
+  { t: 'A real social feed', b: 'Post takes, memes and $tickers, reply, repost and follow the traders you trust.', I: MessageCircle, href: '/feed' },
+  { t: 'Verified callers', b: 'Earn a verified badge from your on-chain hit rate. Followers can auto-join your next raid.', I: BadgeCheck, href: '/leaderboard', soon: true },
+  { t: 'Seasons and crew wars', b: 'Groups compete on a season leaderboard for the best results.', I: Trophy, href: '/war', soon: true },
+] as const;
 
 const STEPS = [
   { k: 'Call', t: 'Call the raid', b: 'Pick any memecoin NEAR Intents can reach: PEPE on Ethereum, TRUMP on Solana, BRETT on Base, SHITZU on NEAR. Set the line: 1.5x, 2x or 3x.', bg: '#15161a', V: 'call' },
@@ -57,7 +66,7 @@ function Nav() {
       <nav className="mx-auto flex h-14 max-w-6xl min-w-0 items-center justify-between gap-3 rounded-full bg-panel/75 pl-4 pr-2 shadow-[0_0_0_1px_var(--color-line),0_14px_30px_-20px_rgb(21_22_26/.35)] backdrop-blur-xl backdrop-saturate-150 md:h-[3.75rem] md:pl-5" aria-label="Main">
         <Link href="/" className="shrink-0" aria-label="RAID home"><Wordmark size={24} /></Link>
         <div className="hidden items-center gap-1 text-[14px] text-mute md:flex">
-          {[['#how', 'How it works'], ['/raids', 'Raids'], ['/feed', 'Feed'], ['/war', 'Crews'], ['/judges', 'Judges']].map(([h, l]) => (
+          {[['#how', 'How it works'], ['/raids', 'Raids'], ['/feed', 'Feed'], ['/reels', 'Reels'], ['/live', 'Live']].map(([h, l]) => (
             <Link key={h} href={h!} className="rounded-full px-3.5 py-2 transition-colors hover:bg-raised hover:text-ink">{l}</Link>
           ))}
         </div>
@@ -89,12 +98,12 @@ function LiveStrip() {
     { k: 'Buyback reserve', v: bb.data !== undefined ? usdcOf(bb.data).toFixed(2) : '–', u: 'USDC' },
   ];
   return (
-    <section className="mx-auto max-w-6xl min-w-0 px-4 py-20 md:px-5 md:py-28">
+    <section className="mx-auto max-w-6xl min-w-0 px-4 py-14 md:px-5 md:py-28">
       <Reveal>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0">
             <p className="eyebrow flex items-center gap-2"><span className="live-dot text-signal" />Live from the chest · {NETWORK}</p>
-            <h2 className="display mt-4 text-[38px] md:text-[64px]"><TwoTone a="Real raids." b="Read from the chain." /></h2>
+            <h2 className="display mt-4 text-[26px] md:text-[64px]"><TwoTone a="Real raids." b="Read from the chain." /></h2>
           </div>
           <Link href="/raids" className="press inline-flex h-11 items-center gap-2 rounded-full btn-pearl px-5 text-[14px] font-semibold">All raids<ArrowUpRight size={16} /></Link>
         </div>
@@ -103,7 +112,7 @@ function LiveStrip() {
         {stats.map((x, i) => (
           <div key={x.k} className={`bg-panel px-4 py-4 md:px-5 md:py-5 ${i === 4 ? 'col-span-2 sm:col-span-1' : ''}`}>
             <dt className="eyebrow">{x.k}</dt>
-            <dd className="mt-2 flex items-baseline gap-1.5"><span className="text-[26px] font-semibold tracking-[-0.045em] md:text-[34px]">{x.v}</span>{x.u && <span className="mono text-[11px] text-mute">{x.u}</span>}</dd>
+            <dd className="mt-2 flex items-baseline gap-1.5"><span className="text-[20px] font-semibold tracking-[-0.045em] md:text-[34px]">{x.v}</span>{x.u && <span className="mono text-[11px] text-mute">{x.u}</span>}</dd>
           </div>
         ))}
       </dl>
@@ -148,22 +157,22 @@ export default function Landing() {
                 <ArrowRight size={13} className="text-faint" />
               </Link>
             </Rise>
-            <h1 className="display mx-auto mt-7 text-[52px] leading-[.92] md:text-[124px] md:leading-[.88]">
-              <MaskLine delay={0.08}>Call it. Crew up.</MaskLine>
+            <h1 className="display mx-auto mt-6 text-[36px] leading-[.95] md:text-[112px] md:leading-[.88]">
+              <MaskLine delay={0.08}>RAID:</MaskLine>
               <span className="tone2 relative block">
-                <MaskLine delay={0.2}>Sell at the line.</MaskLine>
+                <MaskLine delay={0.2}>Fomo with an army.</MaskLine>
                 <span aria-hidden className="raid-sell-line pointer-events-none absolute left-1/2 top-[96%] h-[3px] w-[78%] rounded-full bg-signal md:h-[4px]" />
               </span>
             </h1>
             <Rise delay={0.4}>
-              <p className="mx-auto mt-8 max-w-[36rem] text-[16px] leading-relaxed text-mute md:mt-10 md:text-[19px]">
-                Crews pool USDC into a keyless war chest. After a public ten-minute countdown it buys a memecoin through NEAR Intents, and it only sells at the caller’s line. The caller gets paid only if the crew does.
+              <p className="mx-auto mt-6 max-w-[36rem] text-[14.5px] leading-relaxed text-mute md:mt-10 md:text-[19px]">
+                The social app where memecoin fomo turns into a plan. Watch reels, jump into live raid rooms, and pool money with others to buy a coin together. It sells automatically at the target, and nobody can run off with the pot.
               </p>
             </Rise>
             <Rise delay={0.52}>
               <div className="mx-auto mt-9 flex max-w-sm flex-col gap-2.5 sm:max-w-none sm:flex-row sm:justify-center">
-                <Cta href="/start">Start raiding<ArrowRight size={16} strokeWidth={2.4} /></Cta>
-                <Cta href="/raids" tone="pearl">Watch live raids</Cta>
+                <Cta href="/feed">Open RAID<ArrowRight size={16} strokeWidth={2.4} /></Cta>
+                <Cta href="/how" tone="pearl">How RAID works</Cta>
               </div>
             </Rise>
           </div>
@@ -185,16 +194,30 @@ export default function Landing() {
           </div>
         </section>
 
-        <div className="mt-20 md:mt-28"><TickerTape roomy /></div>
+
+        {/* What RAID is */}
+        <section className="mx-auto max-w-6xl min-w-0 px-4 pt-16 md:px-5 md:pt-24">
+          <Reveal><p className="eyebrow">What you can do</p><h2 className="display mt-3 text-[26px] md:text-[56px]"><TwoTone a="Fomo, but" b="organised." /></h2></Reveal>
+          <div className="mt-6 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            {PILLARS.map((x) => (
+              <Link key={x.t} href={x.href} className="lift panel flex min-w-0 gap-3 !rounded-[18px] p-3.5 md:p-5">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-signal/12 text-lime"><x.I size={19} /></span>
+                <span className="min-w-0"><span className="flex items-center gap-2 text-[15px] font-semibold">{x.t}{'soon' in x && x.soon && <span className="rounded-full bg-raised px-2 py-0.5 text-[10.5px] font-medium text-mute">Coming soon</span>}</span><span className="mt-0.5 block text-[13px] leading-snug text-mute">{x.b}</span></span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <div className="mt-16 md:mt-28"><TickerTape roomy /></div>
 
         <LiveStrip />
 
         {/* How it works */}
-        <section id="how" ref={howRef} className="mx-auto max-w-6xl min-w-0 scroll-mt-24 px-4 py-20 md:px-5 md:py-28">
+        <section id="how" ref={howRef} className="mx-auto max-w-6xl min-w-0 scroll-mt-24 px-4 py-14 md:px-5 md:py-28">
           <Reveal>
             <div className="max-w-2xl">
               <p className="eyebrow">How it works</p>
-              <h2 className="display mt-4 text-[38px] md:text-[64px]"><TwoTone a="From a call" b="to the line." /></h2>
+              <h2 className="display mt-4 text-[26px] md:text-[64px]"><TwoTone a="From a call" b="to the line." /></h2>
             </div>
           </Reveal>
           <div className="mt-10 grid min-w-0 gap-6 md:mt-14 md:grid-cols-[1fr_1.15fr] md:items-stretch md:gap-10" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
@@ -229,7 +252,7 @@ export default function Landing() {
           </div>
         </section>
 
-        <WhyNow className="mx-auto max-w-6xl px-4 py-20 md:px-5 md:py-28" />
+        <WhyNow className="mx-auto max-w-6xl px-4 py-14 md:px-5 md:py-28" />
 
         {/* Caller eats last */}
         <section className="px-3 md:px-5">
@@ -238,12 +261,12 @@ export default function Landing() {
               <Reveal>
                 <div className="min-w-0">
                   <p className="eyebrow">Anti-dump by design</p>
-                  <h2 className="display mt-4 text-[40px] md:text-[68px]"><span className="block">The caller</span><span className="block text-white/40">eats last.</span></h2>
+                  <h2 className="display mt-4 text-[28px] md:text-[68px]"><span className="block">The caller</span><span className="block text-white/40">eats last.</span></h2>
                   <div className="mt-8 hidden md:block"><ChromeChest size={240} fill={0.7} /></div>
                 </div>
               </Reveal>
               <Reveal delay={0.08}>
-                <div className="grid min-w-0 gap-5 text-[15px] leading-relaxed text-white/60 md:text-[16px]">
+                <div className="grid min-w-0 gap-5 text-[14px] leading-relaxed text-white/60 md:text-[16px]">
                   <p><b className="font-semibold text-white">Callers earn a share of the profit, not of the hype.</b> The fee sits locked in the chest and pays out only when the raid hits its line. If it retreats, the fee is gone.</p>
                   <p><b className="font-semibold text-white">No one can grab the pot.</b> The chest checks every 1Click quote’s signature, recipient and minimum return before it moves a cent.</p>
                   <p><b className="font-semibold text-white">Backers keep 90% of the profit.</b> The caller takes 2.5% and the buyback reserve 7.5%, only on a hit. A 1.5x line nets backers +45%, 2x nets +90%, 3x nets +180%. A miss pays no fees, and you can still lose the pot.</p>
@@ -255,10 +278,10 @@ export default function Landing() {
         </section>
 
         {/* Built on NEAR */}
-        <section className="mx-auto max-w-6xl min-w-0 px-4 py-20 md:px-5 md:py-28">
+        <section className="mx-auto max-w-6xl min-w-0 px-4 py-14 md:px-5 md:py-28">
           <Reveal>
             <p className="eyebrow">Built on NEAR</p>
-            <h2 className="display mt-4 text-[38px] md:text-[64px]"><TwoTone a="Three primitives." b="One war chest." /></h2>
+            <h2 className="display mt-4 text-[26px] md:text-[64px]"><TwoTone a="Three primitives." b="One war chest." /></h2>
           </Reveal>
           <div className="mt-10 grid gap-3 md:mt-14 md:grid-cols-3">
             {NEAR.map((x, i) => (
@@ -277,7 +300,7 @@ export default function Landing() {
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div className="min-w-0">
                 <p className="eyebrow">Any chain NEAR Intents reaches</p>
-                <h2 className="display mt-4 text-[38px] md:text-[56px]"><TwoTone a="Raid where" b="the memes are." /></h2>
+                <h2 className="display mt-4 text-[26px] md:text-[56px]"><TwoTone a="Raid where" b="the memes are." /></h2>
               </div>
               <p className="mono text-[10.5px] text-faint">live prices · DexScreener / CoinGecko</p>
             </div>
@@ -303,14 +326,14 @@ export default function Landing() {
 
         {/* Final call */}
         <section className="px-3 pb-6 md:px-5">
-          <div className="panel relative mx-auto flex max-w-6xl min-w-0 flex-col items-center overflow-hidden !rounded-[32px] px-5 py-16 text-center md:!rounded-[40px] md:py-24">
+          <div className="panel relative mx-auto flex max-w-6xl min-w-0 flex-col items-center overflow-hidden !rounded-[32px] px-5 py-12 text-center md:!rounded-[40px] md:py-24">
             <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(45%_55%_at_50%_100%,rgb(255_90_31/.16),transparent_70%)]" />
             <ChromeChest size={170} fill={0.85} open />
-            <h2 className="display relative mt-6 text-[44px] md:text-[96px]"><TwoTone a="Your line." b="Your crew." /></h2>
-            <p className="relative mt-5 max-w-[32rem] text-[15px] leading-relaxed text-mute md:text-[18px]">Call a raid, or back one that’s already live. The chest buys. You sell at the line.</p>
+            <h2 className="display relative mt-6 text-[30px] md:text-[96px]"><TwoTone a="Your coin." b="Your army." /></h2>
+            <p className="relative mt-5 max-w-[32rem] text-[15px] leading-relaxed text-mute md:text-[18px]">Start a raid or join one that’s live. Everyone buys together and it sells at the target.</p>
             <div className="relative mt-8 flex w-full max-w-sm flex-col gap-2.5 sm:max-w-none sm:flex-row sm:justify-center">
-              <Cta href="/start">Start raiding<ArrowRight size={16} strokeWidth={2.4} /></Cta>
-              <Cta href="/judges" tone="pearl">Judges, start here</Cta>
+              <Cta href="/feed">Open RAID<ArrowRight size={16} strokeWidth={2.4} /></Cta>
+              <Cta href="/how" tone="pearl">How RAID works</Cta>
             </div>
           </div>
         </section>
