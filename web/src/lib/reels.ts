@@ -18,9 +18,9 @@ async function req<T>(path: string, init: RequestInit = {}): Promise<T> {
   if (!r.ok) throw new Error((j as { message?: string; error?: string }).message ?? (j as { error?: string }).error ?? `http_${r.status}`);
   return j as T;
 }
-export const useReels = () => useInfiniteQuery({
-  queryKey: ['reels'], initialPageParam: '' as string,
-  queryFn: ({ pageParam }) => req<{ items: Reel[] }>(`/v1/raid/reels${pageParam ? `?before=${pageParam}` : ''}`),
+export const useReels = (following = false, enabled = true) => useInfiniteQuery({
+  queryKey: ['reels', following], initialPageParam: '' as string, enabled,
+  queryFn: ({ pageParam }) => req<{ items: Reel[] }>(`/v1/raid/reels?${new URLSearchParams({ ...(pageParam ? { before: pageParam } : {}), ...(following ? { following: '1' } : {}) })}`),
   getNextPageParam: (p) => (p.items.length === 20 ? p.items[p.items.length - 1]!.id : undefined),
 });
 export const useReelBoard = () => useQuery({ queryKey: ['reel-board'], queryFn: () => req<{ items: ReelCreator[]; share: string }>('/v1/raid/reels/leaderboard'), refetchInterval: 30_000 });

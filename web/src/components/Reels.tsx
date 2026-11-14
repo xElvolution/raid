@@ -45,7 +45,7 @@ export function ReelView({ r, active }: { r: Reel; active: boolean }) {
         </div>
       )}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-[#0b0b0d] via-[#0b0b0d]/70 to-transparent" />
-      <div className="absolute left-2.5 right-2.5 top-2.5 flex items-center gap-1.5">
+      <div className="absolute left-2.5 right-2.5 top-14 flex items-center gap-1.5">
         {r.kind === 'video' && <button onClick={() => setMuted((m) => !m)} aria-label={muted ? 'Unmute' : 'Mute'} className="pointer-events-auto ml-auto grid h-8 w-8 place-items-center rounded-full bg-black/40">{muted ? <VolumeX size={15} /> : <Volume2 size={15} />}</button>}
       </div>
       <ReelRail r={r} />

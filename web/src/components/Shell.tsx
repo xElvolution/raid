@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { ChevronLeft, Clapperboard, Crosshair, Flag, Home, Moon, Plus, Radio, Rocket, Settings, Sun, Trophy, Wallet } from 'lucide-react';
+import { ChevronLeft, Clapperboard, Crosshair, Flag, Home, Moon, Plus, Rocket, Settings, Sun, Trophy, Wallet } from 'lucide-react';
 import { TickerTape } from './Ticker';
 import { Mark, Wordmark } from './Brand';
 import { Avatar } from './app/Avatar';
@@ -28,14 +28,13 @@ import { target, xLabel, usdcOf } from '@/lib/raid';
 
 const TABS = [
   { href: '/feed', label: 'Home', Icon: Home },
+  { href: '/raids', label: 'Raid', Icon: Crosshair },
   { href: '/reels', label: 'Reels', Icon: Clapperboard },
-  { href: '/live', label: 'Live', Icon: Radio },
-  { href: '/raids', label: 'Raids', Icon: Crosshair },
   { href: '/war', label: 'Crews', Icon: Flag },
   { href: '/launch', label: 'Launch', Icon: Rocket },
   { href: '/leaderboard', label: 'Ranks', Icon: Trophy },
 ] as const;
-const BOTTOM = [TABS[0], TABS[1], null, TABS[2], 'you'] as const;
+const BOTTOM = [TABS[0], TABS[1], null, TABS[2], 'you'] as const; // Home, Raid, +, Reels, You
 
 export function ThemeToggle() {
   const { theme, toggle } = useTheme();
@@ -82,7 +81,7 @@ function useNewRaidToasts() {
 }
 
 /** Shell props kept stable for every page: `title` (string or node), `back`, `actions`, `rail` (desktop radar), `flush`, `tabs` (sub tabs under the bar). */
-export function Shell({ children, title, back, actions, rail = true, flush, tabs }: { children: ReactNode; title?: ReactNode; back?: string; actions?: ReactNode; rail?: boolean; flush?: boolean; tabs?: ReactNode }) {
+export function Shell({ children, title, back, actions, rail = true, flush, tabs, immersive }: { children: ReactNode; title?: ReactNode; back?: string; actions?: ReactNode; rail?: boolean; flush?: boolean; tabs?: ReactNode; immersive?: boolean }) {
   const path = usePathname();
   const router = useRouter();
   const acct = useAccount();
@@ -94,7 +93,7 @@ export function Shell({ children, title, back, actions, rail = true, flush, tabs
   return (
     <div className="min-h-dvh bg-bg">
       {/* Top bar */}
-      <header className={`sticky top-0 z-40 bg-bg/80 backdrop-blur-xl backdrop-saturate-150 transition-shadow ${scrolled ? 'shadow-[0_1px_0_var(--color-line)]' : ''}`}>
+      <header className={`${immersive ? 'hidden md:block' : ''} sticky top-0 z-40 bg-bg/80 backdrop-blur-xl backdrop-saturate-150 transition-shadow ${scrolled ? 'shadow-[0_1px_0_var(--color-line)]' : ''}`}>
         <div className="mx-auto flex h-12 max-w-[1180px] items-center gap-1.5 px-3 md:h-16 md:px-6">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             {back ? <button onClick={() => (history.length > 1 ? router.back() : router.push(back))} aria-label="Back" className="press -ml-2 grid h-10 w-10 place-items-center rounded-full hover:bg-raised"><ChevronLeft size={22} /></button>
@@ -111,7 +110,6 @@ export function Shell({ children, title, back, actions, rail = true, flush, tabs
               ))}
             </nav>
           )}
-          {!back && typeof title === 'string' && <h1 className="absolute left-1/2 -translate-x-1/2 text-[16px] font-semibold tracking-[-0.02em] md:hidden">{title}</h1>}
           <div className="flex flex-1 items-center justify-end gap-1">
             {actions}
             <ThemeToggle />
@@ -125,9 +123,9 @@ export function Shell({ children, title, back, actions, rail = true, flush, tabs
         {!NET.live && <p className="bg-ink py-1 text-center text-[11.5px] text-bg">Mainnet: browsing only, raids launch soon. <Link href="/settings" className="underline">Switch to Testnet</Link></p>}
       </header>
 
-      <div className="px-4 md:px-6"><FundsNudge /></div>
+      {!immersive && <div className="px-4 md:px-6"><FundsNudge /></div>}
       <div className="mx-auto flex max-w-[1180px] justify-center gap-8 md:px-6">
-        <main className={`min-w-0 flex-1 ${rail ? 'max-w-[640px]' : 'max-w-[1000px]'} ${flush ? '' : 'px-4 md:px-0'} pb-28 pt-1 md:pb-16 md:pt-6`}>{children}</main>
+        <main className={`min-w-0 flex-1 ${rail ? 'max-w-[640px]' : 'max-w-[1000px]'} ${flush ? '' : 'px-4 md:px-0'} ${immersive ? 'pb-0 pt-0' : 'pb-28 pt-1'} md:pb-16 md:pt-6`}>{children}</main>
         {rail && <RadarRail />}
       </div>
 
@@ -145,7 +143,7 @@ export function Shell({ children, title, back, actions, rail = true, flush, tabs
       )}</AnimatePresence>
 
       {/* Phone bottom bar: thumb reach */}
-      <nav aria-label="Tabs" className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/92 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden">
+      <nav aria-label="Tabs" className={`fixed inset-x-0 bottom-0 z-40 border-t pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden ${immersive ? 'dark-nav border-white/10 bg-[#0b0b0d] [&_a]:!text-white/55 [&_a[aria-current=page]]:!text-white' : 'border-line bg-bg/92'}`}>
         <div className="grid h-[54px] grid-cols-5 items-center">
           {BOTTOM.map((n) => n === null ? (
             <button key="call" onClick={() => setCreate(true)} aria-label="Create" className="grid place-items-center">
@@ -156,9 +154,15 @@ export function Shell({ children, title, back, actions, rail = true, flush, tabs
               {acct ? <Avatar id={acct} size={22} ring={on('/u')} /> : <span className={`grid h-[22px] w-[22px] place-items-center rounded-full border-2 ${on('/u') ? 'border-ink' : 'border-faint'}`}><span className="h-2 w-2 rounded-full bg-current" /></span>}You
             </Link>
           ) : (
+            n.href === '/raids' ? (
+              <Link key={n.href} href={n.href} aria-current={on(n.href) ? 'page' : undefined} className="flex flex-col items-center gap-0.5 text-[10.5px] font-bold !text-lime">
+                <span className={`grid h-[22px] w-[34px] place-items-center rounded-full ${on(n.href) ? 'bg-signal text-white' : 'bg-signal/15'}`}><n.Icon size={16} strokeWidth={2.6} /></span>{n.label}
+              </Link>
+            ) : (
             <Link key={n.href} href={n.href} aria-current={on(n.href) ? 'page' : undefined} className={`flex flex-col items-center gap-0.5 text-[10.5px] font-medium ${on(n.href) ? 'text-ink' : 'text-faint'}`}>
               <n.Icon size={21} strokeWidth={on(n.href) ? 2.3 : 1.7} />{n.label}
             </Link>
+            )
           ))}
         </div>
       </nav>

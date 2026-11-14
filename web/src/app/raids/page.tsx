@@ -1,5 +1,4 @@
 'use client';
-import { Rocket, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { ArrowUpRight, ChevronRight } from 'lucide-react';
@@ -31,7 +30,7 @@ export default function RaidsPage() {
   const pot = all.reduce((s, r) => s + usdcOf(r.pot), 0);
   const hit = all.filter((r) => r.hit).length;
   return (
-    <Shell title="Raids" actions={<><Link href="/leaderboard" aria-label="Ranks" className="press grid h-9 w-9 place-items-center rounded-full text-mute hover:bg-raised md:hidden"><Trophy size={18} /></Link><Link href="/launch" aria-label="Launchpad" className="press grid h-9 w-9 place-items-center rounded-full text-mute hover:bg-raised md:hidden"><Rocket size={18} /></Link></>}>
+    <Shell title="Raids">
       <header className="pb-5 pt-4 md:pt-2">
         <h1 className="text-[24px] font-semibold leading-[1.02] tracking-[-0.045em] md:text-[44px]">Pick a coin. <span className="text-faint">Set the line.</span></h1>
         <p className="mt-3 max-w-[44ch] text-[14.5px] leading-relaxed text-mute">Someone picks a coin and a target. Others pool money in. It buys together and sells automatically when the target is hit.</p>
@@ -57,10 +56,12 @@ export default function RaidsPage() {
                 <span className="block truncate text-[15px] font-semibold tracking-[-0.02em]">${target(r).symbol} to {xLabel(r.target_x_bps)} <span className="font-normal text-faint">#{r.id}</span></span>
                 <span className="mt-1 flex min-w-0 items-center gap-1.5 text-[13px] text-mute"><Avatar id={r.caller} size={18} /><span className="truncate">{displayName(r.caller)}</span><span className="shrink-0">· {usdcOf(r.pot).toFixed(0)} pot</span></span>
               </span>
-              <span className="text-right">
-                <span className={`block mono text-[14px] font-semibold ${r.status === 'Closed' ? (r.hit ? 'text-lime' : 'text-mute') : 'text-ink'}`}>{x ? `${x.toFixed(2)}x` : raidClock(r, now)}</span>
-                <span className="block text-[12px] text-faint">{now ? phase(r, now).label : ''}</span>
-              </span>
+              {(() => { const c = raidClock(r, now); const timer = /\d:\d/.test(c); return x || timer ? (
+                <span className="text-right">
+                  <span className={`block mono text-[14px] font-semibold ${r.status === 'Closed' ? (r.hit ? 'text-lime' : 'text-mute') : 'text-ink'}`}>{x ? `${x.toFixed(2)}x` : c}</span>
+                  <span className="block text-[12px] text-faint">{now ? phase(r, now).label : ''}</span>
+                </span>
+              ) : <span className="shrink-0 rounded-full bg-raised px-2.5 py-1 text-[12px] font-medium text-mute">{now ? phase(r, now).label : ''}</span>; })()}
             </Link></li>
           );
         })}

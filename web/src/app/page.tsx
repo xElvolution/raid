@@ -20,7 +20,7 @@ import { PayoutSlider, WhyNow } from '@/components/Proof';
 
 const PILLARS = [
   { t: 'Reels that sell coins', b: 'Short videos that tag a coin with its live price. Buy it or join the raid right from the reel. Creators earn when a raid from their reel hits.', I: Clapperboard, href: '/reels' },
-  { t: 'Live raid rooms', b: 'Watch a raid form in real time: the pot, the price and the chat. Jump in before the timer ends.', I: Radio, href: '/live' },
+  { t: 'Live raid rooms', b: 'Watch a raid form in real time: the pot, the price and the chat. Jump in before the timer ends.', I: Radio, href: '/reels?tab=live' },
   { t: 'Raids nobody can rug', b: 'The pooled money sits in a contract with no withdraw button. It only sells at the target or returns what’s left.', I: ShieldCheck, href: '/how' },
   { t: 'A real social feed', b: 'Post takes, memes and $tickers, reply, repost and follow the traders you trust.', I: MessageCircle, href: '/feed' },
   { t: 'Verified callers', b: 'Earn a verified badge from your on-chain hit rate. Followers can auto-join your next raid.', I: BadgeCheck, href: '/leaderboard', soon: true },
@@ -66,7 +66,7 @@ function Nav() {
       <nav className="mx-auto flex h-14 max-w-6xl min-w-0 items-center justify-between gap-3 rounded-full bg-panel/75 pl-4 pr-2 shadow-[0_0_0_1px_var(--color-line),0_14px_30px_-20px_rgb(21_22_26/.35)] backdrop-blur-xl backdrop-saturate-150 md:h-[3.75rem] md:pl-5" aria-label="Main">
         <Link href="/" className="shrink-0" aria-label="RAID home"><Wordmark size={24} /></Link>
         <div className="hidden items-center gap-1 text-[14px] text-mute md:flex">
-          {[['#how', 'How it works'], ['/raids', 'Raids'], ['/feed', 'Feed'], ['/reels', 'Reels'], ['/live', 'Live']].map(([h, l]) => (
+          {[['#how', 'How it works'], ['/raids', 'Raids'], ['/feed', 'Feed'], ['/reels', 'Reels'], ['/reels?tab=live', 'Live']].map(([h, l]) => (
             <Link key={h} href={h!} className="rounded-full px-3.5 py-2 transition-colors hover:bg-raised hover:text-ink">{l}</Link>
           ))}
         </div>

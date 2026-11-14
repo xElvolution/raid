@@ -28,7 +28,8 @@ export function StoriesRow({ className = '' }: { className?: string }) {
           <span className="text-[11px] text-mute">Your story</span>
         </button>
         {q.isLoading && [0, 1, 2, 3, 4].map((i) => <span key={i} className="shimmer h-[54px] w-[54px] shrink-0 !rounded-full" />)}
-        {groups.map((g, i) => {
+        {groups.map((g, i) => ({ g, i })).map((x) => {
+          const { g, i } = x;
           const unseen = seen[g.handle] !== g.latest;
           return (
             <button key={g.handle} onClick={() => { setOpen(i); markSeen(g); }} className="flex w-[58px] shrink-0 flex-col items-center gap-1">

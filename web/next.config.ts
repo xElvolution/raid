@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Retired routes land on the feed.
   async redirects() {
-    return ["/judges", "/try"].map((source) => ({ source, destination: "/feed", permanent: false }));
+    return [...["/judges", "/try"].map((source) => ({ source, destination: "/feed", permanent: false })), { source: "/live", destination: "/reels?tab=live", permanent: false }];
   },
   images: { remotePatterns: [{ protocol: "https", hostname: "polymarket-upload.s3.us-east-2.amazonaws.com" }] },
   transpilePackages: ["@called/sdk"],

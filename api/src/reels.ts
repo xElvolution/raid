@@ -67,10 +67,12 @@ export function registerReels(app: FastifyInstance, d: ReelsDeps) {
   const out = async (id: string) => (await db.primary.query(`${SELECT} WHERE r.id = $1`, [id]))[0];
 
   app.get('/v1/raid/reels', async (req, reply) => {
-    const q = z.object({ coin: Coin.optional(), raid: z.coerce.number().int().min(0).optional(), before: z.string().regex(/^\d+$/).optional() }).safeParse(req.query);
+    const q = z.object({ coin: Coin.optional(), raid: z.coerce.number().int().min(0).optional(), before: z.string().regex(/^\d+$/).optional(), following: z.enum(['1']).optional() }).safeParse(req.query);
     if (!q.success) return reply.code(400).send({ error: 'bad_request' });
+    if (q.data.following && !req.userId) return reply.code(401).send({ error: 'auth_required' });
     const items = await db.replica.query(`${SELECT} WHERE ($1::text IS NULL OR r.coin = $1) AND ($2::bigint IS NULL OR r.raid_id = $2) AND ($3::bigint IS NULL OR r.id < $3)
-      ORDER BY r.id DESC LIMIT 20`, [q.data.coin ?? null, q.data.raid ?? null, q.data.before ?? null]);
+      AND ($4::bigint IS NULL OR r.author_id IN (SELECT followee_id FROM follows WHERE follower_id = $4))
+      ORDER BY r.id DESC LIMIT 20`, [q.data.coin ?? null, q.data.raid ?? null, q.data.before ?? null, q.data.following ? req.userId : null]);
     return { items, attribution: 'tracked by RAID, paid off-chain' };
   });
 
