@@ -64,7 +64,7 @@ export function AnyChainBack({ raidId, bps, open }: { raidId: number; bps: numbe
         ))}
       </div>
 
-      <div className="mt-3 rounded-[12px] md:rounded-[14px] bg-raised p-3 md:p-3.5">
+      <div className="mt-3 rounded-[16px] md:rounded-[18px] bg-raised p-3 md:p-3.5">
         <p className="eyebrow">You send on {o.chainLabel}</p>
         <div className="mt-1.5 flex items-center gap-2">
           <input inputMode="decimal" value={amt} onChange={(e) => setAmt(e.target.value.replace(/[^0-9.]/g, ''))} disabled={!open} aria-label={`Amount in ${o.symbol}`} className="w-full bg-transparent mono text-[1.5rem] font-bold outline-none disabled:opacity-50" />
@@ -73,7 +73,7 @@ export function AnyChainBack({ raidId, bps, open }: { raidId: number; bps: numbe
         <p className="mono text-[11.5px] text-mute">{q.data?.amountInUsd ? `≈ $${Number(q.data.amountInUsd).toFixed(2)}` : ' '}</p>
       </div>
       <div className="relative z-10 -my-2.5 flex justify-center"><span className="grid h-8 w-8 place-items-center rounded-full border-4 border-panel bg-brand text-white"><ArrowDown size={15} /></span></div>
-      <div className="rounded-[12px] md:rounded-[14px] hairline p-3 md:p-3.5">
+      <div className="rounded-[16px] md:rounded-[18px] hairline p-3 md:p-3.5">
         <p className="eyebrow">Chest receives (USDC on NEAR)</p>
         {q.isLoading ? <Skeleton className="mt-2 h-7 w-40" /> : q.error ? <p className="mt-1.5 text-[13px] text-down">1Click didn’t quote: {(q.error as Error).message}</p> : (
           <>
@@ -86,11 +86,11 @@ export function AnyChainBack({ raidId, bps, open }: { raidId: number; bps: numbe
       <div className="mt-3 grid gap-2">
         <label className="block">
           <span className="eyebrow">Your RAID account (gets the stake)</span>
-          <input value={who} onChange={(e) => setWho(e.target.value)} placeholder={acct ?? 'name.near or 0x… (ETH address works as a NEAR account)'} aria-invalid={whoBad} className={`mt-1 h-10 w-full rounded-[10px] bg-raised px-3 mono text-[12.5px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)] ${whoBad ? 'shadow-[inset_0_0_0_1.5px_var(--color-down)]' : ''}`} />
+          <input value={who} onChange={(e) => setWho(e.target.value)} placeholder={acct ?? 'name.near or 0x… (ETH address works as a NEAR account)'} aria-invalid={whoBad} className={`mt-1 h-10 w-full rounded-[13px] bg-raised px-3 mono text-[12.5px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)] ${whoBad ? 'shadow-[inset_0_0_0_1.5px_var(--color-down)]' : ''}`} />
         </label>
         <label className="block">
           <span className="eyebrow">Refund address on {o.chainLabel} (if the swap fails)</span>
-          <input value={refund} onChange={(e) => setRefund(e.target.value.trim())} placeholder={o.addr === 'sol' ? 'Solana address' : '0x… address'} aria-invalid={refundBad} className={`mt-1 h-10 w-full rounded-[10px] bg-raised px-3 mono text-[12.5px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)] ${refundBad ? 'shadow-[inset_0_0_0_1.5px_var(--color-down)]' : ''}`} />
+          <input value={refund} onChange={(e) => setRefund(e.target.value.trim())} placeholder={o.addr === 'sol' ? 'Solana address' : '0x… address'} aria-invalid={refundBad} className={`mt-1 h-10 w-full rounded-[13px] bg-raised px-3 mono text-[12.5px] outline-none focus:shadow-[inset_0_0_0_1.5px_var(--color-brand)] ${refundBad ? 'shadow-[inset_0_0_0_1.5px_var(--color-down)]' : ''}`} />
         </label>
       </div>
 
@@ -104,16 +104,16 @@ export function AnyChainBack({ raidId, bps, open }: { raidId: number; bps: numbe
       </ol>
 
       {q.data?.depositAddress ? (
-        <div className="mt-3 rounded-[12px] md:rounded-[14px] bg-lime p-3 md:p-3.5 text-[#0a1a00]">
-          <p className="eyebrow !text-[#0a1a00]/60">Send exactly {q.data.amountIn} {o.symbol} on {o.chainLabel} to</p>
+        <div className="mt-3 rounded-[16px] md:rounded-[18px] bg-lime p-3 md:p-3.5 text-[#1c0900]">
+          <p className="eyebrow !text-[#1c0900]/60">Send exactly {q.data.amountIn} {o.symbol} on {o.chainLabel} to</p>
           <div className="mt-1.5 flex items-center gap-2">
             <p className="min-w-0 flex-1 break-all mono text-[13px] font-bold">{q.data.depositAddress}</p>
-            <button onClick={() => { void navigator.clipboard.writeText(q.data!.depositAddress!); setCopied(true); setTimeout(() => setCopied(false), 1500); }} aria-label="Copy deposit address" className="press grid h-9 w-9 shrink-0 place-items-center rounded-[10px] bg-[#0a1a00] text-lime">{copied ? <Check size={16} /> : <Copy size={16} />}</button>
+            <button onClick={() => { void navigator.clipboard.writeText(q.data!.depositAddress!); setCopied(true); setTimeout(() => setCopied(false), 1500); }} aria-label="Copy deposit address" className="press grid h-9 w-9 shrink-0 place-items-center rounded-[13px] bg-[#1c0900] text-lime">{copied ? <Check size={16} /> : <Copy size={16} />}</button>
           </div>
           <p className="mt-1.5 text-[11.5px] opacity-70">Valid until {q.data.deadline ? new Date(q.data.deadline).toLocaleString('en-GB') : 'the quote deadline'}.</p>
         </div>
       ) : (
-        <div className="mt-3 flex gap-2.5 rounded-[12px] md:rounded-[14px] border border-dashed border-line p-3 md:p-3.5 text-[12px] md:text-[12.5px] text-mute">
+        <div className="mt-3 flex gap-2.5 rounded-[16px] md:rounded-[18px] border border-dashed border-line p-3 md:p-3.5 text-[12px] md:text-[12.5px] text-mute">
           <Info size={16} className="mt-0.5 shrink-0 text-brand" />
           <span className="min-w-0">{q.data?.reason ?? 'The deposit address appears here once the quote is live.'} When live, 1Click swaps your {o.symbol} to USDC on NEAR and hands it to the chest with <code className="mono text-[11px] text-ink break-all">{q.data?.msg ?? '{"back":…}'}</code>, so the stake is yours, not the bridge’s. Anything that lands after the crew window or over the cap is kept claimable for you.</span>
         </div>

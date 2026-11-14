@@ -6,10 +6,10 @@ const fmt = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2,
 
 /** "You get X if the line hits / you can lose it", from the chest's real fee config. */
 export function PayoutBox({ stake, bps, cfg, unit, className = '' }: { stake: number; bps: number; cfg?: ChestConfig; unit: string; className?: string }) {
-  if (!cfg) return <div className={`shimmer h-[7.375rem] rounded-[14px] ${className}`} aria-hidden />;
+  if (!cfg) return <div className={`shimmer h-[7.375rem] rounded-[18px] ${className}`} aria-hidden />;
   const p = payoutAtLine(stake, bps, cfg.caller_fee_bps, cfg.buyback_bps);
   return (
-    <div className={`overflow-hidden rounded-[14px] hairline ${className}`}>
+    <div className={`overflow-hidden rounded-[18px] hairline ${className}`}>
       <div className="grid grid-cols-2">
         <div className="min-w-0 p-2.5 md:p-3.5">
           <p className="eyebrow truncate">Line hits · {xLabel(bps)}</p>
@@ -32,7 +32,7 @@ export function PayoutBox({ stake, bps, cfg, unit, className = '' }: { stake: nu
 /** The plain risk line, shown wherever money goes in. */
 export function RiskNote({ className = '' }: { className?: string }) {
   return (
-    <p role="note" className={`flex gap-2 rounded-[10px] md:rounded-[12px] bg-down/10 px-2.5 md:px-3 py-2 md:py-2.5 text-[11.5px] md:text-[12px] leading-snug text-ink ${className}`}>
+    <p role="note" className={`flex gap-2 rounded-[13px] md:rounded-[16px] bg-down/10 px-2.5 md:px-3 py-2 md:py-2.5 text-[11.5px] md:text-[12px] leading-snug text-ink ${className}`}>
       <AlertTriangle size={15} className="mt-[1px] shrink-0 text-down" />
       <span><b>You can lose the whole pot.</b> Memecoins can drop fast. If the line isn’t hit before retreat, the chest sells at whatever the market pays. This is a game, not an investment.</span>
     </p>

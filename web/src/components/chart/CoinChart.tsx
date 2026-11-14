@@ -22,7 +22,7 @@ export function CoinChart({ candles, mode = 'candles', lines = [], height = 300 
 
   useEffect(() => {
     const el = box.current; if (!el || candles.length < 2) return;
-    const P = { ink: css('--c-ink'), mute: css('--c-mute'), line: css('--c-line'), up: css('--c-up'), down: css('--c-down'), brand: css('--c-brand'), limeLine: css('--c-lime-line') || '#c6ff3d' };
+    const P = { ink: css('--c-ink'), mute: css('--c-mute'), line: css('--c-line'), up: css('--c-up'), down: css('--c-down'), brand: css('--c-brand'), limeLine: css('--c-lime-line') || '#ff5a1f' };
     const c: IChartApi = createChart(el, {
       autoSize: true,
       layout: { background: { type: ColorType.Solid, color: 'transparent' }, textColor: P.mute, fontFamily: 'var(--font-jb), ui-monospace, monospace', fontSize: 10, attributionLogo: false },
@@ -51,7 +51,7 @@ export function CoinChart({ candles, mode = 'candles', lines = [], height = 300 
       c.priceScale('vol').applyOptions({ scaleMargins: { top: 0.84, bottom: 0 } });
       v.setData(data.map((p) => ({ time: Math.floor(p.t / 1000) as UTCTimestamp, value: p.v, color: rgba(p.c >= p.o ? P.up : P.down, 0.35) })));
     }
-    for (const l of lines) s.createPriceLine({ price: l.price, color: l.tone === 'lime' ? P.limeLine : l.tone === 'brand' ? P.brand : P.mute, lineWidth: l.tone === 'lime' ? 2 : 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: l.label, axisLabelColor: l.tone === 'lime' ? '#c6ff3d' : '', axisLabelTextColor: l.tone === 'lime' ? '#0a1a00' : '' });
+    for (const l of lines) s.createPriceLine({ price: l.price, color: l.tone === 'lime' ? P.limeLine : l.tone === 'brand' ? P.brand : P.mute, lineWidth: l.tone === 'lime' ? 2 : 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: l.label, axisLabelColor: l.tone === 'lime' ? '#ff5a1f' : '', axisLabelTextColor: l.tone === 'lime' ? '#1c0900' : '' });
     c.timeScale().fitContent();
     c.subscribeCrosshairMove((e) => {
       if (!e.time) return setTip(null);

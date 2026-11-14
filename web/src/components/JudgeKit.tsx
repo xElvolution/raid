@@ -32,7 +32,7 @@ export function Receipt({ id, className = '' }: { id: number; className?: string
 /** "Judges: try a raid in 2 minutes" box. */
 export function JudgeBox({ className = '' }: { className?: string }) {
   return (
-    <section className={`min-w-0 overflow-hidden rounded-[14px] border border-lime/40 bg-lime/[.06] ${className}`}>
+    <section className={`min-w-0 overflow-hidden rounded-[18px] border border-lime/40 bg-lime/[.06] ${className}`}>
       <div className="flex items-center gap-2 px-3 pt-2.5 md:px-4 md:pt-3.5">
         <Gavel size={15} className="text-lime" />
         <p className="wide text-[0.875rem] md:text-[16px]">Judges: try a raid in 2 minutes</p>
@@ -65,20 +65,20 @@ export function PayoutSlider({ className = '' }: { className?: string }) {
       </div>
       <label className="mt-3 block">
         <span className="flex justify-between text-[12.5px]"><span className="text-mute">Back</span><b className="mono">{stake} USDC</b></span>
-        <input type="range" min={1} max={250} value={stake} onChange={(e) => setStake(Number(e.target.value))} className="mt-1.5 w-full accent-[#c6ff3d]" aria-label="Stake" />
+        <input type="range" min={1} max={250} value={stake} onChange={(e) => setStake(Number(e.target.value))} className="mt-1.5 w-full accent-[#ff5a1f]" aria-label="Stake" />
       </label>
       <div className="mt-2.5 grid grid-cols-2 gap-2">
-        <div className="rounded-[10px] p-2.5 hairline">
+        <div className="rounded-[20px] bg-raised/60 p-3">
           <p className="eyebrow">Hits {xLabel(Number(bps))}</p>
           <p className="mono mt-1 text-[1.0625rem] md:text-[20px] font-bold text-up">{f(p.payout)}</p>
           <p className="mono mt-0.5 text-[11px] text-up">{fmtPct(p.gainPct)} net</p>
           <p className="mt-1.5 text-[10.5px] text-mute leading-snug">Caller {f(p.callerFee)} · reserve {f(p.buyback)}, from profit only</p>
         </div>
-        <div className="rounded-[10px] p-2.5 hairline">
+        <div className="rounded-[20px] bg-raised/60 p-3">
           <p className="eyebrow">Miss · sells {(exit / 100).toFixed(2)}x</p>
           <p className="mono mt-1 text-[1.0625rem] md:text-[20px] font-bold text-down">{f(missBack)}</p>
           <p className="mono mt-0.5 text-[11px] text-down">{fmtPct(exit - 100)} · no fees</p>
-          <input type="range" min={0} max={100} value={exit} onChange={(e) => setExit(Number(e.target.value))} className="mt-1.5 w-full accent-[#ff5c7a]" aria-label="Retreat price" />
+          <input type="range" min={0} max={100} value={exit} onChange={(e) => setExit(Number(e.target.value))} className="mt-1.5 w-full accent-[#e0353f]" aria-label="Retreat price" />
         </div>
       </div>
       <p className="mt-2 text-[10.5px] leading-snug md:text-[11px] text-faint">{fee.caller_fee_bps / 100}% caller fee and {fee.buyback_bps / 100}% buyback, taken from profit only if the raid hits. Max 250 USDC per backer, 1,000 per raid.</p>

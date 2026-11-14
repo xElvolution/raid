@@ -6,12 +6,13 @@
  * up/down for markets, everything else neutral ink. Wide grotesk caps for hero moments, mono for every number.
  */
 @theme {
-  --color-cobalt: #2448ff;
-  --color-cobalt-deep: #0b1fd1;
-  --color-lime: #c6ff3d;
+  --color-cobalt: var(--c-brand);
+  --color-cobalt-deep: var(--c-brand);
+  --color-lime: var(--c-signal);
+  --color-signal: var(--c-signal);
   --color-up: var(--c-up);
   --color-down: var(--c-down);
-  --color-gold: #ffc23d;
+  --color-gold: #ffb020;
   --color-ink: var(--c-ink);
   --color-mute: var(--c-mute);
   --color-faint: var(--c-faint);
@@ -21,66 +22,99 @@
   --color-raised: var(--c-raised);
   --color-brand: var(--c-brand);
   --color-onbrand: #ffffff;
-  /* Legacy aliases so any leftover markup stays on-brand. */
   --color-grape: var(--c-brand);
   --color-mint: var(--c-up);
   --color-coral: var(--c-down);
   --color-snow: var(--c-raised);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-wide: var(--font-archivo), var(--font-inter), sans-serif;
-  --font-mono: var(--font-jb), ui-monospace, monospace;
-  --radius-card: 14px;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-wide: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --radius-card: 20px;
 }
 
-:root, html[data-theme="dark"] {
-  --c-bg: #04061a; --c-panel: #0a0f2e; --c-raised: #111842; --c-line: #1c2558; --c-ink: #f3f5ff; --c-mute: #8c93c4; --c-faint: #5a6196;
-  --c-brand: #3355ff; --c-up: #c6ff3d; --c-down: #ff5c7a; --c-glass: rgb(255 255 255 / .05); --c-lime-ink: #0a1a00; --c-lime-line: #c6ff3d;
-  color-scheme: dark;
-}
-html[data-theme="light"] {
-  --c-bg: #f4f6ff; --c-panel: #ffffff; --c-raised: #eaeeff; --c-line: #d9def5; --c-ink: #060a2b; --c-mute: #5b628f; --c-faint: #9aa0c4;
-  --c-brand: #1d3cff; --c-up: #128a3a; --c-down: #e0234e; --c-glass: rgb(6 10 43 / .03); --c-lime-ink: #0a1a00;
+/*
+ * RAID brand system: "Pearl and Signal".
+ * Warm pearl paper, graphite ink, liquid chrome objects, and ONE signal colour (flare orange) that is reserved for
+ * the sell line, live state and the main action. Two-tone sentence-case headlines, mono for every number.
+ */
+:root, html[data-theme="light"] {
+  --c-bg: #f2f1ec; --c-panel: #fbfaf7; --c-raised: #ebe9e2; --c-line: #e0ded5; --c-ink: #15161a; --c-mute: #6c6d67; --c-faint: #a3a39b;
+  --c-brand: #24252b; --c-signal: #ff5a1f; --c-signal-ink: #1c0900; --c-up: #0d8f50; --c-down: #e0353f; --c-glass: rgb(255 255 255 / .55);
+  --c-lime-line: #ff5a1f; --c-lime-text: #e14a12;
+  --pearl: linear-gradient(180deg, #fefdfb 0%, #f6f5f0 100%);
+  --pearl-shadow: 0 1px 0 rgb(255 255 255 / .9) inset, 0 0 0 1px rgb(21 22 26 / .055), 0 18px 40px -24px rgb(21 22 26 / .28), 0 2px 6px -2px rgb(21 22 26 / .06);
+  --chrome: linear-gradient(145deg, #ffffff 0%, #d9d8d3 22%, #9c9b96 46%, #f4f3ef 58%, #b9b8b2 78%, #ecebe6 100%);
   color-scheme: light;
+}
+html[data-theme="dark"] {
+  --c-bg: #0b0b0d; --c-panel: #141417; --c-raised: #1d1d21; --c-line: #27272c; --c-ink: #f2f1ec; --c-mute: #8d8d86; --c-faint: #5b5b56;
+  --c-brand: #2c2d33; --c-signal: #ff6a2c; --c-signal-ink: #1c0900; --c-up: #3ddc84; --c-down: #ff5b63; --c-glass: rgb(255 255 255 / .04);
+  --c-lime-line: #ff6a2c; --c-lime-text: #ff7a40;
+  --pearl: linear-gradient(180deg, #17171a 0%, #121215 100%);
+  --pearl-shadow: 0 1px 0 rgb(255 255 255 / .05) inset, 0 0 0 1px rgb(255 255 255 / .06), 0 24px 48px -28px rgb(0 0 0 / .9);
+  --chrome: linear-gradient(145deg, #f5f4f0 0%, #b9b8b3 22%, #5d5c58 46%, #e6e5e0 58%, #8e8d88 78%, #d6d5d0 100%);
+  color-scheme: dark;
 }
 
 html { -webkit-tap-highlight-color: transparent; }
-body { background: var(--color-bg); color: var(--color-ink); font-family: var(--font-sans); letter-spacing: -0.006em; }
-::selection { background: rgb(198 255 61 / .45); color: #04061a; }
-:focus-visible { outline: 2px solid var(--color-lime); outline-offset: 2px; border-radius: 4px; }
+body { background: var(--color-bg); color: var(--color-ink); font-family: var(--font-sans); letter-spacing: -0.011em; font-feature-settings: "ss01", "cv11"; }
+::selection { background: rgb(255 90 31 / .28); color: var(--color-ink); }
+:focus-visible { outline: 2px solid var(--color-signal); outline-offset: 2px; border-radius: 6px; }
 input:focus-visible, textarea:focus-visible { outline: none; }
 
 /* ---- Type ---- */
-.wide { font-family: var(--font-wide); font-stretch: 125%; font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; line-height: .9; }
-.wide-black { font-family: var(--font-wide); font-stretch: 125%; font-weight: 900; text-transform: uppercase; letter-spacing: -0.015em; line-height: .86; }
-.mono, .mn { font-family: var(--font-mono); font-feature-settings: "tnum", "zero"; letter-spacing: 0; }
-.eyebrow { font: 700 10.5px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--color-mute); }
+.wide { font-family: var(--font-wide); font-weight: 620; letter-spacing: -0.035em; line-height: 1; }
+.wide-black { font-family: var(--font-wide); font-weight: 660; letter-spacing: -0.05em; line-height: .92; }
+.display { font-family: var(--font-wide); font-weight: 600; letter-spacing: -0.055em; line-height: .95; }
+.tone2 { color: var(--color-faint); }
+html[data-theme="dark"] .tone2 { color: #6f6f69; }
+.mono, .mn { font-family: var(--font-mono); font-feature-settings: "tnum", "zero"; letter-spacing: -0.01em; }
+.eyebrow { font: 500 10.5px/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--color-mute); }
 .tabular-nums { font-variant-numeric: tabular-nums; }
+.text-lime { color: var(--c-lime-text); }
 
 /* ---- Surfaces ---- */
-.panel { background: var(--color-panel); border: 1px solid var(--color-line); border-radius: var(--radius-card); }
-.glass { background: var(--c-glass); border: 1px solid var(--color-line); border-radius: var(--radius-card); backdrop-filter: blur(14px); }
-.cobalt-field { background: radial-gradient(120% 90% at 85% -10%, #4a6bff 0%, #2448ff 42%, #0b1fd1 100%); color: #fff; }
-.cobalt-field .text-mute, .cobalt-field .eyebrow { color: rgb(255 255 255 / .66); }
+.panel { background: var(--pearl); border: 0; border-radius: var(--radius-card); box-shadow: var(--pearl-shadow); }
+.glass { background: var(--c-glass); border: 1px solid var(--color-line); border-radius: var(--radius-card); backdrop-filter: blur(18px) saturate(1.4); }
+/* The dark "obsidian" field: hero blocks inside the app. Graphite with a chrome sheen and a flare glow. */
+.cobalt-field, .obsidian {
+  background:
+    radial-gradient(80% 120% at 100% 0%, rgb(255 90 31 / .32) 0%, transparent 55%),
+    radial-gradient(60% 80% at 0% 100%, rgb(255 255 255 / .07) 0%, transparent 60%),
+    linear-gradient(160deg, #1d1e23 0%, #0e0e11 100%);
+  color: #f2f1ec; box-shadow: 0 1px 0 rgb(255 255 255 / .08) inset, 0 30px 60px -30px rgb(0 0 0 / .55);
+}
+.cobalt-field .text-mute, .cobalt-field .eyebrow, .obsidian .text-mute, .obsidian .eyebrow { color: rgb(242 241 236 / .58); }
+.cobalt-field .text-lime, .obsidian .text-lime { color: #ff7a40; }
 .grid-lines { background-image: linear-gradient(var(--color-line) 1px, transparent 1px), linear-gradient(90deg, var(--color-line) 1px, transparent 1px); background-size: 32px 32px; }
-.dots { background-image: radial-gradient(rgb(255 255 255 / .16) 1px, transparent 1.4px); background-size: 14px 14px; }
+.dots { background-image: radial-gradient(rgb(255 255 255 / .10) 1px, transparent 1.4px); background-size: 16px 16px; }
+.dots-ink { background-image: radial-gradient(rgb(21 22 26 / .10) 1px, transparent 1.4px); background-size: 16px 16px; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; }
 .hairline { box-shadow: inset 0 0 0 1px var(--color-line); }
+.chrome { background: var(--chrome); }
+.chrome-text { background: linear-gradient(100deg, #15161a 0%, #6c6d67 40%, #15161a 60%, #8d8c86 100%); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: chrome-sweep 6s ease-in-out infinite; }
+html[data-theme="dark"] .chrome-text { background-image: linear-gradient(100deg, #f2f1ec 0%, #77766f 40%, #f2f1ec 60%, #a3a29b 100%); }
+@keyframes chrome-sweep { 50% { background-position: 100% 0 } }
+.grain::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .05; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
-/* ---- Lime "line" chip: the brand's signal ---- */
-.chip { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; font: 700 10.5px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; border-radius: 4px; }
-.chip-lime { background: var(--color-lime); color: #0a1a00; }
+/* ---- Chips: pill, mono ---- */
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 9px; font: 500 10.5px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; border-radius: 999px; }
+.chip-lime { background: var(--color-signal); color: var(--c-signal-ink); }
 .chip-ghost { box-shadow: inset 0 0 0 1px var(--color-line); color: var(--color-mute); }
-.chip-brand { background: var(--color-brand); color: #fff; }
-.chip-down { background: color-mix(in srgb, var(--color-down) 16%, transparent); color: var(--color-down); }
-.chip-up { background: color-mix(in srgb, var(--color-up) 16%, transparent); color: var(--color-up); }
+.chip-brand { background: var(--color-ink); color: var(--color-bg); }
+.chip-down { background: color-mix(in srgb, var(--color-down) 13%, transparent); color: var(--color-down); }
+.chip-up { background: color-mix(in srgb, var(--color-up) 13%, transparent); color: var(--color-up); }
+
+/* Any leftover "lime" fill keeps dark ink on the flare, never white. */
+.bg-lime { color: var(--c-signal-ink); }
 
 /* ---- Motion ---- */
 .shimmer { background: linear-gradient(90deg, var(--color-panel) 0%, var(--color-raised) 50%, var(--color-panel) 100%); background-size: 200% 100%; animation: shimmer 1.3s linear infinite; border-radius: 10px; }
 @keyframes shimmer { to { background-position: -200% 0 } }
 @keyframes live-blink { 50% { opacity: .3 } }
 .live-dot { width: 7px; height: 7px; border-radius: 9999px; background: currentColor; animation: live-blink 1.1s steps(2, jump-none) infinite; }
-@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(198 255 61 / .55) } 100% { box-shadow: 0 0 0 10px rgb(198 255 61 / 0) } }
+@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgb(255 90 31 / .5) } 100% { box-shadow: 0 0 0 10px rgb(255 90 31 / 0) } }
 .pulse-live { animation: pulse-ring 1.6s ease-out infinite; }
 @keyframes marquee { to { transform: translateX(-50%) } }
 .marquee { animation: marquee 60s linear infinite; }
@@ -91,8 +125,8 @@ input:focus-visible, textarea:focus-visible { outline: none; }
 .flash-down { animation: flash-down 1.2s ease-out; }
 @keyframes flash-up { from { background: color-mix(in srgb, var(--color-up) 22%, transparent) } }
 @keyframes flash-down { from { background: color-mix(in srgb, var(--color-down) 22%, transparent) } }
-.lift { transition: transform .22s cubic-bezier(.2,.9,.3,1), border-color .2s, background-color .2s; }
-@media (hover: hover) { .lift:hover { transform: translateY(-2px); border-color: color-mix(in srgb, var(--color-brand) 55%, var(--color-line)); } }
+.lift { transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s cubic-bezier(.2,.7,.2,1), background-color .2s; }
+@media (hover: hover) { .lift:hover { transform: translateY(-3px); box-shadow: var(--pearl-shadow), 0 28px 50px -30px rgb(21 22 26 / .35); } }
 
 html.theme-vt::view-transition-old(root), html.theme-vt::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
 html.theme-vt::view-transition-new(root) { z-index: 2; }
@@ -148,25 +182,33 @@ html.theme-vt::view-transition-new(root) { z-index: 2; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
-/* Light mode: #c6ff3d on near-white fails contrast, so lime TEXT and the mark's lime bar darken to an olive
-   that keeps the hue. Lime fills (chips, buttons, meters) keep dark ink text and stay lime. Lime text that sits
-   on a dark or cobalt surface keeps the real lime. */
-html[data-theme="light"] { --c-lime-text: #4a7d00; --c-lime-line: #5f9800; }
-html[data-theme="light"] .text-lime { color: var(--c-lime-text); }
-html[data-theme="light"] :is(.text-white, .on-dark, .cobalt-field, [class*="bg-[#04061a]"], [class*="bg-[#0a1a00]"], [class*="bg-brand"]) .text-lime,
-html[data-theme="light"] :is(.on-dark, [class*="bg-[#0a1a00]"]).text-lime { color: var(--color-lime); }
-html[data-theme="light"] .mark-lime { fill: #7fc400; }
-html[data-theme="light"] :is(.text-white, .on-dark, .cobalt-field, [class*="bg-[#04061a]"], [class*="bg-brand"]) .mark-lime { fill: #c6ff3d; }
-
 /* ---- Compact phone scale (tokens, not per-element hacks) ----
    Everything sized in rem (Tailwind spacing, h-11, text-[0.9375rem]...) shrinks with the root; text under 15px is
    authored in px so small labels stay legible. --av scales coin logos and identicons. Desktop (md+) is untouched. */
 @media (max-width: 767.98px) {
   html { font-size: 14px; --av: .78; overflow-x: clip; }
   body { overflow-x: clip; }
-  .wide { font-stretch: 112%; letter-spacing: -0.012em; line-height: .95; }
-  .wide-black { font-stretch: 110%; letter-spacing: -0.018em; line-height: .92; }
-  .eyebrow { font-size: 9.5px; letter-spacing: .12em; }
-  .chip { height: 19px; padding: 0 6px; font-size: 9.5px; gap: 4px; letter-spacing: .06em; }
-  :root { --radius-card: 12px; }
+    .eyebrow { font-size: 9.5px; letter-spacing: .12em; }
+  .chip { height: 20px; padding: 0 8px; font-size: 9.5px; gap: 4px; letter-spacing: .06em; }
+  :root { --radius-card: 18px; }
 }
+
+/* ---- Signature motion: the line, the chest, chrome objects ---- */
+@keyframes line-dash { to { stroke-dashoffset: -24 } }
+.line-dash { stroke-dasharray: 6 6; animation: line-dash 1.2s linear infinite; }
+@keyframes float-y { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
+.float-y { animation: float-y 5s cubic-bezier(.45,0,.55,1) infinite; }
+@keyframes shine-x { 0% { transform: translateX(-120%) skewX(-18deg) } 60%, 100% { transform: translateX(220%) skewX(-18deg) } }
+.shine { position: relative; overflow: hidden; }
+.shine::before { content: ""; position: absolute; inset: 0; width: 45%; background: linear-gradient(90deg, transparent, rgb(255 255 255 / .55), transparent); animation: shine-x 4.6s cubic-bezier(.2,.7,.2,1) infinite; pointer-events: none; }
+@keyframes spin-slow { to { transform: rotate(360deg) } }
+.spin-slow { animation: spin-slow 22s linear infinite; }
+@keyframes signal-pulse { 0% { box-shadow: 0 0 0 0 rgb(255 90 31 / .45) } 100% { box-shadow: 0 0 0 14px rgb(255 90 31 / 0) } }
+.signal-pulse { animation: signal-pulse 1.8s cubic-bezier(.2,.7,.2,1) infinite; }
+.btn-signal { background: var(--color-signal); color: var(--c-signal-ink); box-shadow: 0 1px 0 rgb(255 255 255 / .35) inset, 0 10px 24px -10px rgb(255 90 31 / .7); }
+.btn-ink { background: var(--color-ink); color: var(--color-bg); box-shadow: 0 1px 0 rgb(255 255 255 / .18) inset, 0 10px 24px -12px rgb(21 22 26 / .6); }
+.btn-pearl { background: var(--pearl); box-shadow: var(--pearl-shadow); color: var(--color-ink); }
+.tilt { transform-style: preserve-3d; transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+.obsidian .on-pearl .text-mute, .cobalt-field .on-pearl .text-mute { color: #6c6d67; }
+.obsidian .on-pearl .eyebrow, .cobalt-field .on-pearl .eyebrow { color: #6c6d67; }
+.on-pearl { --c-ink: #15161a; --c-mute: #6c6d67; --c-faint: #a3a39b; --c-line: #e0ded5; --c-raised: #ebe9e2; --c-panel: #fbfaf7; --c-bg: #f2f1ec; }

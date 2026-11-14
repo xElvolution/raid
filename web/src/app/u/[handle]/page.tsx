@@ -36,14 +36,14 @@ export default function CallerPage({ params }: { params: Promise<{ handle: strin
   const mine = (raids.data ?? []).filter((r) => r.caller === handle).reverse();
   const rate = s && s.settled ? Math.round((s.hits / s.settled) * 100) : null;
   return (
-    <Shell title="Caller card" back="/leaderboard" actions={acct === handle ? <button onClick={() => void disconnect()} aria-label="Disconnect wallet" className="press grid h-9 w-9 place-items-center rounded-[10px] text-mute hover:bg-raised"><LogOut size={17} /></button> : undefined}>
+    <Shell title="Caller card" back="/leaderboard" actions={acct === handle ? <button onClick={() => void disconnect()} aria-label="Disconnect wallet" className="press grid h-9 w-9 place-items-center rounded-[13px] text-mute hover:bg-raised"><LogOut size={17} /></button> : undefined}>
       <motion.section initial={{ rotateX: 12, y: 20, opacity: 0 }} animate={{ rotateX: 0, y: 0, opacity: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 22 }} style={{ perspective: 800 }}
-        className="cobalt-field relative overflow-hidden rounded-[14px] md:rounded-[22px] p-3.5 md:p-7">
+        className="cobalt-field relative overflow-hidden rounded-[18px] md:rounded-[22px] p-3.5 md:p-7">
         <div className="dots absolute inset-0 opacity-60" />
         <div className="relative">
-          <div className="flex items-start justify-between"><Mark size={22} /><span className="mono text-[10.5px] text-white/60">CALLER · {NETWORK.toUpperCase()}</span></div>
+          <div className="flex items-start justify-between"><Mark size={22} light /><span className="mono text-[10.5px] text-white/60">CALLER · {NETWORK.toUpperCase()}</span></div>
           <div className="mt-3 md:mt-6 flex items-center gap-3 md:gap-4">
-            <Identicon seed={handle} size={64} className="!bg-white/10 !rounded-[16px]" />
+            <Identicon seed={handle} size={64} className="!bg-white/10 !rounded-[20px]" />
             <div className="min-w-0"><h2 className="wide-black text-[1.3125rem] md:text-[34px] leading-[.95] truncate">{shortName(handle)}</h2>
               <a href={explorerAccount(handle, NETWORK)} target="_blank" rel="noreferrer" className="mt-1.5 inline-flex items-center gap-1 mono text-[11px] text-white/60 hover:text-white">{handle.length > 30 ? shortAddr(handle) : handle}<ArrowUpRight size={11} /></a></div>
           </div>

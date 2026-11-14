@@ -5,6 +5,7 @@ import { useBuyback, useRaids } from '@/lib/hooks';
 import { usdcOf } from '@/lib/raid';
 import { openCall } from '@/lib/bus';
 import { CoinAvatar, CountUp, Delta, Skeleton } from './ui';
+import { ChromeChest } from './Chrome';
 
 export function RightRail() {
   const q = useQuotes();
@@ -14,12 +15,12 @@ export function RightRail() {
   const pot = (raids.data ?? []).reduce((s, r) => s + usdcOf(r.pot), 0);
   return (
     <aside className="hidden xl:flex sticky top-[96px] self-start w-[20rem] shrink-0 flex-col gap-4 pt-4 pb-10">
-      <section className="cobalt-field relative overflow-hidden rounded-[16px] p-3.5 md:p-5">
-        <div className="dots absolute inset-0 opacity-50" />
+      <section className="cobalt-field relative overflow-hidden rounded-[22px] p-3.5 md:p-5">
+        <div className="pointer-events-none absolute -right-6 -top-4 opacity-90"><ChromeChest size={130} fill={Math.min(1, pot / 500)} /></div>
         <div className="relative">
           <p className="eyebrow">War chest · all raids</p>
           <div className="mt-3 flex min-w-0 items-end gap-2"><span className="wide-black min-w-0 truncate text-[2.0rem] leading-[.85] md:text-[44px]"><CountUp value={pot} format={(n) => n.toFixed(2)} /></span><span className="wide shrink-0 pb-1 text-[13px]">USDC</span></div>
-          <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/20 pt-3 text-[12px]">
+          <div className="mt-4 grid grid-cols-2 gap-3 border-t border-white/12 pt-3 text-[12px]">
             <div><p className="text-white/60">Raids called</p><p className="mono mt-0.5 text-[0.9375rem] font-bold">{raids.data?.length ?? '–'}</p></div>
             <div><p className="text-white/60">Buyback reserve</p><p className="mono mt-0.5 text-[0.9375rem] font-bold">{bb.data !== undefined ? usdcOf(bb.data).toFixed(2) : '–'}</p></div>
           </div>
@@ -34,7 +35,7 @@ export function RightRail() {
               <CoinAvatar symbol={c.symbol} image={c.image} size={28} />
               <Link href={`/coin/${c.symbol}`} className="min-w-0 flex-1 hover:underline"><span className="block text-[13px] font-semibold">${c.symbol}</span><span className="block mono text-[11px] text-mute">{fmtPrice(c.priceUsd)}</span></Link>
               <Delta pct={c.change24h} className="text-[11.5px]" />
-              <button onClick={() => openCall(c.symbol)} className="press ml-1 h-7 rounded-[8px] px-2.5 text-[11.5px] font-bold hairline hover:bg-lime hover:text-[#0a1a00]">Raid</button>
+              <button onClick={() => openCall(c.symbol)} className="press ml-1 h-7 px-2.5 text-[11.5px] font-bold rounded-full hairline hover:bg-lime hover:text-[#1c0900]">Raid</button>
             </li>
           ))}
         </ul>

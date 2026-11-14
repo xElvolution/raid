@@ -107,7 +107,7 @@ export function PostCard({ p, i = 0, now, threaded = true }: { p: Post; i?: numb
           {!mine && <button onClick={follow} aria-pressed={following} aria-label={following ? `Unfollow @${p.handle}` : `Follow @${p.handle}`} className={`press ml-auto flex h-7 shrink-0 items-center gap-1 rounded-full px-2.5 text-[11.5px] font-bold ${following ? 'hairline text-mute' : 'bg-ink text-bg'}`}>{following ? <><UserCheck size={13} /><span className="hidden sm:inline">Following</span></> : <><UserPlus size={13} /><span className="hidden sm:inline">Follow</span></>}</button>}
         </div>
         <p className="mt-0.5 md:mt-1 whitespace-pre-wrap break-words text-[14px] md:text-[15px] leading-snug"><Body text={p.body} /></p>
-        {p.raid_id !== null && !p.reply_to && <Link href={`/raids/${p.raid_id}`} className="lift mt-2 inline-flex items-center gap-1.5 rounded-[10px] hairline px-2.5 py-1.5 text-[12px] font-semibold"><Swords size={13} className="text-lime" />Raid #{p.raid_id}{p.coin ? ` · $${p.coin}` : ''}</Link>}
+        {p.raid_id !== null && !p.reply_to && <Link href={`/raids/${p.raid_id}`} className="lift mt-2 inline-flex items-center gap-1.5 rounded-[13px] hairline px-2.5 py-1.5 text-[12px] font-semibold"><Swords size={13} className="text-lime" />Raid #{p.raid_id}{p.coin ? ` · $${p.coin}` : ''}</Link>}
         <div className="mt-2 flex items-center gap-5 text-[12.5px] text-mute">
           {threaded && <button onClick={() => setOpen((o) => !o)} aria-expanded={open} className="press flex items-center gap-1.5 hover:text-ink"><MessageCircle size={16} />{p.replies || ''}<span className="sr-only">replies</span></button>}
           <button onClick={like} aria-pressed={liked} aria-label={liked ? 'Unlike' : 'Like'} className={`press flex items-center gap-1.5 ${liked ? 'text-down' : 'hover:text-ink'}`}>
@@ -148,7 +148,7 @@ export function Feed({ raidId, coin, header, emptyTitle = 'Nothing posted yet', 
         <div className="mb-2 flex gap-1.5">{(['all', 'following'] as const).map((t) => <button key={t} onClick={() => setTab(t)} aria-pressed={tab === t} className={`press h-8 rounded-full px-3.5 text-[12.5px] font-semibold ${tab === t ? 'bg-ink text-bg' : 'hairline text-mute'}`}>{t === 'all' ? 'Everyone' : 'Following'}</button>)}</div>
       )}
       <div className="panel overflow-hidden divide-y divide-line">
-        {q.isLoading && [0, 1, 2].map((i) => <div key={i} className="flex gap-3 p-4"><Skeleton className="h-10 w-10 !rounded-[9px]" /><div className="flex-1 space-y-2"><Skeleton className="h-3.5 w-40" /><Skeleton className="h-3.5 w-full" /></div></div>)}
+        {q.isLoading && [0, 1, 2].map((i) => <div key={i} className="flex gap-3 p-4"><Skeleton className="h-10 w-10 !rounded-[12px]" /><div className="flex-1 space-y-2"><Skeleton className="h-3.5 w-40" /><Skeleton className="h-3.5 w-full" /></div></div>)}
         {q.error && <div className="p-6"><Empty art={<WifiOff size={36} className="text-faint" />} title="Social feed is offline" body={`Can’t reach the RAID social API. Raids, prices and the chest still work.`} action={<button onClick={() => q.refetch()} className="text-brand font-semibold">Retry</button>} /></div>}
         {!q.isLoading && !q.error && !items.length && <Empty title={tab === 'following' ? 'No posts from people you follow' : emptyTitle} body={tab === 'following' ? 'Follow callers from Everyone to fill this.' : emptyBody} />}
         {items.map((p, i) => <PostCard key={p.id} p={p} i={i} now={now} />)}
@@ -169,7 +169,7 @@ export function WhoToFollow() {
       <ul className="-mx-3 mt-2.5 flex gap-2 overflow-x-auto px-3 no-scrollbar md:mx-0 md:mt-3 md:block md:space-y-3 md:overflow-visible md:px-0">
         {c.isLoading && [0, 1, 2].map((i) => <Skeleton key={i} className="h-9 max-md:w-[14.25rem] shrink-0" />)}
         {c.data?.items.map((u) => (
-          <li key={u.handle} className="flex shrink-0 items-center gap-2 rounded-[10px] py-1.5 pl-1.5 pr-1.5 hairline max-md:w-[14.25rem] md:gap-2.5 md:rounded-none md:p-0 md:shadow-none">
+          <li key={u.handle} className="flex shrink-0 items-center gap-2 rounded-[13px] py-1.5 pl-1.5 pr-1.5 hairline max-md:w-[14.25rem] md:gap-2.5 md:rounded-none md:p-0 md:shadow-none">
             <Identicon seed={u.near_account ?? u.handle} size={34} className="max-md:!h-7 max-md:!w-7 max-md:!rounded-[7px]" />
             <div className="min-w-0 flex-1"><p className="truncate text-[12.5px] md:text-[13px] font-semibold">{(u.display_name || u.handle).replace(/\s*\(demo\)$/i, "")}{u.demo && <span className="ml-1.5 mono text-[9.5px] text-faint">DEMO</span>}</p><p className="truncate mono text-[10.5px] md:text-[11px] text-mute">{u.followers} followers · {u.posts} posts</p></div>
             <button onClick={async () => { if (!(await ensure())) return; await social.follow(u.handle, !u.following).catch(() => {}); void qc.invalidateQueries({ queryKey: ['callers'] }); void qc.invalidateQueries({ queryKey: ['feed'] }); }}

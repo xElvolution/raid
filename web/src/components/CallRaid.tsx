@@ -57,14 +57,14 @@ export function CallRaidSheet() {
           <p className="eyebrow">Call a raid · step {step + 1} of 3</p>
         </div>
         <h2 className="wide mt-1.5 md:mt-2 text-[1.25rem] leading-[.95] pr-10 md:text-[26px]">{['Pick a target', 'Set your line', 'Lock it in'][step]}</h2>
-        <div className="mt-3 md:mt-4 flex gap-1">{[0, 1, 2].map((i) => <motion.span key={i} className="h-[3px] flex-1 rounded-full" animate={{ backgroundColor: i <= step ? '#c6ff3d' : 'var(--color-line)' }} />)}</div>
+        <div className="mt-3 md:mt-4 flex gap-1">{[0, 1, 2].map((i) => <motion.span key={i} className="h-[3px] flex-1 rounded-full" animate={{ backgroundColor: i <= step ? '#ff5a1f' : 'var(--color-line)' }} />)}</div>
       </div>
 
       <AnimatePresence mode="wait" initial={false}>
         <motion.div key={step} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.22, ease: [0.2, 0.9, 0.3, 1] }} className="px-4 pb-5 md:px-6 md:pb-6">
           {step === 0 && (
             <>
-              <label className="mt-1 flex h-[2.875rem] md:h-12 items-center gap-2.5 rounded-[11px] md:rounded-[12px] bg-raised px-3.5 focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]">
+              <label className="mt-1 flex h-[2.875rem] md:h-12 items-center gap-2.5 rounded-[14px] md:rounded-[16px] bg-raised px-3.5 focus-within:shadow-[inset_0_0_0_1.5px_var(--color-brand)]">
                 <Search size={18} className="text-mute" /><input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search PEPE, DOGE, TRUMP…" className="h-full flex-1 bg-transparent text-[14px] md:text-[15px] outline-none placeholder:text-faint" aria-label="Search coins" />
               </label>
               <div className="mt-3 flex gap-1.5 overflow-x-auto no-scrollbar">
@@ -72,7 +72,7 @@ export function CallRaidSheet() {
                   <button key={k} onClick={() => setChain(k)} className={`press h-8 shrink-0 rounded-full px-3 text-[12.5px] font-semibold ${chain === k ? 'bg-ink text-bg' : 'hairline text-mute hover:text-ink'}`}>{k === 'all' ? 'All chains' : CHAINS[k].label}</button>
                 ))}
               </div>
-              <ul className="mt-3 divide-y divide-line rounded-[14px] hairline overflow-hidden">
+              <ul className="mt-3 divide-y divide-line rounded-[18px] hairline overflow-hidden">
                 {list.map((c) => { const qq = quotes.data?.find((x) => x.symbol === c.symbol); return (
                   <li key={c.symbol}>
                     <button onClick={() => { setCoin(c); setStep(1); }} className="flex w-full items-center gap-2.5 md:gap-3 px-3 md:px-3.5 py-2.5 md:py-3 text-left hover:bg-raised">
@@ -90,7 +90,7 @@ export function CallRaidSheet() {
 
           {step === 1 && coin && (
             <>
-              <div className="flex items-center gap-3 rounded-[12px] md:rounded-[14px] bg-raised p-3 md:p-3.5">
+              <div className="flex items-center gap-3 rounded-[16px] md:rounded-[18px] bg-raised p-3 md:p-3.5">
                 <CoinAvatar symbol={coin.symbol} image={quote?.image} size={40} />
                 <div className="min-w-0 flex-1"><p className="wide text-[1.0625rem]">${coin.symbol}</p><p className="text-[12px] text-mute">{CHAINS[coin.chain].label} · mcap {fmtUsd(quote?.marketCap)}</p></div>
                 <div className="text-right"><p className="mono text-[14px]">{fmtPrice(quote?.priceUsd)}</p><Delta pct={quote?.change24h} className="text-[11px]" /></div>
@@ -98,9 +98,9 @@ export function CallRaidSheet() {
               <p className="eyebrow mt-4 md:mt-5">Sell line</p>
               <div className="mt-2 grid grid-cols-3 gap-2">
                 {LINES.map((l) => (
-                  <button key={l.bps} onClick={() => setBps(l.bps)} aria-pressed={bps === l.bps} className={`press relative rounded-[12px] md:rounded-[14px] p-2.5 md:p-3 text-left transition-colors ${bps === l.bps ? 'bg-lime text-[#0a1a00]' : 'hairline hover:bg-raised'}`}>
+                  <button key={l.bps} onClick={() => setBps(l.bps)} aria-pressed={bps === l.bps} className={`press relative rounded-[16px] md:rounded-[18px] p-2.5 md:p-3 text-left transition-colors ${bps === l.bps ? 'bg-lime text-[#1c0900]' : 'hairline hover:bg-raised'}`}>
                     <span className="wide-black block text-[1.5rem] md:text-[30px] leading-none">{l.label}</span>
-                    <span className={`mt-1.5 md:mt-2 block text-[11px] md:text-[11.5px] ${bps === l.bps ? 'text-[#0a1a00]/70' : 'text-mute'}`}>Backers <b className="mono">{netLabel(l.bps, cfg.data)}</b></span>
+                    <span className={`mt-1.5 md:mt-2 block text-[11px] md:text-[11.5px] ${bps === l.bps ? 'text-[#1c0900]/70' : 'text-mute'}`}>Backers <b className="mono">{netLabel(l.bps, cfg.data)}</b></span>
                     <span className="mt-1 block mono text-[11px] truncate">{quote ? `@ ${fmtPrice(quote.priceUsd * l.bps / 1e4)}` : ''}</span>
                   </button>
                 ))}
@@ -116,7 +116,7 @@ export function CallRaidSheet() {
 
           {step === 2 && coin && call && (
             <>
-              <div className="cobalt-field relative overflow-hidden rounded-[16px] p-3.5 md:p-5">
+              <div className="cobalt-field relative overflow-hidden rounded-[20px] p-3.5 md:p-5">
                 <div className="dots absolute inset-0 opacity-60" />
                 <div className="relative">
                   <p className="eyebrow">Your call</p>
@@ -138,7 +138,7 @@ export function CallRaidSheet() {
                 <Rule icon={<Flame size={15} />}>{cfg.data ? `${cfg.data.buyback_bps / 100}%` : 'A share'} of a winning raid’s profit goes to the buyback reserve. The chest has no method to withdraw it.</Rule>
               </ul>
               <RiskNote className="mt-4" />
-              <details className="mt-4 rounded-[12px] bg-raised px-3.5 py-3 text-[12px]">
+              <details className="mt-4 rounded-[16px] bg-raised px-3.5 py-3 text-[12px]">
                 <summary className="cursor-pointer font-semibold text-mute">What your wallet will sign</summary>
                 <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all mono text-[11px] text-mute">{`${CHEST_ID}.call_raid(${JSON.stringify(call.args, null, 1)})`}</pre>
               </details>
@@ -153,7 +153,7 @@ export function CallRaidSheet() {
 }
 
 function Pick({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {
-  return <button onClick={onClick} aria-pressed={on} className={`press h-10 rounded-[10px] mono text-[12.5px] font-bold ${on ? 'bg-ink text-bg' : 'hairline text-mute hover:text-ink'}`}>{children}</button>;
+  return <button onClick={onClick} aria-pressed={on} className={`press h-10 rounded-[13px] mono text-[12.5px] font-bold ${on ? 'bg-ink text-bg' : 'hairline text-mute hover:text-ink'}`}>{children}</button>;
 }
 function Rule({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return <li className="flex gap-2.5"><span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-raised text-lime">{icon}</span><span className="text-mute leading-snug">{children}</span></li>;

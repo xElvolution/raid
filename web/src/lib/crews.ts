@@ -7,8 +7,8 @@ import { type Raid, CHEST_ID, usdcOf, view } from './raid';
 export const DAO_FACTORY = process.env.NEXT_PUBLIC_RAID_DAO_FACTORY ?? 'sputnikv2.testnet';
 export interface Crew { key: string; name: string; dao: string; tag: string; color: string; ink: string }
 export const CREWS: Crew[] = [
-  { key: 'frogs', name: 'Frog Legion', dao: `raid-frog-legion.${DAO_FACTORY}`, tag: 'FRG', color: '#c6ff3d', ink: '#0a1a00' },
-  { key: 'dogs', name: 'Doge Pack', dao: `raid-doge-pack.${DAO_FACTORY}`, tag: 'DGP', color: '#3355ff', ink: '#ffffff' },
+  { key: 'frogs', name: 'Frog Legion', dao: `raid-frog-legion.${DAO_FACTORY}`, tag: 'FRG', color: '#ff5a1f', ink: '#1c0900' },
+  { key: 'dogs', name: 'Doge Pack', dao: `raid-doge-pack.${DAO_FACTORY}`, tag: 'DGP', color: '#3a3b42', ink: '#ffffff' },
 ];
 export const crewByDao = (dao: string) => CREWS.find((c) => c.dao === dao);
 
