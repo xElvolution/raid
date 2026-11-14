@@ -81,7 +81,7 @@ export function PayoutSlider({ className = '' }: { className?: string }) {
           <input type="range" min={0} max={100} value={exit} onChange={(e) => setExit(Number(e.target.value))} className="mt-1.5 w-full accent-[#ff5c7a]" aria-label="Retreat price" />
         </div>
       </div>
-      <p className="mt-2 text-[10.5px] md:text-[11px] text-faint">Same math as the contract’s <code>payout_preview</code>: {fee.caller_fee_bps / 100}% caller + {fee.buyback_bps / 100}% reserve, of profit, on a hit only. Caps: 250 per backer, 1,000 per raid.</p>
+      <p className="mt-2 text-[10.5px] leading-snug md:text-[11px] text-faint">{fee.caller_fee_bps / 100}% caller fee and {fee.buyback_bps / 100}% buyback, taken from profit only if the raid hits. Max 250 USDC per backer, 1,000 per raid.</p>
     </section>
   );
 }
@@ -90,6 +90,8 @@ interface Why { items: { id: string; name: string; marketCap: number; volume24h:
 /** "Why now": live memecoin category numbers from CoinGecko, each linked to its source page. */
 export function WhyNow({ className = '' }: { className?: string }) {
   const q = useQuery({ queryKey: ['whynow'], queryFn: () => fetch('/api/market/whynow').then((r) => r.json() as Promise<Why>), staleTime: 5 * 60_000 });
+  const items = q.data?.items ?? [];
+  if (!items.length) return null;
   return (
     <section className={`min-w-0 ${className}`}>
       <div className="flex items-baseline justify-between"><p className="eyebrow">Why now · memecoin market, live</p><a href={q.data?.sourceUrl ?? 'https://www.coingecko.com/en/categories'} target="_blank" rel="noreferrer" className="mono text-[10px] text-faint hover:text-ink">src · CoinGecko</a></div>
