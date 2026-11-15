@@ -39,7 +39,7 @@ Miss, raid #2: sold at market after retreat, no fees.
 https://testnet.nearblocks.io/txns/Fk2k5zgfNKGc1bDVTUmSueZAqG73Vm2jTBi7pBLhSLGP
 
 Try it on testnet, no real funds:
-https://raid.5-189-170-85.sslip.io/judges
+https://raid-near.vercel.app
 
 @NearLegion @NearBuilders
 

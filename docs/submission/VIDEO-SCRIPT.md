@@ -47,9 +47,9 @@ VO: Then the chest buys the whole pot in one swap. It is keyless. It can sign it
 On screen: raid #1, already closed at the line. Show 120 in, 246 out. Show the fee split: caller 3.15, buyback 9.45, backers 233.40. Then show a backer claim, and the crew DAO claiming the caller fee.
 VO: The chest can only sell at the line, or at market after retreat. This raid hit. One hundred and twenty went in, two hundred and forty six came out. Fees came only from profit. Two and a half percent to the caller, seven and a half to buyback, the rest to the crew. On a miss, nobody takes a fee.
 
-### 2:08 to 2:22: Judges faucet
-On screen: https://raid.5-189-170-85.sslip.io/judges. Tap Get a testnet judge account. Show the new account name and the tUSDC arriving. Do not show any private key.
-VO: If you want to try it yourself, open the judges page and take a funded testnet account in one tap. No real funds. The key stays in your browser.
+### 2:08 to 2:22: Free testnet account
+On screen: https://raid-near.vercel.app. Tap Sign in, then Get a free testnet account. Show the new account name and the test USDC arriving. Do not show any private key.
+VO: If you want to try it yourself, tap Sign in and take a free funded testnet account in one tap. No real funds. The key stays in your browser.
 
 ### 2:22 to 2:48: NearBlocks proof, and the miss
 On screen: first open the raid #1 settle transaction on NearBlocks testnet:

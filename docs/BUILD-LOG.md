@@ -22,7 +22,7 @@ Times are WAT (UTC+1). Testnet only: no mainnet transaction, no money spent, not
 - In-app: members, votes needed, each proposal with its vote bar, Yes/No buttons for members (wallet `act_proposal`), and a Propose form.
 
 ## 3. Judge kit (PIRY-style) — done 11 Nov ~18:45
-- `/judges`: "Try a raid in 2 minutes". 3 prefunded testnet judge accounts (10 testnet NEAR from the faucet helper + 500 tUSDC each):
+- Judge kit (since removed from the app): 3 prefunded testnet judge accounts (10 testnet NEAR from the faucet helper + 500 tUSDC each):
   `raid-judge1-mwce6ry3.testnet`, `raid-judge2-mwce6vli.testnet` (Frog Legion members), `raid-judge3-mwce6zdz.testnet` (Doge Pack).
   Keys: `secrets/judges.json` and `docs/JUDGE-ACCESS.local.md` (both gitignored) for the submission form only.
 - Judge mode (`web/src/lib/wallet.ts`): paste a judge key, the app checks it is an access key of that account on chain, keeps it in
@@ -35,8 +35,7 @@ Times are WAT (UTC+1). Testnet only: no mainnet transaction, no money spent, not
   24 h change), each card linked to its CoinGecko page. If CoinGecko fails, numbers are hidden, not guessed.
 - Payout slider: stake 1–250, line 1.5x/2x/3x, net on a hit (with caller and reserve cuts) and a miss case with a retreat price slider.
   Uses the chest's live fee config.
-- Founder line: `web/src/lib/judges.ts` `FOUNDER_LINE` is empty on purpose; it renders on /judges once Elvis writes it.
-- Honest notes on /judges: testnet, no swaps on testnet, not audited.
+- Honest notes in the app: testnet, no swaps on testnet, not audited.
 - Copy fix: landing no longer says "RAID gets burned" (the RAID token is cut).
 
 ## 5. Reels (vertical video feed that sells raids)

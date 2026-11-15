@@ -1,7 +1,7 @@
 # RAID demo video: 2:30 script
 
 Not recorded yet. Record on a phone-sized browser window (390 px wide) against the prod build (`:3420`), on NEAR testnet, in dark mode.
-Use judge mode (`/judges`) so no wallet popup interrupts the take. Voice-over is in quotes. On-screen text is in **bold**.
+Use a free testnet account (Sign in, then Get a free testnet account) so no wallet popup interrupts the take. Voice-over is in quotes. On-screen text is in **bold**.
 
 | Time | Screen | Voice-over |
 |---|---|---|
@@ -11,7 +11,7 @@ Use judge mode (`/judges`) so no wallet popup interrupts the take. Voice-over is
 | 0:50–1:05 | Back panel → **Phantom · MetaMask** tab | "No NEAR account? Back from MetaMask or Phantom. You sign one NEAR Intents message, and the stake belongs to your wallet key." |
 | 1:05–1:30 | `/war` → Frog Legion vs Doge Pack. Scroll to the proposals, tap Yes on an open one, show it pass | "Crews are Sputnik DAOs. A raid is a proposal. When it passes, the DAO itself calls the raid, so the fee goes to the crew. Two crews, 24 hours: Raid War." |
 | 1:30–1:50 | `/reels`: swipe two reels, tap Back on one | "Reels sell raids. Every reel carries the coin, the live raid and a Back button. Back through a reel and its creator gets a cut of the caller's fee if the raid hits." **DEMO reels, off-chain attribution** |
-| 1:50–2:05 | `/judges` payout slider: move the stake and the line, then the miss slider | "The deal is on chain: fees come only out of profit, 2.5% to the caller and 7.5% to the buyback. On a miss nobody takes a fee." |
+| 1:50–2:05 | Raid page payoff card: what 10 in pays back if the coin hits the goal | "The deal is on chain: fees come only out of profit, 2.5% to the caller and 7.5% to the buyback. On a miss nobody takes a fee." |
 | 2:05–2:20 | Split screen: `docs/TESTNET-E2E.md` checklist, then the Telegram mock card | "We rehearsed the whole flow on testnet in one script: DAO vote, three kinds of backers, a reel, the launchpad, and Chain Signatures signing the buy. The swap itself waits for mainnet Intents." |
 | 2:20–2:30 | Logo end card + URL | "RAID. Call it. Back it. Hit the line." **Built on NEAR Intents · Chain Signatures · Sputnik DAO** |
 

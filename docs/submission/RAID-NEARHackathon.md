@@ -112,7 +112,7 @@ An earlier rehearsal (`evidence/testnet-e2e-run.json`) passed 21 steps and block
 5. Open Reels, tap a coin card to see the token sheet. Open the Live tab, or tap + and Go live to stream your camera; a second browser sees it in Reels, then Live.
 6. Open Ranks for the season leaderboard and Get verified. Tap the bell for alerts.
 
-There is no separate judges page: `/judges` now redirects to the feed.
+Every page is readable without signing in.
 
 ## Baseline and limits, in brief
 

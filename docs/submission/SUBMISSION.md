@@ -144,4 +144,4 @@ What to open, as "do X, see Y":
 - Alerts: the bell in the top bar lists raids opened, bought, hit or sold early, and Auto-join prompts.
 - Test funds: sign in, then Get test funds. The account is created under `raidapp.testnet`.
 
-There is no separate judges page any more: `/judges` redirects to the feed, and every page is readable without signing in.
+Every page is readable without signing in.
