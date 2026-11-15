@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/v1/:path*", "destination": "https://app.raid.5-189-170-85.sslip.io/v1/:path*" }
+  ]
+}
