@@ -2,14 +2,14 @@
 
 **Call a raid on any memecoin. Your crew backs it. A keyless war chest on NEAR buys together and can only sell at the line.**
 
-- **Live app (NEAR testnet):** [https://app.raid.5-189-170-85.sslip.io](https://app.raid.5-189-170-85.sslip.io) · judges start at [https://app.raid.5-189-170-85.sslip.io/judges](https://app.raid.5-189-170-85.sslip.io/judges)
-- **A full raid, start to payout, on testnet:** [https://app.raid.5-189-170-85.sslip.io/raids/1](https://app.raid.5-189-170-85.sslip.io/raids/1)
+- **Live app (NEAR testnet):** [https://raid-near.vercel.app](https://raid-near.vercel.app)
+- **A full raid, start to payout, on testnet:** [https://raid-near.vercel.app/raids/1](https://raid-near.vercel.app/raids/1)
 - **Landing page:** [https://raid.5-189-170-85.sslip.io](https://raid.5-189-170-85.sslip.io)
 
 > NEAR HACKATHON, Nov 2026. Tracks: `memecoins` (primary), `defi`, `open`, `social` (crews are Sputnik DAOs).
 > Status: **NEAR testnet**. Nothing is deployed to mainnet and no real funds are used. Every number below links to a testnet transaction. One raid has gone the whole way on testnet: Open, Bought, Held, Sold at the line, Closed, every backer and the caller paid (raid #1 below). A second raid missed the line after retreat, sold at market, paid no fees, and returned what came back to the backer (raid #2 below).
 > Baseline disclosure (Q-003/Q-004): the social app shell comes from the team's earlier project *Called* (`docs/REUSE-MAP.md`).
-> Everything else is new in the window: the chest and launchpad contracts, raids, Raid War, crews, reels, keyless backing, the judge kit and the Telegram bot.
+> Everything else is new in the window: the chest and launchpad contracts, raids, Raid War, crews, reels, keyless backing, the test funds faucet and the Telegram bot.
 
 ## The problem
 Meme "raids" happen in Telegram and X every day. Someone shouts "PEPE to 2x", people pile in, and insiders dump on the crowd.
@@ -56,10 +56,10 @@ flowchart LR
     N[NEAR wallet]
     MM[MetaMask / Phantom<br/>no NEAR account]
     X[SOL / ETH / USDC<br/>on other chains]
-    J[Judge mode<br/>prefunded testnet key]
+    J[Free testnet account<br/>test funds faucet]
   end
   subgraph Web["web/ (Next.js 16)"]
-    UI[Raids · War · Reels · Launch · Feed · Judges]
+    UI[Feed · Raids · Reels · Live · Tokens · Settings]
     KV[/api/keyless/verify<br/>simulate_intents/]
     Q[/api/anychain/quote<br/>1Click/]
   end
@@ -91,17 +91,16 @@ flowchart LR
 
 ## Try it with no money
 Everything runs on NEAR testnet. No wallet install and no real money.
-1. Open [https://app.raid.5-189-170-85.sslip.io/judges](https://app.raid.5-189-170-85.sslip.io/judges) and press **Get a testnet judge account**. Your browser makes a new key; only the public key goes to the judge faucet (`web/src/app/api/judge-faucet/route.ts`), which opens a `raid-judge-….testnet` account with testnet NEAR and sends it 500 tUSDC. You see "Signing as raid-judge-…". The key stays in your browser's localStorage.
-2. Open [https://app.raid.5-189-170-85.sslip.io/raids/1](https://app.raid.5-189-170-85.sslip.io/raids/1). You see a raid a crew DAO called, the chest's buy and its sale at 2.05x, the fee split, and a list of every testnet transaction for it.
-3. Go to [https://app.raid.5-189-170-85.sslip.io/raids](https://app.raid.5-189-170-85.sslip.io/raids), pick a coin and a line, and call a raid. On this testnet chest the crew window and the public countdown are 1 minute each. Your raid appears in the list with its receipt.
-4. Back an open raid with 10 tUSDC. You see your account in the raid's backer list (`get_backers` on the chest).
-5. Try the payout slider on `/judges`: pick a stake and a line, see the hit and the miss.
+1. Open [https://raid-near.vercel.app](https://raid-near.vercel.app), tap **Sign in** at the top right, then **New here? Get a free testnet account**. Your browser makes a new key; only the public key goes to the test funds faucet (`web/src/app/api/faucet/route.ts`), which opens a `u-….raidapp.testnet` account with test NEAR and sends it 500 test USDC. You see "Signed in as u-…". The key stays in your browser's localStorage. Already have a testnet wallet? Use **Connect a NEAR wallet**, then **Settings → Get test funds → Claim test funds** (once a day).
+2. Open [https://raid-near.vercel.app/raids/1](https://raid-near.vercel.app/raids/1). You see a raid that hit its goal: the chest's buy and its sale at 2.05x, the fee split, and a list of every testnet transaction for it.
+3. Open the **Raid** tab, pick a coin, tap **Start a raid**, choose a goal (1.5x, 2x or 3x) and confirm. On this testnet chest the join window and the public countdown are 1 minute each. Your raid appears in the list with its receipt.
+4. Open any open raid and tap **Join raid** with 10 test USDC. You see your account in the raid's backer list (`get_backers` on the chest). The raid page also shows what 10 in pays back if the coin hits the goal, after fees.
 
 Every page is readable without signing in.
 
 ## Evidence (NEAR testnet)
 ### Full raid lifecycle on testnet (raid #1)
-Script: `scripts/testnet-lifecycle.mjs`. Log with every step, result and tx: `evidence/testnet-lifecycle-run.json`. The same tx list shows on [https://app.raid.5-189-170-85.sslip.io/raids/1](https://app.raid.5-189-170-85.sslip.io/raids/1).
+Script: `scripts/testnet-lifecycle.mjs`. Log with every step, result and tx: `evidence/testnet-lifecycle-run.json`. The same tx list shows on [https://raid-near.vercel.app/raids/1](https://raid-near.vercel.app/raids/1).
 
 NEAR Intents and 1Click run on mainnet only, so this run uses a fresh chest (`raidchest-mwgr1bk0.testnet`) whose `intents` account is **`contracts/intents-sim`** (`raidvenue-mwgr1iba.testnet`): a small testnet contract with the same methods the chest calls on `intents.near` (`ft_on_transfer`, `mt_transfer`, `mt_balance_of`, `ft_withdraw`, `add_public_key`). The chest's 1Click key is a testnet quote signer. A solver account (`raidsolver-mwgr1iba.testnet`) plays the 1Click market maker and the bridge: it receives the pot at its deposit account and pays the coin back, and later buys the coin back for tUSDC. **The solver sets the prices (1 tPEPE = 1 tUSDC at entry, 2.05 tUSDC at exit), so the price move is simulated.** The chest code, quote checks, countdown, line rule, fee split and claims are the same contract that is meant for mainnet. The target coin is `tPEPE` (`raidpepe-mwgr1iba.testnet`), a testnet NEP-141.
 
@@ -169,7 +168,7 @@ The back transactions show one failed receipt, on `intents-not-on-testnet.…`: 
 ## Run it
 1. `cd contracts && cargo test`: chest and launchpad unit tests (lifecycle, countdown, fee split, caps, bridged beneficiary, keyless claims). 17 pass on Rust 1.100. Build the wasm with `cargo near build non-reproducible-wasm --no-abi` in each contract folder.
 2. `cd api && npm ci && npm test`: social, reels and Telegram bot tests. `npm run dev:local` serves the API on :8787 with PGlite. `SEED_DEMO=1` adds clearly labelled sample posts and reels (the seed script uses `demo_*` account names).
-3. `cd sdk && npm ci && npm run build`, then `cd web && npm ci && npm run build && npx next start -p 3420`, then open `/raids`. Raids are read live from the testnet chest set in `NEXT_PUBLIC_RAID_CHEST`. The judge faucet needs `RAID_FAUCET_ACCOUNT`, `RAID_FAUCET_KEY` and `RAID_FAUCET_USDC` (testnet token owner, server env only).
+3. `cd sdk && npm ci && npm run build`, then `cd web && npm ci && npm run build && npx next start -p 3420`, then open `/raids`. Raids are read live from the testnet chest set in `NEXT_PUBLIC_RAID_CHEST`. The test funds faucet needs `RAID_FAUCET_ACCOUNT`, `RAID_FAUCET_KEY` and `RAID_FAUCET_USDC` (testnet token owner, server env only).
 4. `cd scripts && npm ci && RAID_SECRETS=<folder with testnet keys> node testnet-lifecycle.mjs setup` then `call`, `back`, `buy`, `sell`, `claim` runs the full lifecycle on testnet. `node testnet-e2e.mjs a` (then `b` about 20 minutes later) replays the earlier rehearsal. `node mainnet-go-no-go.mjs check` is read-only, and spending stages refuse to run without `--i-confirm-mainnet`.
 5. `cd api && npm run telegram:mock` is a dry run of the bot. `TELEGRAM_BOT_TOKEN=… npm run telegram` runs it live.
 
@@ -180,7 +179,7 @@ The back transactions show one failed receipt, on `intents-not-on-testnet.…`: 
 | `contracts/raid-launchpad` | Bonding-curve launchpad: `create_coin`, buy via `ft_transfer_call`, `sell`, `claim_fees` |
 | `contracts/test-usdc` | Testnet token with a public faucet (tUSDC, and tPEPE as a stand-in target coin) |
 | `contracts/intents-sim` | Testnet stand-in for the `intents.near` methods the chest calls (Intents has no testnet) |
-| `web/` | Next.js app: raids, war, reels, launch, feed, judges and the judge faucet, keyless backing. Live at https://app.raid.5-189-170-85.sslip.io |
+| `web/` | Next.js app: feed, raids, reels, live, tokens, settings with the test funds faucet, keyless backing. Live at https://raid-near.vercel.app |
 | `landing/` | Public static landing page, live at https://raid.5-189-170-85.sslip.io |
 | `api/` | Social API, reels, Telegram bot |
 | `scripts/` | Testnet runs, E2E rehearsal, receipts, screenshot runner, reel renderer |
@@ -190,7 +189,7 @@ The back transactions show one failed receipt, on `intents-not-on-testnet.…`: 
 ## Known limits (honest)
 - **Testnet only.** NEAR Intents and 1Click are mainnet services. On testnet the swaps run against `contracts/intents-sim` and a solver account that sets the prices, so fills and the price move are simulated. No swap has run through real `intents.near` and 1Click yet; that needs a small mainnet run. The Raid War board reads the earlier testnet chest and its crews.
 - On testnet, a stand-in account plays the Intents bridge for MetaMask and Phantom backs. The signatures themselves are checked by mainnet `intents.near` (read-only `simulate_intents`).
-- Raids that judges call on the hosted app stay Open until someone runs the buy with a solver quote; there is no automatic keeper on testnet.
+- Raids started on the hosted app stay Open until someone runs the buy with a solver quote; there is no automatic keeper on testnet.
 - Reel-creator rewards are tracked by the API, not by the contract (*off-chain attribution, not yet on the contract*). The hosted app starts with an empty feed and no seeded posts. No real people appear.
 - The buyback reserve accumulates on hits and has no spend method yet. Launchpad coins live in the launchpad ledger, not separate NEP-141 contracts. Graduation to a DEX pool is not built.
 - One in-flight swap per token, enforced by the contract. **Not audited.** Tiny amounts only.

@@ -132,7 +132,7 @@ Miss path, raid #2 (3x line, 1 hour retreat): 20 tUSDC backed, bought, held, the
 
 Full table: root README. Raw log: `evidence/testnet-lifecycle-run.json`. Receipt list for the app: `evidence/lifecycle-receipts.json` (not written into `web/`; the UI worker can copy it).
 
-Live app (NEAR testnet): https://raid.5-189-170-85.sslip.io (also https://app.raid.5-189-170-85.sslip.io)
+Live app (NEAR testnet): https://raid.5-189-170-85.sslip.io (also https://raid-near.vercel.app)
 
 What to open, as "do X, see Y":
 
